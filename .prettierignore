@@ -8,7 +8,8 @@ node_modules
 out
 build
 
-# Archivos de lock (mantener pnpm-lock.yaml, ignorar otros)
+# Archivos de lock (generados automáticamente)
+pnpm-lock.yaml
 package-lock.json
 yarn.lock
 
@@ -25,7 +26,6 @@ next-env.d.ts
 
 # Archivos del sistema
 .DS_Store
-*.pem
 
 # Logs
 *.log
