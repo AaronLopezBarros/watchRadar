@@ -1,4 +1,4 @@
-const BASE_URL = 'https://api.themoviedb.org/';
+const BASE_URL = 'https://api.themoviedb.org/3';
 
 type TmdbClientOptions = RequestInit & {
   revalidate?: number;
