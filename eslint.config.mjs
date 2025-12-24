@@ -21,6 +21,13 @@ const eslintConfig = defineConfig([
     rules: {
       "no-console": "error",
       "no-unused-vars": "error",
+      "id-length": [
+        "error",
+        {
+          min: 2,
+          exceptions: ["_"],
+        },
+      ],
       "import/order": [
         "error",
         {
