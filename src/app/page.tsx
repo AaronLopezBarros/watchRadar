@@ -1,16 +1,14 @@
-import Image from 'next/image';
-
+import { MovieCard } from '@/src/components/MovieCard';
 import { getPopularMoviesMultiplePages } from '@/src/lib/api/tmdb/movies';
 import { Movie } from '@/src/lib/api/tmdb/types';
-import { getPosterUrl } from '@/src/lib/utils/getPosterUrl';
 
 export default async function Home() {
-  const movies = await getPopularMoviesMultiplePages(3);
+  const movies = await getPopularMoviesMultiplePages(10);
 
   return (
-    <div className='wrap flex items-center justify-center gap-3'>
+    <div className='flex flex-wrap items-center justify-center gap-5 px-5 py-10'>
       {movies.map((movie: Movie) => (
-        <Image key={movie.id} src={getPosterUrl(movie.poster_path)} alt={movie.title} width={100} height={100} />
+        <MovieCard key={movie.id} movie={movie} />
       ))}
     </div>
   );
