@@ -1,4 +1,4 @@
-import { MovieCard } from '@/src/components/MovieCard';
+import { MovieCard } from '@/src/components/MovieCard/MovieCard';
 import { getPopularMoviesMultiplePages } from '@/src/lib/api/tmdb/movies';
 import { Movie } from '@/src/lib/api/tmdb/types';
 
