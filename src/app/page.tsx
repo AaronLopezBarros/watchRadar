@@ -6,7 +6,7 @@ export default async function Home() {
   const movies = await getPopularMoviesMultiplePages(10);
 
   return (
-    <div className='flex flex-wrap items-center justify-center gap-5 px-5 py-10'>
+    <div className='flex flex-wrap items-center justify-center gap-5 overflow-visible px-5 py-10'>
       {movies.map((movie: Movie) => (
         <MovieCard key={movie.id} movie={movie} />
       ))}
