@@ -1,6 +1,6 @@
 import { tmdbClient } from '@/lib/api/tmdb/client';
 import { Movie, PopularMoviesResponse } from '@/src/lib/api/tmdb/types';
-import { deduplicateById } from '@/src/lib/utils/array';
+import { deduplicateById } from '@/src/lib/utils';
 
 export async function getPopularMovies(page = 1): Promise<PopularMoviesResponse> {
   return tmdbClient<PopularMoviesResponse>(`/movie/popular?page=${page}`);
