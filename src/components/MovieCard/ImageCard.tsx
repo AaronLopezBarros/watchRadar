@@ -1,6 +1,7 @@
+import Image from 'next/image';
+
 import { Movie } from '@/src/lib/api/tmdb/types';
 import { cn, getPosterUrl } from '@/src/lib/utils';
-import Image from 'next/image';
 
 type ImageCardProps = {
   movie: Movie;
