@@ -1,5 +1,7 @@
 'use client';
 
+// TODO: redisign this component
+
 type ErrorProps = {
   error: Error & { digest?: string; status?: number };
 };
