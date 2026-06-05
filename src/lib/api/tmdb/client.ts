@@ -4,7 +4,7 @@ type TmdbClientOptions = RequestInit & {
   revalidate?: number;
 };
 
-export async function tmdbClient<T>(endpoint: string, options?: TmdbClientOptions): Promise<T> {
+export const tmdbClient = async <T>(endpoint: string, options?: TmdbClientOptions): Promise<T> => {
   const { revalidate = 3600, headers = {}, ...restOptions } = options || {};
 
   const token = process.env.TMDB_TOKEN || process.env.TMDB_API_KEY;
@@ -32,4 +32,4 @@ export async function tmdbClient<T>(endpoint: string, options?: TmdbClientOption
   }
 
   return response.json();
-}
+};

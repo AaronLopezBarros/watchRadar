@@ -10,7 +10,7 @@ type ImageCardProps = {
   posterW: number;
 };
 
-export const ImageCard = ({ movie, isHovered, flipX, posterH, posterW }: ImageCardProps) => {
+export function ImageCard({ movie, isHovered, flipX, posterH, posterW }: ImageCardProps) {
   return (
     <div
       className={cn(
@@ -22,4 +22,4 @@ export const ImageCard = ({ movie, isHovered, flipX, posterH, posterW }: ImageCa
       <Image src={getPosterUrl(movie.poster_path)} alt={movie.title} fill sizes='100px' className='object-cover' />
     </div>
   );
-};
+}
