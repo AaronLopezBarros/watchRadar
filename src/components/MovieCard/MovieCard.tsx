@@ -27,12 +27,16 @@ export function MovieCard({ movie }: MovieCardProps) {
 
   const year = movie.release_date?.slice(0, 4);
 
+  const calculateFlipPosition = (cardRect?: DOMRect) => {
+    setFlipX(!!cardRect && cardRect.left + EXPANDED_WIDTH > window.innerWidth);
+    setFlipY(!!cardRect && cardRect.top + EXPANDED_HEIGHT > window.innerHeight);
+  };
+
   const handleMouseEnter = () => {
-    const rect = articleRef.current?.getBoundingClientRect();
-    if (rect) {
-      setFlipX(rect.left + EXPANDED_WIDTH > window.innerWidth);
-      setFlipY(rect.top + EXPANDED_HEIGHT > window.innerHeight);
-    }
+    const cardRect = articleRef.current?.getBoundingClientRect();
+
+    calculateFlipPosition(cardRect);
+
     setIsHovered(true);
   };
 
