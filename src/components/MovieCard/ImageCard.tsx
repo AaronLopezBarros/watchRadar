@@ -14,6 +14,7 @@ type ImageCardProps = {
 export function ImageCard({ movie, isHovered, flipX, posterH, posterW }: ImageCardProps) {
   return (
     <div
+      data-testid='image-card-container'
       className={cn(
         'relative shrink-0 overflow-hidden transition-[width,height] duration-300 ease-out',
         isHovered ? (flipX ? 'rounded-l-md' : 'rounded-r-md') : 'rounded-md',
