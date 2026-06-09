@@ -56,6 +56,7 @@ export function MovieCard({ movie }: MovieCardProps) {
       onMouseLeave={handleMouseLeave}
     >
       <div
+        data-testid='movie-card-container'
         className={cn(
           'absolute flex rounded-md transition-[width,height] duration-300 ease-out',
           flipX ? 'right-0 flex-row-reverse' : 'left-0',
@@ -66,6 +67,7 @@ export function MovieCard({ movie }: MovieCardProps) {
         <ImageCard movie={movie} isHovered flipX posterH={posterH} posterW={posterW} />
 
         <div
+          data-testid='movie-card-info-container'
           className={cn(
             'overflow-hidden bg-white transition-[width,opacity,padding] duration-300 ease-out',
             isHovered ? (flipX ? 'rounded-l-md' : 'rounded-r-md') : 'rounded-none',
