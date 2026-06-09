@@ -6,6 +6,8 @@ import { getPopularMoviesMultiplePages } from '@/src/lib/api/tmdb/movies';
 import { Movie } from '@/src/lib/api/tmdb/types';
 import { createMovie } from '@/tests/factories/movie.factory';
 
+const movieMock = createMovie();
+
 vi.mock('@/src/lib/api/tmdb/movies', () => ({
   getPopularMoviesMultiplePages: vi.fn(),
 }));
@@ -16,10 +18,10 @@ vi.mock('@/src/components/MovieCard/MovieCard', () => ({
 
 describe('PopularMovies', () => {
   it('should render when it mounts', async () => {
-    (getPopularMoviesMultiplePages as Mock).mockResolvedValue([createMovie()]);
+    (getPopularMoviesMultiplePages as Mock).mockResolvedValue([movieMock]);
 
     render(await PopularMovies());
 
-    expect(screen.getByText('Test Movie')).toBeInTheDocument();
+    expect(screen.getByText(movieMock.title)).toBeInTheDocument();
   });
 });
