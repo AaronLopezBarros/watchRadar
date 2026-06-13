@@ -3,7 +3,11 @@ import { Movie, PopularMoviesResponse } from '@/src/lib/api/tmdb/types';
 import { deduplicateById } from '@/src/lib/utils';
 
 export const getPopularMovies = async (page = 1): Promise<PopularMoviesResponse> => {
-  return tmdbClient<PopularMoviesResponse>(`/movie/popular?page=${page}`);
+  return tmdbClient<PopularMoviesResponse>(`/movie/popular`, {
+    params: {
+      page: page,
+    },
+  });
 };
 
 export const getPopularMoviesMultiplePages = async (pages = 1): Promise<Movie[]> => {
