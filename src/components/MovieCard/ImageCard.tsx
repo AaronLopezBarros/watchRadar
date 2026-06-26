@@ -17,7 +17,7 @@ export function ImageCard({ movie, isHovered, flipX, posterH, posterW }: ImageCa
       data-testid='image-card-container'
       className={cn(
         'relative shrink-0 overflow-hidden transition-[width,height] duration-300 ease-out',
-        isHovered ? (flipX ? 'rounded-l-md' : 'rounded-r-md') : 'rounded-md',
+        isHovered ? (flipX ? 'rounded-r-md' : 'rounded-l-md') : 'rounded-md',
       )}
       style={{ width: posterW, height: posterH }}
     >
