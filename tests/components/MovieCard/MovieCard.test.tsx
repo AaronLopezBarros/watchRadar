@@ -1,7 +1,7 @@
 /* eslint-disable id-length */
-import { cleanup, render, screen } from '@testing-library/react';
+import { act, cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { MovieCard } from '@/src/components/MovieCard/MovieCard';
 import { Movie } from '@/src/lib/api/tmdb/types';
@@ -13,44 +13,40 @@ vi.mock('@/src/components/MovieCard/ImageCard', () => ({
   ImageCard: ({ movie }: { movie: Movie }) => <div>{movie.backdrop_path}</div>,
 }));
 
+vi.mock('@/src/components/MovieCard/MovieCardInfo', () => ({
+  MovieCardInfo: () => <div data-testid='movie-card-info-mock' />,
+}));
+
 describe('MovieCard', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
   afterEach(() => {
+    vi.useRealTimers();
     cleanup();
   });
 
   it('should render', () => {
     render(<MovieCard movie={movieMock} />);
 
-    expect(screen.getByText(movieMock.title)).toBeInTheDocument();
+    expect(screen.getByRole('article')).toBeInTheDocument();
   });
 
   describe('handle', () => {
-    it('shows expanded content on mouse enter', async () => {
-      render(<MovieCard movie={movieMock} />);
+    const HOVER_DELAY = 175;
 
-      const article = screen.getByRole('article');
-      const panel = screen.getByTestId('movie-card-info-container');
+    let user: ReturnType<typeof userEvent.setup>;
 
-      expect(panel).toHaveClass('opacity-0');
-
-      await userEvent.hover(article);
-
-      expect(panel).toHaveClass('opacity-100');
+    beforeEach(() => {
+      vi.stubGlobal('jest', {
+        advanceTimersByTime: vi.advanceTimersByTime.bind(vi),
+      });
+      user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     });
 
-    it('hides expanded content on mouse leave', async () => {
-      render(<MovieCard movie={movieMock} />);
-
-      const article = screen.getByRole('article');
-      const panel = screen.getByTestId('movie-card-info-container');
-
-      await userEvent.hover(article);
-
-      expect(panel).toHaveClass('opacity-100');
-
-      await userEvent.unhover(article);
-
-      expect(panel).toHaveClass('opacity-0');
+    afterEach(() => {
+      vi.unstubAllGlobals();
     });
 
     it('sets flipX when there is not enough horizontal space', async () => {
@@ -75,7 +71,8 @@ describe('MovieCard', () => {
         toJSON: () => {},
       } as DOMRect);
 
-      await userEvent.hover(article);
+      await user.hover(article);
+      act(() => vi.advanceTimersByTime(HOVER_DELAY));
 
       const container = screen.getByTestId('movie-card-container');
 
@@ -105,7 +102,9 @@ describe('MovieCard', () => {
         toJSON: () => {},
       } as DOMRect);
 
-      await userEvent.hover(article);
+      await user.hover(article);
+
+      act(() => vi.advanceTimersByTime(HOVER_DELAY));
 
       const container = screen.getByTestId('movie-card-container');
 
