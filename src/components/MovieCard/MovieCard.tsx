@@ -1,8 +1,10 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 
+import { useMovieCardHover } from '@/src/components/MovieCard/hooks/useMovieCardHover';
 import { ImageCard } from '@/src/components/MovieCard/ImageCard';
+import { MovieCardInfo } from '@/src/components/MovieCard/MovieCardInfo';
 import type { Movie } from '@/src/lib/api/tmdb/types';
 import { cn } from '@/src/lib/utils';
 
@@ -12,39 +14,17 @@ const POSTER_W_HOVER = 200;
 const POSTER_H_HOVER = 320;
 const PANEL_W = 180;
 
-const EXPANDED_WIDTH = POSTER_W_HOVER + PANEL_W;
-const EXPANDED_HEIGHT = POSTER_H_HOVER;
-
 type MovieCardProps = {
   movie: Movie;
 };
 
 export function MovieCard({ movie }: MovieCardProps) {
   const articleRef = useRef<HTMLElement>(null);
-  const hoverTimeout = useRef<ReturnType<typeof setTimeout>>(null);
-  const [isHovered, setIsHovered] = useState(false);
-  const [flipX, setFlipX] = useState(false);
-  const [flipY, setFlipY] = useState(false);
-
-  const year = movie.release_date?.slice(0, 4);
-
-  const calculateFlipPosition = (cardRect?: DOMRect) => {
-    setFlipX(!!cardRect && cardRect.left + EXPANDED_WIDTH > window.innerWidth);
-    setFlipY(!!cardRect && cardRect.top + EXPANDED_HEIGHT > window.innerHeight);
-  };
-
-  const handleMouseEnter = () => {
-    hoverTimeout.current = setTimeout(() => {
-      const cardRect = articleRef.current?.getBoundingClientRect();
-      calculateFlipPosition(cardRect);
-      setIsHovered(true);
-    }, 175);
-  };
-
-  const handleMouseLeave = () => {
-    if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
-    setIsHovered(false);
-  };
+  const { isHovered, flipX, flipY, handleMouseEnter, handleMouseLeave } = useMovieCardHover(articleRef, {
+    delay: 175,
+    expandedWidth: POSTER_W_HOVER + PANEL_W,
+    expandedHeight: POSTER_H_HOVER,
+  });
 
   const posterW = isHovered ? POSTER_W_HOVER : POSTER_W;
   const posterH = isHovered ? POSTER_H_HOVER : POSTER_H;
@@ -67,23 +47,7 @@ export function MovieCard({ movie }: MovieCardProps) {
         )}
       >
         <ImageCard movie={movie} isHovered={isHovered} flipX={flipX} posterH={posterH} posterW={posterW} />
-
-        <div
-          data-testid='movie-card-info-container'
-          className={cn(
-            'overflow-hidden bg-white transition-[width,opacity,padding] duration-300 ease-out',
-            isHovered ? (flipX ? 'rounded-l-md' : 'rounded-r-md') : 'rounded-none',
-            isHovered ? 'px-3 py-2 opacity-100' : 'w-0 p-0 opacity-0',
-          )}
-          style={{ height: posterH, width: posterW }}
-        >
-          <div className='scrollbar-hidden h-full overflow-y-auto'>
-            <h3 className='text-sm font-semibold text-zinc-900'>{movie.title}</h3>
-            {year && <p className='mt-1 text-xs text-zinc-500'>{year}</p>}
-            <p className='mt-2 text-xs leading-relaxed text-zinc-600'>{movie.overview}</p>
-            <p className='mt-2 text-xs text-zinc-500'>★ {movie.vote_average.toFixed(1)}</p>
-          </div>
-        </div>
+        <MovieCardInfo movie={movie} isHovered={isHovered} flipX={flipX} posterH={posterH} posterW={posterW} />
       </div>
     </article>
   );
