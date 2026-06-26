@@ -8,7 +8,7 @@ describe('utils: getPosterUrl', () => {
   });
 
   it('should return the fallback when path is not provided', () => {
-    expect(getPosterUrl(null, 'w500')).toStrictEqual('/poster-placeholder.png');
+    expect(getPosterUrl(null, 'w500')).toStrictEqual('/assets/images/poster-placeholder.webp');
   });
 
   it('should return the fallback size when it is not provided', () => {
