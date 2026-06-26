@@ -21,6 +21,7 @@ type MovieCardProps = {
 
 export function MovieCard({ movie }: MovieCardProps) {
   const articleRef = useRef<HTMLElement>(null);
+  const hoverTimeout = useRef<ReturnType<typeof setTimeout>>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [flipX, setFlipX] = useState(false);
   const [flipY, setFlipY] = useState(false);
@@ -33,14 +34,15 @@ export function MovieCard({ movie }: MovieCardProps) {
   };
 
   const handleMouseEnter = () => {
-    const cardRect = articleRef.current?.getBoundingClientRect();
-
-    calculateFlipPosition(cardRect);
-
-    setIsHovered(true);
+    hoverTimeout.current = setTimeout(() => {
+      const cardRect = articleRef.current?.getBoundingClientRect();
+      calculateFlipPosition(cardRect);
+      setIsHovered(true);
+    }, 175);
   };
 
   const handleMouseLeave = () => {
+    if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
     setIsHovered(false);
   };
 
@@ -64,7 +66,7 @@ export function MovieCard({ movie }: MovieCardProps) {
           isHovered ? 'z-50' : 'z-0',
         )}
       >
-        <ImageCard movie={movie} isHovered flipX posterH={posterH} posterW={posterW} />
+        <ImageCard movie={movie} isHovered={isHovered} flipX={flipX} posterH={posterH} posterW={posterW} />
 
         <div
           data-testid='movie-card-info-container'
