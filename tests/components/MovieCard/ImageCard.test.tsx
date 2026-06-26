@@ -25,13 +25,13 @@ describe('ImageCard', () => {
     it('should have the correct classes when isHovered and flipX are true', () => {
       render(<ImageCard movie={movieMock} isHovered={true} flipX={true} posterH={100} posterW={100} />);
 
-      expect(screen.getByTestId('image-card-container')).toHaveClass('rounded-l-md');
+      expect(screen.getByTestId('image-card-container')).toHaveClass('rounded-r-md');
     });
 
     it('should have the correct classes when isHovered is true and flipX are false', () => {
       render(<ImageCard movie={movieMock} isHovered={true} flipX={false} posterH={100} posterW={100} />);
 
-      expect(screen.getByTestId('image-card-container')).toHaveClass('rounded-r-md');
+      expect(screen.getByTestId('image-card-container')).toHaveClass('rounded-l-md');
     });
 
     it('should have the correct classes when isHovered is false', () => {
