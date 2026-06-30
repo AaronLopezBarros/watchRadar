@@ -44,19 +44,14 @@ export function InfiniteMovieGrid({ initialMovies }: InfiniteMovieGridProps) {
   }, []);
 
   useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return;
-
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) loadMore();
       },
-      {
-        rootMargin: `${LOAD_MARGIN}px`,
-      },
+      { rootMargin: `${LOAD_MARGIN}px` },
     );
 
-    observer.observe(sentinel);
+    observer.observe(sentinelRef.current!);
 
     return () => observer.disconnect();
   }, [movies, loadMore]);
