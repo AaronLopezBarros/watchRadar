@@ -11,8 +11,8 @@ import { MovieCardInfo } from '@/src/components/MovieCard/MovieCardInfo';
 import type { Movie } from '@/src/lib/api/tmdb/types';
 import { cn } from '@/src/lib/utils';
 
-const POSTER_W = 50;
-const POSTER_H = 80;
+const POSTER_W = 80;
+const POSTER_H = 128;
 const POSTER_W_HOVER = 200;
 const POSTER_H_HOVER = 320;
 const PANEL_W = 180;
