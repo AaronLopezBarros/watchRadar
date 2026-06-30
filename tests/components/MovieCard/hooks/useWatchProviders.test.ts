@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { fetchMovieWatchProviders } from '@/src/app/actions';
+import { fetchMovieWatchProviders } from '@/lib/api/tmdb/actions';
 import { useWatchProviders } from '@/src/components/MovieCard/hooks/useWatchProviders';
 import { createProvider } from '@/tests/factories/movie.factory';
 

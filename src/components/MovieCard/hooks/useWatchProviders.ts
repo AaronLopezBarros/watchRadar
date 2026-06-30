@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from 'react';
 
-import { fetchMovieWatchProviders } from '@/src/app/actions';
+import { fetchMovieWatchProviders } from '@/lib/api/tmdb/actions';
 import type { WatchProvider } from '@/src/lib/api/tmdb/types';
 
 const COUNTRY = 'ES';
