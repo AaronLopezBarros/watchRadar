@@ -1,8 +1,12 @@
 import { cleanup, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { MovieCardInfo } from '@/src/components/MovieCard/MovieCardInfo';
-import { createMovie } from '@/tests/factories/movie.factory';
+import { createMovie, createProvider } from '@/tests/factories/movie.factory';
+
+vi.mock('next/image', () => ({
+  default: ({ alt, src }: { alt: string; src: string }) => <img alt={alt} src={src} />,
+}));
 
 const BASE_PROPS = { isHovered: false, flipX: false, posterH: 320, posterW: 200, providers: [], isLoadingProviders: false };
 
@@ -73,6 +77,41 @@ describe('MovieCardInfo', () => {
       render(<MovieCardInfo movie={createMovie()} {...BASE_PROPS} isHovered={true} flipX={true} />);
 
       expect(screen.getByTestId('movie-card-info-container')).toHaveClass('rounded-l-md');
+    });
+  });
+
+  describe('providers', () => {
+    it('shows loading skeleton when isLoadingProviders is true', () => {
+      render(<MovieCardInfo movie={createMovie()} {...BASE_PROPS} isLoadingProviders={true} />);
+
+      expect(document.querySelectorAll('.animate-pulse')).toHaveLength(3);
+    });
+
+    it('shows provider logos when providers are available', () => {
+      const providers = [
+        createProvider({ provider_id: 1, provider_name: 'Netflix' }),
+        createProvider({ provider_id: 2, provider_name: 'HBO Max' }),
+      ];
+      render(<MovieCardInfo movie={createMovie()} {...BASE_PROPS} providers={providers} />);
+
+      expect(screen.getByRole('img', { name: 'Netflix' })).toBeInTheDocument();
+      expect(screen.getByRole('img', { name: 'HBO Max' })).toBeInTheDocument();
+    });
+
+    it('shows "No disponible en streaming" when providers is empty', () => {
+      render(<MovieCardInfo movie={createMovie()} {...BASE_PROPS} providers={[]} />);
+
+      expect(screen.getByText('No disponible en streaming')).toBeInTheDocument();
+    });
+
+    it('shows overflow badge when providers exceed the visible limit', () => {
+      const providers = Array.from({ length: 5 }, (_, i) =>
+        createProvider({ provider_id: i + 1, provider_name: `Provider ${i + 1}` }),
+      );
+      render(<MovieCardInfo movie={createMovie()} {...BASE_PROPS} providers={providers} />);
+
+      expect(screen.getByText('+1')).toBeInTheDocument();
+      expect(screen.getAllByRole('img')).toHaveLength(4);
     });
   });
 });
