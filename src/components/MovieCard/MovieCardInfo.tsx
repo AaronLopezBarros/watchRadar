@@ -1,53 +1,8 @@
-import Image from 'next/image';
-
+import { ProviderSection } from '@/src/components/MovieCard/ProviderSection';
 import type { Movie, WatchProvider } from '@/src/lib/api/tmdb/types';
-import { cn, getLogoUrl } from '@/src/lib/utils';
+import { cn } from '@/src/lib/utils';
 
 const MAX_VISIBLE_LOGOS = 4;
-const SKELETON_COUNT = 3;
-const LOGO_SIZE = 32;
-
-type ProviderSectionProps = {
-  providers: WatchProvider[];
-  isLoading: boolean;
-};
-
-function ProviderSection({ providers, isLoading }: ProviderSectionProps) {
-  const visibleProviders = providers.slice(0, MAX_VISIBLE_LOGOS);
-  const extraCount = providers.length - visibleProviders.length;
-
-  return (
-    <div className='shrink-0 border-t border-zinc-100 pt-2'>
-      <p className='mb-1.5 text-[10px] font-medium tracking-wide text-zinc-400 uppercase'>Where to watch</p>
-      {isLoading && (
-        <div className='flex gap-1.5'>
-          {Array.from({ length: SKELETON_COUNT }, (_, index) => (
-            <div key={index} className='h-8 w-8 animate-pulse rounded-sm bg-zinc-200' />
-          ))}
-        </div>
-      )}
-      {!isLoading && visibleProviders.length > 0 && (
-        <div className='flex items-center gap-1.5'>
-          {visibleProviders.map(provider => (
-            <Image
-              key={provider.provider_id}
-              src={getLogoUrl(provider.logo_path)}
-              alt={provider.provider_name}
-              title={provider.provider_name}
-              width={LOGO_SIZE}
-              height={LOGO_SIZE}
-              className='rounded-sm'
-            />
-          ))}
-          {extraCount > 0 && <span className='text-[10px] font-medium text-zinc-400'>+{extraCount}</span>}
-        </div>
-      )}
-      {!isLoading && visibleProviders.length === 0 && (
-        <p className='text-[10px] text-zinc-400'>Not available for streaming</p>
-      )}
-    </div>
-  );
-}
 
 type MovieCardInfoProps = {
   movie: Movie;
@@ -87,7 +42,7 @@ export function MovieCardInfo({
           <p className='mt-2 text-xs leading-relaxed text-zinc-600'>{movie.overview}</p>
           <p className='mt-2 text-xs text-zinc-500'>★ {movie.vote_average.toFixed(1)}</p>
         </div>
-        <ProviderSection providers={providers} isLoading={isLoadingProviders} />
+        <ProviderSection providers={providers} isLoading={isLoadingProviders} maxVisible={MAX_VISIBLE_LOGOS} />
       </div>
     </div>
   );
