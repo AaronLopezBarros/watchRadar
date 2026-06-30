@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import { createPortal } from 'react-dom';
 
 import { ProviderSection } from '@/src/components/MovieCard/ProviderSection';
 import type { Movie, WatchProvider } from '@/src/lib/api/tmdb/types';
@@ -20,7 +19,7 @@ type MovieBottomSheetProps = {
 export function MovieBottomSheet({ movie, providers, isLoadingProviders, onClose }: MovieBottomSheetProps) {
   const year = movie.release_date?.slice(0, 4);
 
-  return createPortal(
+  return (
     <div className='fixed inset-0 z-50 flex items-end'>
       <div
         data-testid='bottom-sheet-backdrop'
@@ -52,7 +51,6 @@ export function MovieBottomSheet({ movie, providers, isLoadingProviders, onClose
           <ProviderSection providers={providers} isLoading={isLoadingProviders} />
         </div>
       </div>
-    </div>,
-    document.body,
+    </div>
   );
 }
