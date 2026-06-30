@@ -23,6 +23,7 @@ export function MovieBottomSheet({ movie, providers, isLoadingProviders, onClose
   return createPortal(
     <div className='fixed inset-0 z-50 flex items-end'>
       <div
+        data-testid='bottom-sheet-backdrop'
         className='absolute inset-0 animate-[fade-in_300ms_ease-out] bg-black/50'
         onClick={event => {
           event.stopPropagation();
