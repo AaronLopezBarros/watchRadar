@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { MovieCardInfo } from '@/src/components/MovieCard/MovieCardInfo';
 import { createMovie } from '@/tests/factories/movie.factory';
 
-const BASE_PROPS = { isHovered: false, flipX: false, posterH: 320, posterW: 200 };
+const BASE_PROPS = { isHovered: false, flipX: false, posterH: 320, posterW: 200, providers: [], isLoadingProviders: false };
 
 describe('MovieCardInfo', () => {
   afterEach(() => {

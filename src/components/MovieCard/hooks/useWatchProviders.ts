@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { getMovieWatchProviders } from '@/src/app/actions';
+import { fetchMovieWatchProviders } from '@/src/app/actions';
 import type { WatchProvider } from '@/src/lib/api/tmdb/types';
 
 const COUNTRY = 'ES';
@@ -26,7 +26,7 @@ export function useWatchProviders(movieId: number, enabled: boolean): UseWatchPr
     const load = async () => {
       setIsLoading(true);
       try {
-        const data = await getMovieWatchProviders(movieId);
+        const data = await fetchMovieWatchProviders(movieId);
         const flatrate = data.results?.[COUNTRY]?.flatrate ?? [];
         setProviders(flatrate.slice(0, MAX_PROVIDERS));
       } catch {
