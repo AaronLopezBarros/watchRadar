@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { tmdbClient } from '@/src/lib/api/tmdb/client';
-import { getPopularMovies, getPopularMoviesMultiplePages } from '@/src/lib/api/tmdb/movies';
+import { getMovieWatchProviders, getPopularMovies, getPopularMoviesMultiplePages } from '@/src/lib/api/tmdb/movies';
 import { deduplicateById } from '@/src/lib/utils';
 import { createMovie } from '@/tests/factories/movie.factory';
 
@@ -50,6 +50,18 @@ describe('movies service', () => {
       params: {
         page: 1,
       },
+    });
+  });
+
+  describe('getMovieWatchProviders', () => {
+    it('calls tmdbClient with the correct endpoint', async () => {
+      const response = { id: 1, results: {} };
+      vi.mocked(tmdbClient).mockResolvedValue(response);
+
+      const result = await getMovieWatchProviders(1);
+
+      expect(vi.mocked(tmdbClient)).toHaveBeenCalledWith('/movie/1/watch/providers');
+      expect(result).toEqual(response);
     });
   });
 
