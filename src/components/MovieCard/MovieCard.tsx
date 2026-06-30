@@ -26,17 +26,22 @@ export function MovieCard({ movie }: MovieCardProps) {
     expandedWidth: POSTER_W_HOVER + PANEL_W,
     expandedHeight: POSTER_H_HOVER,
   });
-  const { providers, isLoading: isLoadingProviders } = useWatchProviders(movie.id, isHovered);
+  const { providers, isLoading: isLoadingProviders, fetchProviders } = useWatchProviders(movie.id);
 
   const posterW = isHovered ? POSTER_W_HOVER : POSTER_W;
   const posterH = isHovered ? POSTER_H_HOVER : POSTER_H;
+
+  const onMouseEnter = () => {
+    handleMouseEnter();
+    fetchProviders();
+  };
 
   return (
     <article
       ref={articleRef}
       className='relative shrink-0 cursor-pointer'
       style={{ width: POSTER_W, height: POSTER_H }}
-      onMouseEnter={handleMouseEnter}
+      onMouseEnter={onMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <div
