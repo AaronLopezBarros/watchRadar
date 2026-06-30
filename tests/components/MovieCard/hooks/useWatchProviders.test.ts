@@ -5,7 +5,9 @@ import { fetchMovieWatchProviders } from '@/lib/api/tmdb/actions';
 import { useWatchProviders } from '@/src/components/MovieCard/hooks/useWatchProviders';
 import { createProvider } from '@/tests/factories/movie.factory';
 
-vi.mock('@/src/app/actions');
+vi.mock('@/lib/api/tmdb/actions', () => ({
+  fetchMovieWatchProviders: vi.fn(),
+}));
 
 describe('useWatchProviders', () => {
   beforeEach(() => {

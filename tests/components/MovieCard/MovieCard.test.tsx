@@ -3,6 +3,7 @@ import { act, cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { useIsTouchDevice } from '@/src/components/MovieCard/hooks/useIsTouchDevice';
 import { MovieCard } from '@/src/components/MovieCard/MovieCard';
 import { Movie } from '@/src/lib/api/tmdb/types';
 import { createMovie } from '@/tests/factories/movie.factory';
@@ -15,6 +16,26 @@ vi.mock('@/src/components/MovieCard/ImageCard', () => ({
 
 vi.mock('@/src/components/MovieCard/MovieCardInfo', () => ({
   MovieCardInfo: () => <div data-testid='movie-card-info-mock' />,
+}));
+
+vi.mock('@/src/components/MovieCard/hooks/useIsTouchDevice', () => ({
+  useIsTouchDevice: vi.fn(() => false),
+}));
+
+vi.mock('@/src/components/MovieCard/MovieBottomSheet', () => ({
+  MovieBottomSheet: ({ onClose }: { onClose: () => void }) => (
+    <div
+      data-testid='movie-bottom-sheet-mock'
+      onClick={event => {
+        event.stopPropagation();
+        onClose();
+      }}
+    />
+  ),
+}));
+
+vi.mock('@/src/components/MovieCard/hooks/useWatchProviders', () => ({
+  useWatchProviders: () => ({ providers: [], isLoading: false, fetchProviders: vi.fn() }),
 }));
 
 describe('MovieCard', () => {
@@ -33,12 +54,59 @@ describe('MovieCard', () => {
     expect(screen.getByRole('article')).toBeInTheDocument();
   });
 
+  describe('touch behavior', () => {
+    beforeEach(() => {
+      vi.useRealTimers();
+    });
+
+    afterEach(() => {
+      vi.mocked(useIsTouchDevice).mockReturnValue(false);
+    });
+
+    it('does not open the hover card on a touch device', async () => {
+      vi.mocked(useIsTouchDevice).mockReturnValue(true);
+      render(<MovieCard movie={movieMock} />);
+
+      await userEvent.hover(screen.getByRole('article'));
+
+      expect(screen.getByTestId('movie-card-container')).toHaveClass('z-0');
+    });
+
+    it('does not open the bottom sheet on click on a desktop device', async () => {
+      render(<MovieCard movie={movieMock} />);
+
+      await userEvent.click(screen.getByRole('article'));
+
+      expect(screen.queryByTestId('movie-bottom-sheet-mock')).not.toBeInTheDocument();
+    });
+
+    it('opens the bottom sheet on click when on a touch device', async () => {
+      vi.mocked(useIsTouchDevice).mockReturnValue(true);
+      render(<MovieCard movie={movieMock} />);
+
+      await userEvent.click(screen.getByRole('article'));
+
+      expect(screen.getByTestId('movie-bottom-sheet-mock')).toBeInTheDocument();
+    });
+
+    it('closes the bottom sheet when onClose is called', async () => {
+      vi.mocked(useIsTouchDevice).mockReturnValue(true);
+      render(<MovieCard movie={movieMock} />);
+
+      await userEvent.click(screen.getByRole('article'));
+      await userEvent.click(screen.getByTestId('movie-bottom-sheet-mock'));
+
+      expect(screen.queryByTestId('movie-bottom-sheet-mock')).not.toBeInTheDocument();
+    });
+  });
+
   describe('handle', () => {
     const HOVER_DELAY = 175;
 
     let user: ReturnType<typeof userEvent.setup>;
 
     beforeEach(() => {
+      vi.mocked(useIsTouchDevice).mockReturnValue(false);
       vi.stubGlobal('jest', {
         advanceTimersByTime: vi.advanceTimersByTime.bind(vi),
       });
