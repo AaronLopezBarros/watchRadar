@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 
 import { useMovieCardHover } from '@/src/components/MovieCard/hooks/useMovieCardHover';
+import { useWatchProviders } from '@/src/components/MovieCard/hooks/useWatchProviders';
 import { ImageCard } from '@/src/components/MovieCard/ImageCard';
 import { MovieCardInfo } from '@/src/components/MovieCard/MovieCardInfo';
 import type { Movie } from '@/src/lib/api/tmdb/types';
@@ -25,6 +26,7 @@ export function MovieCard({ movie }: MovieCardProps) {
     expandedWidth: POSTER_W_HOVER + PANEL_W,
     expandedHeight: POSTER_H_HOVER,
   });
+  const { providers, isLoading: isLoadingProviders } = useWatchProviders(movie.id, isHovered);
 
   const posterW = isHovered ? POSTER_W_HOVER : POSTER_W;
   const posterH = isHovered ? POSTER_H_HOVER : POSTER_H;
@@ -47,7 +49,15 @@ export function MovieCard({ movie }: MovieCardProps) {
         )}
       >
         <ImageCard movie={movie} isHovered={isHovered} flipX={flipX} posterH={posterH} posterW={posterW} />
-        <MovieCardInfo movie={movie} isHovered={isHovered} flipX={flipX} posterH={posterH} posterW={posterW} />
+        <MovieCardInfo
+          movie={movie}
+          isHovered={isHovered}
+          flipX={flipX}
+          posterH={posterH}
+          posterW={posterW}
+          providers={providers}
+          isLoadingProviders={isLoadingProviders}
+        />
       </div>
     </article>
   );
