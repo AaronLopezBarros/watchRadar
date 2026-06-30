@@ -108,7 +108,7 @@ describe('MovieCardInfo', () => {
     it('shows "No disponible en streaming" when providers is empty', () => {
       render(<MovieCardInfo movie={createMovie()} {...BASE_PROPS} providers={[]} />);
 
-      expect(screen.getByText('No disponible en streaming')).toBeInTheDocument();
+      expect(screen.getByText('Not available for streaming')).toBeInTheDocument();
     });
 
     it('shows overflow badge when providers exceed the visible limit', () => {

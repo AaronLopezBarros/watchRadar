@@ -47,7 +47,7 @@ export function MovieCardInfo({
         </div>
 
         <div className='shrink-0 border-t border-zinc-100 pt-2'>
-          <p className='mb-1.5 text-[10px] font-medium tracking-wide text-zinc-400 uppercase'>Dónde ver</p>
+          <p className='mb-1.5 text-[10px] font-medium tracking-wide text-zinc-400 uppercase'>Where to watch</p>
           {isLoadingProviders ? (
             <div className='flex gap-1.5'>
               {[0, 1, 2].map(index => (
@@ -70,7 +70,7 @@ export function MovieCardInfo({
               {extraCount > 0 && <span className='text-[10px] font-medium text-zinc-400'>+{extraCount}</span>}
             </div>
           ) : (
-            <p className='text-[10px] text-zinc-400'>No disponible en streaming</p>
+            <p className='text-[10px] text-zinc-400'>Not available for streaming</p>
           )}
         </div>
       </div>
