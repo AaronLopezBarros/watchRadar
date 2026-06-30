@@ -8,7 +8,14 @@ vi.mock('next/image', () => ({
   default: ({ alt, src }: { alt: string; src: string }) => <img alt={alt} src={src} />,
 }));
 
-const BASE_PROPS = { isHovered: false, flipX: false, posterH: 320, posterW: 200, providers: [], isLoadingProviders: false };
+const BASE_PROPS = {
+  isHovered: false,
+  flipX: false,
+  posterH: 320,
+  posterW: 200,
+  providers: [],
+  isLoadingProviders: false,
+};
 
 describe('MovieCardInfo', () => {
   afterEach(() => {
@@ -105,8 +112,8 @@ describe('MovieCardInfo', () => {
     });
 
     it('shows overflow badge when providers exceed the visible limit', () => {
-      const providers = Array.from({ length: 5 }, (_, i) =>
-        createProvider({ provider_id: i + 1, provider_name: `Provider ${i + 1}` }),
+      const providers = Array.from({ length: 5 }, (_, index) =>
+        createProvider({ provider_id: index + 1, provider_name: `Provider ${index + 1}` }),
       );
       render(<MovieCardInfo movie={createMovie()} {...BASE_PROPS} providers={providers} />);
 
