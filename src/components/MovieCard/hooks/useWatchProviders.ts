@@ -14,7 +14,7 @@ type UseWatchProvidersResult = {
   fetchProviders: () => void;
 };
 
-export function useWatchProviders(movieId: number): UseWatchProvidersResult {
+export const useWatchProviders = (movieId: number): UseWatchProvidersResult => {
   const [providers, setProviders] = useState<WatchProvider[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const fetched = useRef(false);

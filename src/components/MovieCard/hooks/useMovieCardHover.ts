@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-function getFlipPosition(cardRect: DOMRect, expandedWidth: number, expandedHeight: number) {
+const getFlipPosition = (cardRect: DOMRect, expandedWidth: number, expandedHeight: number) => {
   return {
     flipX: cardRect.left + expandedWidth > window.innerWidth,
     flipY: cardRect.top + expandedHeight > window.innerHeight,
@@ -15,10 +15,10 @@ type UseMovieCardHoverOptions = {
   expandedHeight: number;
 };
 
-export function useMovieCardHover(
+export const useMovieCardHover = (
   ref: React.RefObject<HTMLElement | null>,
   { delay, expandedWidth, expandedHeight }: UseMovieCardHoverOptions,
-) {
+) => {
   const hoverTimeout = useRef<ReturnType<typeof setTimeout>>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [flipX, setFlipX] = useState(false);
