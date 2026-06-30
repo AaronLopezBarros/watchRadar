@@ -51,7 +51,7 @@ export function MovieCardInfo({
           {isLoadingProviders ? (
             <div className='flex gap-1.5'>
               {[0, 1, 2].map(index => (
-                <div key={index} className='h-6 w-6 animate-pulse rounded-sm bg-zinc-200' />
+                <div key={index} className='h-8 w-8 animate-pulse rounded-sm bg-zinc-200' />
               ))}
             </div>
           ) : visibleProviders.length > 0 ? (
@@ -62,8 +62,8 @@ export function MovieCardInfo({
                   src={getLogoUrl(provider.logo_path)}
                   alt={provider.provider_name}
                   title={provider.provider_name}
-                  width={24}
-                  height={24}
+                  width={32}
+                  height={32}
                   className='rounded-sm'
                 />
               ))}
