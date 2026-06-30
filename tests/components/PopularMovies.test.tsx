@@ -11,8 +11,8 @@ vi.mock('@/lib/api/tmdb/actions', () => ({
 }));
 
 vi.mock('@/src/components/InfiniteMovieGrid', () => ({
-  InfiniteMovieGrid: ({ initialMovies }: { initialMovies: unknown[] }) => (
-    <div data-testid='infinite-grid' data-count={initialMovies.length} />
+  InfiniteMovieGrid: ({ initialMovies, initialPage }: { initialMovies: unknown[]; initialPage: number }) => (
+    <div data-testid='infinite-grid' data-page={initialPage} data-count={initialMovies.length} />
   ),
 }));
 
@@ -25,6 +25,7 @@ describe('PopularMovies', () => {
 
     const grid = screen.getByTestId('infinite-grid');
     expect(fetchPopularMovies).toHaveBeenCalledWith(1);
+    expect(grid).toHaveAttribute('data-page', '1');
     expect(grid).toHaveAttribute('data-count', '2');
   });
 });
