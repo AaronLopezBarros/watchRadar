@@ -1,25 +1,12 @@
 import { tmdbClient } from '@/lib/api/tmdb/client';
-import { Movie, PopularMoviesResponse, WatchProvidersResponse } from '@/src/lib/api/tmdb/types';
-import { deduplicateById } from '@/src/lib/utils';
+import type { Movie, PopularMoviesResponse } from '@/lib/api/tmdb/types';
+import { deduplicateById } from '@/lib/utils';
 
-export const getPopularMovies = async (page = 1): Promise<PopularMoviesResponse> => {
-  return tmdbClient<PopularMoviesResponse>(`/movie/popular`, {
-    params: {
-      page: page,
-    },
-  });
-};
+export const getPopularMovies = async (page = 1): Promise<PopularMoviesResponse> =>
+  tmdbClient<PopularMoviesResponse>(`/movie/popular`, { params: { page } });
 
 export const getPopularMoviesMultiplePages = async (pages = 1): Promise<Movie[]> => {
   const requests = Array.from({ length: pages }, (_, index) => getPopularMovies(index + 1));
-
   const responses = await Promise.all(requests);
-
-  const allMovies = responses.flatMap(response => response.results);
-
-  return deduplicateById(allMovies);
-};
-
-export const getMovieWatchProviders = async (movieId: number): Promise<WatchProvidersResponse> => {
-  return tmdbClient<WatchProvidersResponse>(`/movie/${movieId}/watch/providers`);
+  return deduplicateById(responses.flatMap(response => response.results));
 };
