@@ -7,20 +7,20 @@ import { MovieCard } from '@/src/components/MovieCard/MovieCard';
 import { MovieCardSkeleton } from '@/src/components/MovieCard/MovieCardSkeleton';
 import type { Movie } from '@/src/lib/api/tmdb/types';
 
-const INITIAL_PAGE = 1;
 const SKELETON_COUNT = 20;
 const LOAD_MARGIN = 300;
 
 type InfiniteMovieGridProps = {
   initialMovies: Movie[];
+  initialPage: number;
 };
 
-export function InfiniteMovieGrid({ initialMovies }: InfiniteMovieGridProps) {
+export function InfiniteMovieGrid({ initialMovies, initialPage }: InfiniteMovieGridProps) {
   const [movies, setMovies] = useState(initialMovies);
   const [isLoading, setIsLoading] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const isLoadingRef = useRef(false);
-  const pageRef = useRef(INITIAL_PAGE);
+  const pageRef = useRef(initialPage);
   const seenIdsRef = useRef(new Set(initialMovies.map(movie => movie.id)));
 
   const loadMore = useCallback(async () => {

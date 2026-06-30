@@ -6,5 +6,5 @@ const INITIAL_PAGE = 1;
 export async function PopularMovies() {
   const movies = await fetchPopularMovies(INITIAL_PAGE);
 
-  return <InfiniteMovieGrid initialMovies={movies} />;
+  return <InfiniteMovieGrid initialMovies={movies} initialPage={INITIAL_PAGE} />;
 }
