@@ -1,4 +1,4 @@
-import { Movie } from '@/src/lib/api/tmdb/types';
+import { Movie, WatchProvider } from '@/src/lib/api/tmdb/types';
 
 const defaultMovie: Movie = {
   id: 1,
@@ -22,3 +22,15 @@ export const createMovie = (overrides: Partial<Movie> = {}): Movie => {
     ...overrides,
   };
 };
+
+const defaultProvider: WatchProvider = {
+  provider_id: 1,
+  provider_name: 'Netflix',
+  logo_path: '/netflix.png',
+  display_priority: 1,
+};
+
+export const createProvider = (overrides: Partial<WatchProvider> = {}): WatchProvider => ({
+  ...defaultProvider,
+  ...overrides,
+});
