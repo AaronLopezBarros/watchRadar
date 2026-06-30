@@ -20,3 +20,20 @@ export type PopularMoviesResponse = {
   total_pages: number;
   total_results: number;
 };
+
+export type WatchProvider = {
+  logo_path: string;
+  provider_id: number;
+  provider_name: string;
+  display_priority: number;
+};
+
+export type WatchProvidersCountryResult = {
+  link: string;
+  flatrate?: WatchProvider[];
+};
+
+export type WatchProvidersResponse = {
+  id: number;
+  results: Record<string, WatchProvidersCountryResult>;
+};
