@@ -50,6 +50,13 @@ describe('useMovieCardHover', () => {
     expect(result.current.isHovered).toBe(false);
   });
 
+  it('does not throw when mouse leaves without a pending hover', () => {
+    const { result } = renderHook(() => useMovieCardHover({ current: null }, OPTIONS));
+
+    expect(() => act(() => result.current.handleMouseLeave())).not.toThrow();
+    expect(result.current.isHovered).toBe(false);
+  });
+
   it('clears the timeout on unmount', () => {
     const clearTimeoutSpy = vi.spyOn(globalThis, 'clearTimeout');
     const { result, unmount } = renderHook(() => useMovieCardHover({ current: null }, OPTIONS));
