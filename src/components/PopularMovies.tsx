@@ -1,15 +1,8 @@
-import { MovieCard } from '@/src/components/MovieCard/MovieCard';
-import { getPopularMoviesMultiplePages } from '@/src/lib/api/tmdb/movies';
-import { Movie } from '@/src/lib/api/tmdb/types';
+import { fetchPopularMovies } from '@/lib/api/tmdb/actions';
+import { InfiniteMovieGrid } from '@/src/components/InfiniteMovieGrid';
 
 export async function PopularMovies() {
-  const movies = await getPopularMoviesMultiplePages(10);
+  const movies = await fetchPopularMovies(1);
 
-  return (
-    <div className='flex flex-wrap items-center justify-center gap-5 overflow-visible px-5 py-10'>
-      {movies.map((movie: Movie) => (
-        <MovieCard key={movie.id} movie={movie} />
-      ))}
-    </div>
-  );
+  return <InfiniteMovieGrid initialMovies={movies} initialPage={1} />;
 }
