@@ -9,9 +9,10 @@ type ImageCardProps = {
   flipX: boolean;
   posterH: number;
   posterW: number;
+  priority?: boolean;
 };
 
-export function ImageCard({ movie, isHovered, flipX, posterH, posterW }: ImageCardProps) {
+export function ImageCard({ movie, isHovered, flipX, posterH, posterW, priority = false }: ImageCardProps) {
   return (
     <div
       data-testid='image-card-container'
@@ -21,7 +22,15 @@ export function ImageCard({ movie, isHovered, flipX, posterH, posterW }: ImageCa
       )}
       style={{ width: posterW, height: posterH }}
     >
-      <Image src={getPosterUrl(movie.poster_path)} alt={movie.title} fill sizes='100px' className='object-cover' />
+      <Image
+        src={getPosterUrl(movie.poster_path)}
+        alt={movie.title}
+        fill
+        sizes='100px'
+        className='object-cover'
+        priority={priority}
+        fetchPriority={priority ? 'high' : undefined}
+      />
     </div>
   );
 }

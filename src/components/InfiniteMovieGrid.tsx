@@ -9,6 +9,7 @@ import type { Movie } from '@/src/lib/api/tmdb/types';
 
 const SKELETON_COUNT = 20;
 const LOAD_MARGIN = 300;
+const PRIORITY_COUNT = 1;
 
 type InfiniteMovieGridProps = {
   initialMovies: Movie[];
@@ -58,8 +59,8 @@ export function InfiniteMovieGrid({ initialMovies, initialPage }: InfiniteMovieG
 
   return (
     <div className='flex flex-wrap items-center justify-center gap-5 overflow-visible px-5 py-10'>
-      {movies.map(movie => (
-        <MovieCard key={movie.id} movie={movie} />
+      {movies.map((movie, index) => (
+        <MovieCard key={movie.id} movie={movie} priority={index < PRIORITY_COUNT} />
       ))}
       {isLoading && Array.from({ length: SKELETON_COUNT }, (_, index) => <MovieCardSkeleton key={index} />)}
       <div ref={sentinelRef} className='w-full' />

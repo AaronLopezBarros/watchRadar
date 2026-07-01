@@ -19,9 +19,10 @@ const PANEL_W = 180;
 
 type MovieCardProps = {
   movie: Movie;
+  priority?: boolean;
 };
 
-export function MovieCard({ movie }: MovieCardProps) {
+export function MovieCard({ movie, priority = false }: MovieCardProps) {
   const articleRef = useRef<HTMLElement>(null);
   const isTouchDevice = useIsTouchDevice();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -66,7 +67,14 @@ export function MovieCard({ movie }: MovieCardProps) {
           isHovered ? 'z-50' : 'z-0',
         )}
       >
-        <ImageCard movie={movie} isHovered={isHovered} flipX={flipX} posterH={posterH} posterW={posterW} />
+        <ImageCard
+          movie={movie}
+          isHovered={isHovered}
+          flipX={flipX}
+          posterH={posterH}
+          posterW={posterW}
+          priority={priority}
+        />
         <MovieCardInfo
           movie={movie}
           isHovered={isHovered}
