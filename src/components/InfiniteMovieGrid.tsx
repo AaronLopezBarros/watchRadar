@@ -2,10 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { fetchPopularMovies } from '@/lib/api/tmdb/actions';
+import { fetchMovies } from '@/lib/api/tmdb/actions';
 import { MovieCard } from '@/src/components/MovieCard/MovieCard';
 import { MovieCardSkeleton } from '@/src/components/MovieCard/MovieCardSkeleton';
-import type { Movie } from '@/src/lib/api/tmdb/types';
+import type { Movie, MovieCategory } from '@/src/lib/api/tmdb/types';
 
 const SKELETON_COUNT = 20;
 const LOAD_MARGIN = 300;
@@ -14,9 +14,10 @@ const PRIORITY_COUNT = 1;
 type InfiniteMovieGridProps = {
   initialMovies: Movie[];
   initialPage: number;
+  category: MovieCategory;
 };
 
-export function InfiniteMovieGrid({ initialMovies, initialPage }: InfiniteMovieGridProps) {
+export function InfiniteMovieGrid({ initialMovies, initialPage, category }: InfiniteMovieGridProps) {
   const [movies, setMovies] = useState(initialMovies);
   const [isLoading, setIsLoading] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -32,7 +33,7 @@ export function InfiniteMovieGrid({ initialMovies, initialPage }: InfiniteMovieG
 
     try {
       const nextPage = pageRef.current + 1;
-      const newMovies = await fetchPopularMovies(nextPage);
+      const newMovies = await fetchMovies(category, nextPage);
       const unique = newMovies.filter(movie => !seenIdsRef.current.has(movie.id));
 
       unique.forEach(movie => seenIdsRef.current.add(movie.id));
@@ -42,7 +43,7 @@ export function InfiniteMovieGrid({ initialMovies, initialPage }: InfiniteMovieG
       isLoadingRef.current = false;
       setIsLoading(false);
     }
-  }, []);
+  }, [category]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(

@@ -1,3 +1,5 @@
+export type MovieCategory = 'popular' | 'top_rated' | 'upcoming' | 'now_playing';
+
 export type Movie = {
   adult: boolean;
   backdrop_path: string | null;
@@ -14,7 +16,7 @@ export type Movie = {
   vote_count: number;
 };
 
-export type PopularMoviesResponse = {
+export type MoviesResponse = {
   page: number;
   results: Movie[];
   total_pages: number;
