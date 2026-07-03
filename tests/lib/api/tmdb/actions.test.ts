@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { fetchMovieWatchProviders, fetchPopularMovies } from '@/lib/api/tmdb/actions';
+import { fetchMovieWatchProviders, fetchMovies } from '@/lib/api/tmdb/actions';
 import { tmdbClient } from '@/lib/api/tmdb/client';
 
 vi.mock('@/lib/api/tmdb/client');
@@ -22,14 +22,24 @@ describe('actions', () => {
     });
   });
 
-  describe('fetchPopularMovies', () => {
+  describe('fetchMovies', () => {
     it('calls tmdbClient with the correct endpoint and page', async () => {
       const movies = [{ id: 1 }, { id: 2 }];
       vi.mocked(tmdbClient).mockResolvedValue({ results: movies });
 
-      const result = await fetchPopularMovies(3);
+      const result = await fetchMovies('popular', 3);
 
       expect(tmdbClient).toHaveBeenCalledWith('/movie/popular', { params: { page: 3 } });
+      expect(result).toEqual(movies);
+    });
+
+    it('calls tmdbClient with the category-specific endpoint', async () => {
+      const movies = [{ id: 1 }];
+      vi.mocked(tmdbClient).mockResolvedValue({ results: movies });
+
+      const result = await fetchMovies('top_rated', 1);
+
+      expect(tmdbClient).toHaveBeenCalledWith('/movie/top_rated', { params: { page: 1 } });
       expect(result).toEqual(movies);
     });
   });

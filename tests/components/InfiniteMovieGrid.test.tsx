@@ -1,12 +1,12 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { fetchPopularMovies } from '@/lib/api/tmdb/actions';
+import { fetchMovies } from '@/lib/api/tmdb/actions';
 import { InfiniteMovieGrid } from '@/src/components/InfiniteMovieGrid';
 import { createMovie } from '@/tests/factories/movie.factory';
 
 vi.mock('@/lib/api/tmdb/actions', () => ({
-  fetchPopularMovies: vi.fn(),
+  fetchMovies: vi.fn(),
 }));
 
 vi.mock('@/src/components/MovieCard/MovieCard', () => ({
@@ -45,56 +45,64 @@ describe('InfiniteMovieGrid', () => {
 
   it('renders initial movies', () => {
     const movies = [createMovie({ id: 1, title: 'Film A' }), createMovie({ id: 2, title: 'Film B' })];
-    render(<InfiniteMovieGrid initialPage={1} initialMovies={movies} />);
+    render(<InfiniteMovieGrid initialPage={1} initialMovies={movies} category='popular' />);
     expect(screen.getAllByTestId('movie-card')).toHaveLength(2);
   });
 
-  it('loads more movies when sentinel intersects', async () => {
-    vi.mocked(fetchPopularMovies).mockResolvedValue([createMovie({ id: 2, title: 'Film B' })]);
+  it('loads more movies for the given category when sentinel intersects', async () => {
+    vi.mocked(fetchMovies).mockResolvedValue([createMovie({ id: 2, title: 'Film B' })]);
 
-    render(<InfiniteMovieGrid initialPage={1} initialMovies={[createMovie({ id: 1, title: 'Film A' })]} />);
+    render(
+      <InfiniteMovieGrid
+        initialPage={1}
+        initialMovies={[createMovie({ id: 1, title: 'Film A' })]}
+        category='top_rated'
+      />,
+    );
     act(() => triggerIntersection(true));
 
     await waitFor(() => expect(screen.getAllByTestId('movie-card')).toHaveLength(2));
-    expect(fetchPopularMovies).toHaveBeenCalledWith(2);
+    expect(fetchMovies).toHaveBeenCalledWith('top_rated', 2);
   });
 
   it('does not load when sentinel is not intersecting', () => {
-    render(<InfiniteMovieGrid initialPage={1} initialMovies={[createMovie({ id: 1 })]} />);
+    render(<InfiniteMovieGrid initialPage={1} initialMovies={[createMovie({ id: 1 })]} category='popular' />);
     act(() => triggerIntersection(false));
-    expect(fetchPopularMovies).not.toHaveBeenCalled();
+    expect(fetchMovies).not.toHaveBeenCalled();
   });
 
   it('deduplicates movies already in the grid', async () => {
-    vi.mocked(fetchPopularMovies).mockResolvedValue([createMovie({ id: 1 }), createMovie({ id: 2 })]);
+    vi.mocked(fetchMovies).mockResolvedValue([createMovie({ id: 1 }), createMovie({ id: 2 })]);
 
-    render(<InfiniteMovieGrid initialPage={1} initialMovies={[createMovie({ id: 1 })]} />);
+    render(<InfiniteMovieGrid initialPage={1} initialMovies={[createMovie({ id: 1 })]} category='popular' />);
     act(() => triggerIntersection(true));
 
     await waitFor(() => expect(screen.getAllByTestId('movie-card')).toHaveLength(2));
   });
 
   it('shows skeletons while loading', async () => {
-    vi.mocked(fetchPopularMovies).mockImplementation(() => new Promise(() => {}));
+    vi.mocked(fetchMovies).mockImplementation(() => new Promise(() => {}));
 
-    render(<InfiniteMovieGrid initialPage={1} initialMovies={[createMovie({ id: 1 })]} />);
+    render(<InfiniteMovieGrid initialPage={1} initialMovies={[createMovie({ id: 1 })]} category='popular' />);
     act(() => triggerIntersection(true));
 
     await waitFor(() => expect(screen.getAllByTestId('skeleton').length).toBeGreaterThan(0));
   });
 
   it('prevents concurrent loads', () => {
-    vi.mocked(fetchPopularMovies).mockImplementation(() => new Promise(() => {}));
+    vi.mocked(fetchMovies).mockImplementation(() => new Promise(() => {}));
 
-    render(<InfiniteMovieGrid initialPage={1} initialMovies={[createMovie({ id: 1 })]} />);
+    render(<InfiniteMovieGrid initialPage={1} initialMovies={[createMovie({ id: 1 })]} category='popular' />);
     act(() => triggerIntersection(true));
     act(() => triggerIntersection(true));
 
-    expect(fetchPopularMovies).toHaveBeenCalledTimes(1);
+    expect(fetchMovies).toHaveBeenCalledTimes(1);
   });
 
   it('disconnects the observer on unmount', () => {
-    const { unmount } = render(<InfiniteMovieGrid initialPage={1} initialMovies={[createMovie({ id: 1 })]} />);
+    const { unmount } = render(
+      <InfiniteMovieGrid initialPage={1} initialMovies={[createMovie({ id: 1 })]} category='popular' />,
+    );
     unmount();
     expect(disconnect).toHaveBeenCalled();
   });
