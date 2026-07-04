@@ -59,7 +59,7 @@ export function InfiniteMovieGrid({ initialMovies, initialPage, category }: Infi
   }, [movies, loadMore]);
 
   return (
-    <div className='flex flex-wrap items-center justify-center gap-5 overflow-visible px-5 py-10'>
+    <div className='flex flex-wrap items-center justify-start gap-5 overflow-visible px-5 py-10'>
       {movies.map((movie, index) => (
         <MovieCard key={movie.id} movie={movie} priority={index < PRIORITY_COUNT} />
       ))}
