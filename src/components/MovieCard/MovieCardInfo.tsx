@@ -1,4 +1,5 @@
 import { ProviderSection } from '@/src/components/MovieCard/ProviderSection';
+import { RatingBadge } from '@/src/components/MovieCard/RatingBadge';
 import type { Movie, WatchProvider } from '@/src/lib/api/tmdb/types';
 import { cn } from '@/src/lib/utils';
 
@@ -40,7 +41,9 @@ export function MovieCardInfo({
           <h3 className='text-sm font-semibold text-zinc-900'>{movie.title}</h3>
           {year && <p className='mt-1 text-xs text-zinc-500'>{year}</p>}
           <p className='mt-2 text-xs leading-relaxed text-zinc-600'>{movie.overview}</p>
-          <p className='mt-2 text-xs text-zinc-500'>★ {movie.vote_average.toFixed(1)}</p>
+          <div className='mt-2'>
+            <RatingBadge rating={movie.vote_average} />
+          </div>
         </div>
         <ProviderSection providers={providers} isLoading={isLoadingProviders} maxVisible={MAX_VISIBLE_LOGOS} />
       </div>

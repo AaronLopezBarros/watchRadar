@@ -3,6 +3,7 @@
 import Image from 'next/image';
 
 import { ProviderSection } from '@/src/components/MovieCard/ProviderSection';
+import { RatingBadge } from '@/src/components/MovieCard/RatingBadge';
 import type { Movie, WatchProvider } from '@/src/lib/api/tmdb/types';
 import { getPosterUrl } from '@/src/lib/utils';
 
@@ -44,7 +45,9 @@ export function MovieBottomSheet({ movie, providers, isLoadingProviders, onClose
             <div className='flex flex-col justify-center'>
               <h2 className='text-base font-semibold text-zinc-900'>{movie.title}</h2>
               {year && <p className='mt-1 text-sm text-zinc-500'>{year}</p>}
-              <p className='mt-1 text-sm text-zinc-500'>★ {movie.vote_average.toFixed(1)}</p>
+              <div className='mt-1.5'>
+                <RatingBadge rating={movie.vote_average} />
+              </div>
             </div>
           </div>
           <p className='mb-4 text-sm leading-relaxed text-zinc-600'>{movie.overview}</p>
