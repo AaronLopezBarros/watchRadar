@@ -52,7 +52,7 @@ export function MovieCard({ movie, priority = false }: MovieCardProps) {
   return (
     <article
       ref={articleRef}
-      className='relative shrink-0 cursor-pointer'
+      className='relative shrink-0 cursor-pointer animate-[card-in_300ms_ease-out]'
       style={{ width: POSTER_W, height: POSTER_H }}
       onMouseEnter={onMouseEnter}
       onMouseLeave={handleMouseLeave}
