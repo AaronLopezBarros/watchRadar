@@ -1,6 +1,6 @@
 import { fetchMovies } from '@/lib/api/tmdb/actions';
 import type { MovieCategory } from '@/lib/api/tmdb/types';
-import { InfiniteMovieGrid } from '@/src/components/InfiniteMovieGrid';
+import { InfiniteMovieGrid } from '@/src/components/InfiniteMovieGrid/InfiniteMovieGrid';
 
 const INITIAL_PAGE = 1;
 

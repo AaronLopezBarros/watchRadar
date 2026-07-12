@@ -2,8 +2,8 @@
 
 import { useRef } from 'react';
 
-import { useInfiniteMovies } from '@/src/components/hooks/useInfiniteMovies';
-import { useInfiniteScroll } from '@/src/components/hooks/useInfiniteScroll';
+import { useInfiniteMovies } from '@/src/components/InfiniteMovieGrid/hooks/useInfiniteMovies';
+import { useInfiniteScroll } from '@/src/components/InfiniteMovieGrid/hooks/useInfiniteScroll';
 import { MovieCard } from '@/src/components/MovieCard/MovieCard';
 import { MovieCardSkeleton } from '@/src/components/MovieCard/MovieCardSkeleton';
 import type { Movie, MovieCategory } from '@/src/lib/api/tmdb/types';
