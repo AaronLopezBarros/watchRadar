@@ -10,7 +10,7 @@ vi.mock('@/lib/api/tmdb/actions', () => ({
   fetchMovieWatchProviders: vi.fn(),
 }));
 
-vi.mock('@/src/components/InfiniteMovieGrid', () => ({
+vi.mock('@/src/components/InfiniteMovieGrid/InfiniteMovieGrid', () => ({
   InfiniteMovieGrid: ({
     initialMovies,
     initialPage,
