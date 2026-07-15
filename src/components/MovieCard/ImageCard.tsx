@@ -1,11 +1,8 @@
 import Image from 'next/image';
 
+import { POSTER_H_HOVER, POSTER_W, POSTER_W_HOVER } from '@/src/components/MovieCard/constants';
 import { Movie } from '@/src/lib/api/tmdb/types';
 import { cn, getPosterUrl } from '@/src/lib/utils';
-
-const POSTER_W = 80;
-const POSTER_W_HOVER = 200;
-const POSTER_H_HOVER = 320;
 
 type ImageCardProps = {
   movie: Movie;

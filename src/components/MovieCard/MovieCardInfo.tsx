@@ -1,11 +1,10 @@
+import { PANEL_W, POSTER_H_HOVER } from '@/src/components/MovieCard/constants';
 import { ProviderSection } from '@/src/components/MovieCard/ProviderSection';
 import { RatingBadge } from '@/src/components/MovieCard/RatingBadge';
 import type { Movie, WatchProvider } from '@/src/lib/api/tmdb/types';
 import { cn } from '@/src/lib/utils';
 
 const MAX_VISIBLE_LOGOS = 4;
-const PANEL_W = 180;
-const PANEL_H = 320;
 
 type MovieCardInfoProps = {
   movie: Movie;
@@ -28,7 +27,7 @@ export function MovieCardInfo({ movie, isHovered, flipX, providers, isLoadingPro
           ? 'translate-x-0 opacity-100'
           : cn('pointer-events-none opacity-0', flipX ? 'translate-x-2' : '-translate-x-2'),
       )}
-      style={{ height: PANEL_H, width: PANEL_W }}
+      style={{ height: POSTER_H_HOVER, width: PANEL_W }}
     >
       <div className='flex h-full flex-col'>
         <div className='scrollbar-hidden min-h-0 flex-1 overflow-y-auto'>

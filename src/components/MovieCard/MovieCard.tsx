@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react';
 
+import { PANEL_W, POSTER_H, POSTER_H_HOVER, POSTER_W, POSTER_W_HOVER } from '@/src/components/MovieCard/constants';
 import { useIsTouchDevice } from '@/src/components/MovieCard/hooks/useIsTouchDevice';
 import { useMovieCardHover } from '@/src/components/MovieCard/hooks/useMovieCardHover';
 import { useWatchProviders } from '@/src/components/MovieCard/hooks/useWatchProviders';
@@ -10,12 +11,6 @@ import { MovieBottomSheet } from '@/src/components/MovieCard/MovieBottomSheet';
 import { MovieCardInfo } from '@/src/components/MovieCard/MovieCardInfo';
 import type { Movie } from '@/src/lib/api/tmdb/types';
 import { cn } from '@/src/lib/utils';
-
-const POSTER_W = 80;
-const POSTER_H = 128;
-const POSTER_W_HOVER = 200;
-const POSTER_H_HOVER = 320;
-const PANEL_W = 180;
 
 type MovieCardProps = {
   movie: Movie;
