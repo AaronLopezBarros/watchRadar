@@ -11,7 +11,6 @@ const DEBOUNCE_DELAY_MS = 350;
 export function SearchBar() {
   const [isOpen, setIsOpen] = useState(false);
   const [text, setText] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const { setDebouncedQuery } = useSearch();
 
@@ -27,7 +26,6 @@ export function SearchBar() {
 
   const handleOpen = () => {
     setIsOpen(true);
-    requestAnimationFrame(() => inputRef.current?.focus());
   };
 
   const handleClose = () => {
@@ -51,10 +49,9 @@ export function SearchBar() {
   }
 
   return (
-    <div className='absolute inset-y-0 inset-x-3 z-10 flex items-center gap-1.5 rounded-full bg-slate-950 pr-1 pl-3 sm:static sm:inset-auto sm:z-auto sm:min-w-0 sm:flex-1 sm:bg-white/10'>
+    <div className='absolute inset-x-3 inset-y-0 z-10 flex items-center gap-1.5 rounded-full bg-slate-950 pr-1 pl-3 sm:static sm:inset-auto sm:z-auto sm:min-w-0 sm:flex-1 sm:bg-white/10'>
       <SearchIcon className='shrink-0 text-white/40' />
       <input
-        ref={inputRef}
         type='text'
         value={text}
         onChange={event => handleChange(event.target.value)}
