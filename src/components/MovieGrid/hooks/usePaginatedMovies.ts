@@ -2,18 +2,20 @@
 
 import { useCallback, useRef, useState } from 'react';
 
-import { fetchMovies } from '@/lib/api/tmdb/actions';
-import type { Movie, MovieCategory } from '@/src/lib/api/tmdb/types';
+import type { Movie } from '@/src/lib/api/tmdb/types';
 
-type UseInfiniteMoviesOptions = {
+type UsePaginatedMoviesOptions = {
   initialMovies: Movie[];
   initialPage: number;
-  category: MovieCategory;
+  // eslint-disable-next-line no-unused-vars -- `page` names the parameter for documentation, TS function types require a name
+  fetchPage: (page: number) => Promise<Movie[]>;
+  startLoading?: boolean;
 };
 
-export const useInfiniteMovies = ({ initialMovies, initialPage, category }: UseInfiniteMoviesOptions) => {
+export const usePaginatedMovies = ({ initialMovies, initialPage, fetchPage, startLoading }: UsePaginatedMoviesOptions) => {
   const [movies, setMovies] = useState(initialMovies);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(startLoading ?? false);
+  const [error, setError] = useState(false);
   const isLoadingRef = useRef(false);
   const pageRef = useRef(initialPage);
   const seenIdsRef = useRef(new Set(initialMovies.map(movie => movie.id)));
@@ -23,20 +25,23 @@ export const useInfiniteMovies = ({ initialMovies, initialPage, category }: UseI
 
     isLoadingRef.current = true;
     setIsLoading(true);
+    setError(false);
 
     try {
       const nextPage = pageRef.current + 1;
-      const newMovies = await fetchMovies(category, nextPage);
+      const newMovies = await fetchPage(nextPage);
       const unique = newMovies.filter(movie => !seenIdsRef.current.has(movie.id));
 
       unique.forEach(movie => seenIdsRef.current.add(movie.id));
       setMovies(prev => [...prev, ...unique]);
       pageRef.current = nextPage;
+    } catch {
+      setError(true);
     } finally {
       isLoadingRef.current = false;
       setIsLoading(false);
     }
-  }, [category]);
+  }, [fetchPage]);
 
-  return { movies, isLoading, loadMore };
+  return { movies, isLoading, error, loadMore };
 }
