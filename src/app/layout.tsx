@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 
+import { getLocale } from '@/lib/i18n/getLocale';
 import { Header } from '@/src/components/Header';
 import './globals.css';
 
@@ -11,13 +12,15 @@ export const metadata: Metadata = {
   description: 'Discover popular, top rated, upcoming and now playing movies.',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+
   return (
-    <html lang='en' className='overflow-x-hidden'>
+    <html lang={locale} className='overflow-x-hidden'>
       <body className={`${plusJakartaSans.className} h-screen overflow-x-hidden bg-slate-950 antialiased`}>
         <div className='fixed inset-0 -z-10 bg-linear-to-b from-indigo-950 via-blue-950 to-slate-950' />
         <Header />
