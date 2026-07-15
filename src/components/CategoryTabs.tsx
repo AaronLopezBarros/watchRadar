@@ -11,8 +11,8 @@ type CategoryTabsProps = {
 
 export function CategoryTabs({ active }: CategoryTabsProps) {
   return (
-    <nav className='sticky top-0 z-30 flex items-center gap-2 px-5 pt-6 pb-4 backdrop-blur-md'>
-      <div className='scrollbar-hidden flex min-w-0 flex-1 justify-center gap-2 overflow-x-auto'>
+    <nav className='sticky top-0 z-30 flex items-center gap-2 px-5 pt-4 pb-3 backdrop-blur-md'>
+      <div className='scrollbar-hidden flex min-w-0 flex-1 justify-start gap-2 overflow-x-auto sm:justify-center'>
         {MOVIE_CATEGORIES.map(({ value, label }) => (
           <Link
             key={value}
