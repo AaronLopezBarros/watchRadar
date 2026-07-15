@@ -12,7 +12,12 @@ type UsePaginatedMoviesOptions = {
   startLoading?: boolean;
 };
 
-export const usePaginatedMovies = ({ initialMovies, initialPage, fetchPage, startLoading }: UsePaginatedMoviesOptions) => {
+export const usePaginatedMovies = ({
+  initialMovies,
+  initialPage,
+  fetchPage,
+  startLoading,
+}: UsePaginatedMoviesOptions) => {
   const [movies, setMovies] = useState(initialMovies);
   const [isLoading, setIsLoading] = useState(startLoading ?? false);
   const [error, setError] = useState(false);
@@ -44,4 +49,4 @@ export const usePaginatedMovies = ({ initialMovies, initialPage, fetchPage, star
   }, [fetchPage]);
 
   return { movies, isLoading, error, loadMore };
-}
+};
