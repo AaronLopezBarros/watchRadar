@@ -12,8 +12,6 @@ vi.mock('next/image', () => ({
 const BASE_PROPS = {
   isHovered: false,
   flipX: false,
-  posterH: 320,
-  posterW: 200,
   providers: [],
   isLoadingProviders: false,
 };
@@ -61,10 +59,20 @@ describe('MovieCardInfo', () => {
   });
 
   describe('visibility', () => {
-    it('is hidden when not hovered', () => {
-      render(<MovieCardInfo movie={createMovie()} {...BASE_PROPS} isHovered={false} />);
+    it('is hidden and slides in from the left when not hovered and not flipped', () => {
+      render(<MovieCardInfo movie={createMovie()} {...BASE_PROPS} isHovered={false} flipX={false} />);
 
-      expect(screen.getByTestId('movie-card-info-container')).toHaveClass('opacity-0');
+      const container = screen.getByTestId('movie-card-info-container');
+      expect(container).toHaveClass('opacity-0');
+      expect(container).toHaveClass('-translate-x-2');
+    });
+
+    it('is hidden and slides in from the right when not hovered and flipped', () => {
+      render(<MovieCardInfo movie={createMovie()} {...BASE_PROPS} isHovered={false} flipX={true} />);
+
+      const container = screen.getByTestId('movie-card-info-container');
+      expect(container).toHaveClass('opacity-0');
+      expect(container).toHaveClass('translate-x-2');
     });
 
     it('is visible when hovered', () => {
