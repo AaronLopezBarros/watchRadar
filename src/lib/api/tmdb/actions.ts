@@ -10,3 +10,11 @@ export const fetchMovies = async (category: MovieCategory, page: number): Promis
   const data = await tmdbClient<MoviesResponse>(`/movie/${category}`, { params: { page } });
   return data.results;
 };
+
+export const searchMovies = async (query: string, page: number): Promise<Movie[]> => {
+  const data = await tmdbClient<MoviesResponse>('/search/movie', {
+    params: { query, page, include_adult: false },
+    revalidate: 60,
+  });
+  return data.results;
+};
