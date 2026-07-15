@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { fetchMovieWatchProviders, fetchMovies } from '@/lib/api/tmdb/actions';
+import { fetchMovieWatchProviders, fetchMovies, searchMovies } from '@/lib/api/tmdb/actions';
 import { tmdbClient } from '@/lib/api/tmdb/client';
 
 vi.mock('@/lib/api/tmdb/client');
@@ -40,6 +40,21 @@ describe('actions', () => {
       const result = await fetchMovies('top_rated', 1);
 
       expect(tmdbClient).toHaveBeenCalledWith('/movie/top_rated', { params: { page: 1 } });
+      expect(result).toEqual(movies);
+    });
+  });
+
+  describe('searchMovies', () => {
+    it('calls tmdbClient with the query, page and revalidate window', async () => {
+      const movies = [{ id: 1 }];
+      vi.mocked(tmdbClient).mockResolvedValue({ results: movies });
+
+      const result = await searchMovies('batman', 2);
+
+      expect(tmdbClient).toHaveBeenCalledWith('/search/movie', {
+        params: { query: 'batman', page: 2, include_adult: false },
+        revalidate: 60,
+      });
       expect(result).toEqual(movies);
     });
   });
