@@ -46,6 +46,16 @@ describe('InfiniteMovieGrid', () => {
     expect(screen.getAllByTestId('movie-card')).toHaveLength(2);
   });
 
+  it('does not load more movies when the sentinel is not intersecting', () => {
+    render(
+      <InfiniteMovieGrid initialPage={1} initialMovies={[createMovie({ id: 1, title: 'Film A' })]} category='popular' />,
+    );
+
+    act(() => triggerIntersection(false));
+
+    expect(fetchMovies).not.toHaveBeenCalled();
+  });
+
   it('wires the sentinel intersection to loading more movies for the given category', async () => {
     vi.mocked(fetchMovies).mockResolvedValue([createMovie({ id: 2, title: 'Film B' })]);
 
@@ -60,5 +70,31 @@ describe('InfiniteMovieGrid', () => {
 
     await waitFor(() => expect(screen.getAllByTestId('movie-card')).toHaveLength(2));
     expect(fetchMovies).toHaveBeenCalledWith('top_rated', 2);
+  });
+
+  it('ignores a second loadMore call while the first one is still in flight', async () => {
+    // eslint-disable-next-line no-unused-vars -- `movies` names the parameter for documentation, TS function types require a name
+    let resolveFetch: ((movies: ReturnType<typeof createMovie>[]) => void) | undefined;
+    vi.mocked(fetchMovies).mockImplementation(
+      () =>
+        new Promise(resolve => {
+          resolveFetch = resolve;
+        }),
+    );
+
+    render(
+      <InfiniteMovieGrid initialPage={1} initialMovies={[createMovie({ id: 1, title: 'Film A' })]} category='popular' />,
+    );
+
+    act(() => {
+      triggerIntersection(true);
+      triggerIntersection(true);
+    });
+
+    expect(fetchMovies).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      resolveFetch?.([createMovie({ id: 2, title: 'Film B' })]);
+    });
   });
 });
