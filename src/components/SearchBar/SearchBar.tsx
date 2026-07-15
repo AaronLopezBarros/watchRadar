@@ -49,7 +49,7 @@ export function SearchBar() {
   }
 
   return (
-    <div className='absolute inset-x-3 inset-y-0 z-10 flex items-center gap-1.5 rounded-full bg-slate-950 pr-1 pl-3 sm:static sm:inset-auto sm:z-auto sm:min-w-0 sm:flex-1 sm:bg-white/10'>
+    <div className='flex min-w-0 flex-1 items-center gap-1.5 rounded-full bg-white/10 pr-1 pl-3'>
       <SearchIcon className='shrink-0 text-white/40' />
       <input
         type='text'

@@ -2,16 +2,19 @@ import Link from 'next/link';
 
 import { MOVIE_CATEGORIES } from '@/lib/api/tmdb/constants';
 import type { MovieCategory } from '@/lib/api/tmdb/types';
+import type { Locale } from '@/lib/i18n/locale';
+import { LanguageSelector } from '@/src/components/LanguageSelector/LanguageSelector';
 import { SearchBar } from '@/src/components/SearchBar/SearchBar';
 import { cn } from '@/src/lib/utils';
 
 type CategoryTabsProps = {
   active: MovieCategory;
+  locale: Locale;
 };
 
-export function CategoryTabs({ active }: CategoryTabsProps) {
+export function CategoryTabs({ active, locale }: CategoryTabsProps) {
   return (
-    <nav className='sticky top-0 z-30 flex items-center gap-2 px-5 pt-4 pb-3 backdrop-blur-md'>
+    <nav className='sticky top-0 z-30 flex flex-col gap-2 px-5 pt-4 pb-3 backdrop-blur-md md:flex-row md:items-center'>
       <div className='scrollbar-hidden flex min-w-0 flex-1 justify-start gap-2 overflow-x-auto sm:justify-center'>
         {MOVIE_CATEGORIES.map(({ value, label }) => (
           <Link
@@ -28,7 +31,10 @@ export function CategoryTabs({ active }: CategoryTabsProps) {
           </Link>
         ))}
       </div>
-      <SearchBar />
+      <div className='flex items-center justify-end gap-2'>
+        <SearchBar />
+        <LanguageSelector locale={locale} />
+      </div>
     </nav>
   );
 }
