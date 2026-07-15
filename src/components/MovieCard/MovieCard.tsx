@@ -34,9 +34,6 @@ export function MovieCard({ movie, priority = false }: MovieCardProps) {
   });
   const { providers, isLoading: isLoadingProviders, fetchProviders } = useWatchProviders(movie.id);
 
-  const posterW = isHovered ? POSTER_W_HOVER : POSTER_W;
-  const posterH = isHovered ? POSTER_H_HOVER : POSTER_H;
-
   const onMouseEnter = () => {
     if (isTouchDevice) return;
     handleMouseEnter();
@@ -61,26 +58,17 @@ export function MovieCard({ movie, priority = false }: MovieCardProps) {
       <div
         data-testid='movie-card-container'
         className={cn(
-          'absolute flex rounded-md transition-[width,height] duration-300 ease-out',
+          'absolute flex',
           flipX ? 'right-0 flex-row-reverse' : 'left-0',
           flipY ? 'top-auto bottom-0' : 'top-0',
           isHovered ? 'z-50' : 'z-0',
         )}
       >
-        <ImageCard
-          movie={movie}
-          isHovered={isHovered}
-          flipX={flipX}
-          posterH={posterH}
-          posterW={posterW}
-          priority={priority}
-        />
+        <ImageCard movie={movie} isHovered={isHovered} flipX={flipX} flipY={flipY} priority={priority} />
         <MovieCardInfo
           movie={movie}
           isHovered={isHovered}
           flipX={flipX}
-          posterH={posterH}
-          posterW={posterW}
           providers={providers}
           isLoadingProviders={isLoadingProviders}
         />
