@@ -13,7 +13,7 @@ export const tmdbClient = async <T>(endpoint: string, options?: TmdbClientOption
   const token = process.env.TMDB_TOKEN || process.env.TMDB_API_KEY;
 
   if (!token) {
-    throw new Error('TMDB_TOKEN o TMDB_API_KEY is not set in the environment variables');
+    throw new Error('TMDB_TOKEN or TMDB_API_KEY is not set in the environment variables');
   }
 
   const searchParams = new URLSearchParams();
