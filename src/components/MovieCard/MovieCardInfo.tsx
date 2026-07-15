@@ -4,37 +4,31 @@ import type { Movie, WatchProvider } from '@/src/lib/api/tmdb/types';
 import { cn } from '@/src/lib/utils';
 
 const MAX_VISIBLE_LOGOS = 4;
+const PANEL_W = 180;
+const PANEL_H = 320;
 
 type MovieCardInfoProps = {
   movie: Movie;
   isHovered: boolean;
   flipX: boolean;
-  posterH: number;
-  posterW: number;
   providers: WatchProvider[];
   isLoadingProviders: boolean;
 };
 
-export function MovieCardInfo({
-  movie,
-  isHovered,
-  flipX,
-  posterH,
-  posterW,
-  providers,
-  isLoadingProviders,
-}: MovieCardInfoProps) {
+export function MovieCardInfo({ movie, isHovered, flipX, providers, isLoadingProviders }: MovieCardInfoProps) {
   const year = movie.release_date?.slice(0, 4);
 
   return (
     <div
       data-testid='movie-card-info-container'
       className={cn(
-        'overflow-hidden bg-white transition-[width,opacity,padding] duration-300 ease-out',
+        'overflow-hidden bg-white px-3 py-2 transition-[opacity,transform] duration-300 ease-out',
         isHovered ? (flipX ? 'rounded-l-md' : 'rounded-r-md') : 'rounded-none',
-        isHovered ? 'px-3 py-2 opacity-100' : 'w-0 p-0 opacity-0',
+        isHovered
+          ? 'translate-x-0 opacity-100'
+          : cn('pointer-events-none opacity-0', flipX ? 'translate-x-2' : '-translate-x-2'),
       )}
-      style={{ height: posterH, width: posterW }}
+      style={{ height: PANEL_H, width: PANEL_W }}
     >
       <div className='flex h-full flex-col'>
         <div className='scrollbar-hidden min-h-0 flex-1 overflow-y-auto'>
