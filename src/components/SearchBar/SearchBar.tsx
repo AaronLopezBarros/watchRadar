@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react';
 
+import { useTranslations } from '@/src/components/LocaleProvider';
 import { useSearch } from '@/src/components/SearchBar/SearchProvider';
 import { cn } from '@/src/lib/utils';
 
@@ -13,6 +14,7 @@ export function SearchBar() {
   const [text, setText] = useState('');
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const { setDebouncedQuery } = useSearch();
+  const dict = useTranslations();
 
   const handleChange = (value: string) => {
     setText(value);
@@ -40,7 +42,7 @@ export function SearchBar() {
       <button
         type='button'
         onClick={handleOpen}
-        aria-label='Search movies'
+        aria-label={dict.search.openAriaLabel}
         className='flex shrink-0 items-center justify-center rounded-full bg-white/5 p-2 text-white/60 transition-colors hover:bg-white/10 hover:text-white'
       >
         <SearchIcon />
@@ -55,13 +57,13 @@ export function SearchBar() {
         type='text'
         value={text}
         onChange={event => handleChange(event.target.value)}
-        placeholder='Search movies…'
+        placeholder={dict.search.placeholder}
         className='min-w-0 flex-1 bg-transparent py-1.5 text-sm text-white placeholder:text-white/40 focus:outline-none'
       />
       <button
         type='button'
         onClick={handleClose}
-        aria-label='Close search'
+        aria-label={dict.search.closeAriaLabel}
         className='flex shrink-0 items-center justify-center rounded-full p-1.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white'
       >
         <CloseIcon />
