@@ -39,6 +39,33 @@
   }
 }
 
+/* Soft ambient glow that cycles through a single saturated color at a time,
+   used as the hover halo on movie cards (registered so the color itself can
+   be smoothly interpolated instead of crossfading two box-shadow layers). */
+@property --aurora-color {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: rgba(5, 217, 232, 0.6);
+}
+
+@keyframes aurora-color {
+  0%,
+  100% {
+    --aurora-color: rgba(5, 217, 232, 0.6);
+  }
+  50% {
+    --aurora-color: rgba(255, 45, 149, 0.6);
+  }
+}
+
+@utility aurora-glow-active {
+  animation: aurora-color 4s linear infinite;
+  box-shadow:
+    0 0 55px 0 var(--aurora-color),
+    0 0 22px 0 var(--aurora-color),
+    0 14px 28px -8px rgba(0, 0, 0, 0.5);
+}
+
 @keyframes wr-flicker {
   0%,
   100% {
