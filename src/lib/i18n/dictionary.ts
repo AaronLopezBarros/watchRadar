@@ -2,6 +2,9 @@ import type { MovieCategory } from '@/lib/api/tmdb/types';
 import type { Locale } from '@/lib/i18n/locale';
 
 export type Dictionary = {
+  header: {
+    tagline: string;
+  };
   category: Record<MovieCategory, string>;
   search: {
     openAriaLabel: string;
@@ -35,6 +38,9 @@ export type Dictionary = {
 
 const translations: Record<Locale, Dictionary> = {
   en: {
+    header: {
+      tagline: 'Films · Ratings · Where to watch',
+    },
     category: {
       popular: 'Popular',
       top_rated: 'Top Rated',
@@ -71,6 +77,9 @@ const translations: Record<Locale, Dictionary> = {
     },
   },
   es: {
+    header: {
+      tagline: 'Películas · Valoraciones · Dónde ver',
+    },
     category: {
       popular: 'Populares',
       top_rated: 'Mejor valoradas',
