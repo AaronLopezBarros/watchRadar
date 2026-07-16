@@ -3,7 +3,7 @@
 import { useCallback, useRef, useState } from 'react';
 
 import { fetchMovieWatchProviders } from '@/lib/api/tmdb/actions';
-import type { WatchProvider } from '@/src/lib/api/tmdb/types';
+import type { WatchProvider } from '@/lib/api/tmdb/types';
 
 const COUNTRY = 'ES';
 const MAX_PROVIDERS = 6;

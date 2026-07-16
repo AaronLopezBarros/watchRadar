@@ -6,7 +6,7 @@ import { useState, useTransition } from 'react';
 import { setLocale } from '@/lib/i18n/actions';
 import { getDictionary } from '@/lib/i18n/dictionary';
 import { SUPPORTED_LOCALES, type Locale } from '@/lib/i18n/locale';
-import { cn } from '@/src/lib/utils';
+import { cn } from '@/lib/utils';
 
 const LOCALE_LABEL: Record<Locale, string> = { en: 'EN', es: 'ES' };
 const LOCALE_NAME: Record<Locale, string> = { en: 'English', es: 'Español' };

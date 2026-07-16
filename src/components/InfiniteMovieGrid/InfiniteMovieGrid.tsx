@@ -3,9 +3,9 @@
 import { useCallback } from 'react';
 
 import { fetchMovies } from '@/lib/api/tmdb/actions';
+import type { Movie, MovieCategory } from '@/lib/api/tmdb/types';
 import { usePaginatedMovies } from '@/src/components/MovieGrid/hooks/usePaginatedMovies';
 import { MovieGrid } from '@/src/components/MovieGrid/MovieGrid';
-import type { Movie, MovieCategory } from '@/src/lib/api/tmdb/types';
 
 type InfiniteMovieGridProps = {
   initialMovies: Movie[];

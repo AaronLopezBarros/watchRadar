@@ -4,9 +4,9 @@ import { MOVIE_CATEGORIES } from '@/lib/api/tmdb/constants';
 import type { MovieCategory } from '@/lib/api/tmdb/types';
 import { getDictionary } from '@/lib/i18n/dictionary';
 import type { Locale } from '@/lib/i18n/locale';
+import { cn } from '@/lib/utils';
 import { LanguageSelector } from '@/src/components/LanguageSelector/LanguageSelector';
 import { SearchBar } from '@/src/components/SearchBar/SearchBar';
-import { cn } from '@/src/lib/utils';
 
 type CategoryTabsProps = {
   active: MovieCategory;
