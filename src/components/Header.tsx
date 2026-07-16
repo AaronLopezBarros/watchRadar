@@ -1,9 +1,18 @@
 import { Anton, Audiowide } from 'next/font/google';
 
+import { getDictionary } from '@/lib/i18n/dictionary';
+import type { Locale } from '@/lib/i18n/locale';
+
 const anton = Anton({ subsets: ['latin'], weight: '400' });
 const audiowide = Audiowide({ subsets: ['latin'], weight: '400' });
 
-export function Header() {
+type HeaderProps = {
+  locale: Locale;
+};
+
+export function Header({ locale }: HeaderProps) {
+  const dict = getDictionary(locale);
+
   return (
     <header className='flex justify-center px-4 pt-6'>
       <div className='@container w-full max-w-[640px]'>
@@ -51,7 +60,7 @@ export function Header() {
             <p
               className={`${audiowide.className} mt-[0.667cqw] pl-[0.5cqw] text-[1.417cqw] tracking-[0.625cqw] whitespace-nowrap text-[#8fb6d9] uppercase`}
             >
-              Films · Ratings · Where to watch
+              {dict.header.tagline}
             </p>
           </div>
         </div>

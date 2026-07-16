@@ -30,7 +30,7 @@ export default async function RootLayout({
     <html lang={locale} className='overflow-x-hidden'>
       <body className={`${plusJakartaSans.className} h-screen overflow-x-hidden bg-slate-950 antialiased`}>
         <div className='fixed inset-0 -z-10 bg-linear-to-b from-indigo-950 via-blue-950 to-slate-950' />
-        <Header />
+        <Header locale={locale} />
         <LocaleProvider locale={locale}>
           <main>{children}</main>
         </LocaleProvider>
