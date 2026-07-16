@@ -56,7 +56,7 @@ export function MovieCard({ movie, priority = false }: MovieCardProps) {
           'absolute flex',
           flipX ? 'right-0 flex-row-reverse' : 'left-0',
           flipY ? 'top-auto bottom-0' : 'top-0',
-          isHovered ? 'z-50' : 'z-0',
+          isHovered ? 'z-50 aurora-glow-active' : 'z-0',
         )}
       >
         <ImageCard movie={movie} isHovered={isHovered} flipX={flipX} flipY={flipY} priority={priority} />
