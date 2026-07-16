@@ -40,7 +40,13 @@ export function MovieBottomSheet({ movie, providers, isLoadingProviders, onClose
         <div className='max-h-[70vh] overflow-y-auto px-4 pb-8'>
           <div className='mb-4 flex gap-4'>
             <div className='relative shrink-0 overflow-hidden rounded-md' style={{ width: POSTER_W, height: POSTER_H }}>
-              <Image src={getPosterUrl(movie.poster_path)} alt={movie.title} fill className='object-cover' />
+              <Image
+                src={getPosterUrl(movie.poster_path)}
+                alt={movie.title}
+                fill
+                sizes={`${POSTER_W}px`}
+                className='object-cover'
+              />
             </div>
             <div className='flex flex-col justify-center'>
               <h2 className='text-base font-semibold text-zinc-900'>{movie.title}</h2>
