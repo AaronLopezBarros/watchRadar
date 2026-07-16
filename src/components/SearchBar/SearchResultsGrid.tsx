@@ -3,6 +3,7 @@
 import { useCallback } from 'react';
 
 import { searchMovies } from '@/lib/api/tmdb/actions';
+import { useTranslations } from '@/src/components/LocaleProvider';
 import { usePaginatedMovies } from '@/src/components/MovieGrid/hooks/usePaginatedMovies';
 import { MovieGrid } from '@/src/components/MovieGrid/MovieGrid';
 
@@ -11,6 +12,7 @@ type SearchResultsGridProps = {
 };
 
 export function SearchResultsGrid({ query }: SearchResultsGridProps) {
+  const dict = useTranslations();
   const fetchPage = useCallback((page: number) => searchMovies(query, page), [query]);
   const { movies, isLoading, error, loadMore } = usePaginatedMovies({
     initialMovies: [],
@@ -22,13 +24,13 @@ export function SearchResultsGrid({ query }: SearchResultsGridProps) {
   if (error && movies.length === 0) {
     return (
       <div className='flex flex-col items-center gap-3 px-5 py-16 text-center text-white/60'>
-        <p>The search could not be completed.</p>
+        <p>{dict.search.error}</p>
         <button
           type='button'
           onClick={loadMore}
           className='rounded-full bg-white/10 px-4 py-1.5 text-sm text-white transition-colors hover:bg-white/20'
         >
-          Retry
+          {dict.search.retry}
         </button>
       </div>
     );
@@ -38,7 +40,7 @@ export function SearchResultsGrid({ query }: SearchResultsGridProps) {
     return (
       <div className='px-5 py-16 text-center text-white/60'>
         <p>
-          No results found for <span className='text-white'>&ldquo;{query}&rdquo;</span>.
+          {dict.search.noResultsFor} <span className='text-white'>&ldquo;{query}&rdquo;</span>.
         </p>
       </div>
     );
