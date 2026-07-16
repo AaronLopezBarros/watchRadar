@@ -21,7 +21,7 @@ export function MovieCardInfo({ movie, isHovered, flipX, providers, isLoadingPro
     <div
       data-testid='movie-card-info-container'
       className={cn(
-        'overflow-hidden bg-white px-3 py-2 transition-[opacity,transform] duration-300 ease-out',
+        'overflow-hidden bg-white px-3 py-2 shadow-2xl transition-[opacity,transform] duration-300 ease-out',
         isHovered ? (flipX ? 'rounded-l-md' : 'rounded-r-md') : 'rounded-none',
         isHovered
           ? 'translate-x-0 opacity-100'

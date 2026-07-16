@@ -21,7 +21,7 @@ export function ImageCard({ movie, isHovered, flipX, flipY, priority = false }: 
     <div
       data-testid='image-card-container'
       className={cn(
-        'relative shrink-0 overflow-hidden transition-transform duration-300 ease-out',
+        'relative shrink-0 overflow-hidden shadow-2xl transition-transform duration-300 ease-out',
         isHovered ? (flipX ? 'rounded-r-md' : 'rounded-l-md') : 'rounded-md',
       )}
       style={{
