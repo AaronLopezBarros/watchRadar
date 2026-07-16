@@ -15,26 +15,35 @@ vi.mock('@/src/components/InfiniteMovieGrid/InfiniteMovieGrid', () => ({
     initialMovies,
     initialPage,
     category,
+    locale,
   }: {
     initialMovies: unknown[];
     initialPage: number;
     category: string;
+    locale: string;
   }) => (
-    <div data-testid='infinite-grid' data-page={initialPage} data-count={initialMovies.length} data-category={category} />
+    <div
+      data-testid='infinite-grid'
+      data-page={initialPage}
+      data-count={initialMovies.length}
+      data-category={category}
+      data-locale={locale}
+    />
   ),
 }));
 
 describe('CategoryMovies', () => {
-  it('fetches page 1 for the given category and passes results to InfiniteMovieGrid', async () => {
+  it('fetches page 1 for the given category/locale and passes results to InfiniteMovieGrid', async () => {
     const movies = [createMovie({ id: 1 }), createMovie({ id: 2 })];
     vi.mocked(fetchMovies).mockResolvedValue(movies);
 
-    render(await CategoryMovies({ category: 'top_rated' }));
+    render(await CategoryMovies({ category: 'top_rated', locale: 'en' }));
 
     const grid = screen.getByTestId('infinite-grid');
-    expect(fetchMovies).toHaveBeenCalledWith('top_rated', 1);
+    expect(fetchMovies).toHaveBeenCalledWith('top_rated', 1, 'en');
     expect(grid).toHaveAttribute('data-page', '1');
     expect(grid).toHaveAttribute('data-count', '2');
     expect(grid).toHaveAttribute('data-category', 'top_rated');
+    expect(grid).toHaveAttribute('data-locale', 'en');
   });
 });

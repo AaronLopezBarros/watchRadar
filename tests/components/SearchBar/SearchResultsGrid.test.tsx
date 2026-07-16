@@ -53,7 +53,7 @@ describe('SearchResultsGrid', () => {
     act(() => triggerIntersection(true));
 
     await waitFor(() => expect(screen.getByTestId('movie-card')).toHaveTextContent('Batman'));
-    expect(searchMovies).toHaveBeenCalledWith('batman', 1);
+    expect(searchMovies).toHaveBeenCalledWith('batman', 1, 'en');
   });
 
   it('shows an empty state when the search resolves with no results', async () => {

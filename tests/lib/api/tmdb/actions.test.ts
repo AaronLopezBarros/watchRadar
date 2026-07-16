@@ -23,13 +23,13 @@ describe('actions', () => {
   });
 
   describe('fetchMovies', () => {
-    it('calls tmdbClient with the correct endpoint and page', async () => {
+    it('calls tmdbClient with the correct endpoint, page and language', async () => {
       const movies = [{ id: 1 }, { id: 2 }];
       vi.mocked(tmdbClient).mockResolvedValue({ results: movies });
 
-      const result = await fetchMovies('popular', 3);
+      const result = await fetchMovies('popular', 3, 'en');
 
-      expect(tmdbClient).toHaveBeenCalledWith('/movie/popular', { params: { page: 3 } });
+      expect(tmdbClient).toHaveBeenCalledWith('/movie/popular', { params: { page: 3, language: 'en-US' } });
       expect(result).toEqual(movies);
     });
 
@@ -37,25 +37,46 @@ describe('actions', () => {
       const movies = [{ id: 1 }];
       vi.mocked(tmdbClient).mockResolvedValue({ results: movies });
 
-      const result = await fetchMovies('top_rated', 1);
+      const result = await fetchMovies('top_rated', 1, 'en');
 
-      expect(tmdbClient).toHaveBeenCalledWith('/movie/top_rated', { params: { page: 1 } });
+      expect(tmdbClient).toHaveBeenCalledWith('/movie/top_rated', { params: { page: 1, language: 'en-US' } });
       expect(result).toEqual(movies);
+    });
+
+    it('maps the es locale to the es-ES TMDB language', async () => {
+      const movies = [{ id: 1 }];
+      vi.mocked(tmdbClient).mockResolvedValue({ results: movies });
+
+      await fetchMovies('popular', 1, 'es');
+
+      expect(tmdbClient).toHaveBeenCalledWith('/movie/popular', { params: { page: 1, language: 'es-ES' } });
     });
   });
 
   describe('searchMovies', () => {
-    it('calls tmdbClient with the query, page and revalidate window', async () => {
+    it('calls tmdbClient with the query, page, language and revalidate window', async () => {
       const movies = [{ id: 1 }];
       vi.mocked(tmdbClient).mockResolvedValue({ results: movies });
 
-      const result = await searchMovies('batman', 2);
+      const result = await searchMovies('batman', 2, 'en');
 
       expect(tmdbClient).toHaveBeenCalledWith('/search/movie', {
-        params: { query: 'batman', page: 2, include_adult: false },
+        params: { query: 'batman', page: 2, include_adult: false, language: 'en-US' },
         revalidate: 60,
       });
       expect(result).toEqual(movies);
+    });
+
+    it('maps the es locale to the es-ES TMDB language', async () => {
+      const movies = [{ id: 1 }];
+      vi.mocked(tmdbClient).mockResolvedValue({ results: movies });
+
+      await searchMovies('batman', 1, 'es');
+
+      expect(tmdbClient).toHaveBeenCalledWith('/search/movie', {
+        params: { query: 'batman', page: 1, include_adult: false, language: 'es-ES' },
+        revalidate: 60,
+      });
     });
   });
 });

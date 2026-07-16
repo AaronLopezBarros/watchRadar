@@ -42,13 +42,13 @@ describe('InfiniteMovieGrid', () => {
 
   it('renders initial movies', () => {
     const movies = [createMovie({ id: 1, title: 'Film A' }), createMovie({ id: 2, title: 'Film B' })];
-    render(<InfiniteMovieGrid initialPage={1} initialMovies={movies} category='popular' />);
+    render(<InfiniteMovieGrid initialPage={1} initialMovies={movies} category='popular' locale='en' />);
     expect(screen.getAllByTestId('movie-card')).toHaveLength(2);
   });
 
   it('does not load more movies when the sentinel is not intersecting', () => {
     render(
-      <InfiniteMovieGrid initialPage={1} initialMovies={[createMovie({ id: 1, title: 'Film A' })]} category='popular' />,
+      <InfiniteMovieGrid initialPage={1} initialMovies={[createMovie({ id: 1, title: 'Film A' })]} category='popular' locale='en' />,
     );
 
     act(() => triggerIntersection(false));
@@ -64,12 +64,13 @@ describe('InfiniteMovieGrid', () => {
         initialPage={1}
         initialMovies={[createMovie({ id: 1, title: 'Film A' })]}
         category='top_rated'
+        locale='en'
       />,
     );
     act(() => triggerIntersection(true));
 
     await waitFor(() => expect(screen.getAllByTestId('movie-card')).toHaveLength(2));
-    expect(fetchMovies).toHaveBeenCalledWith('top_rated', 2);
+    expect(fetchMovies).toHaveBeenCalledWith('top_rated', 2, 'en');
   });
 
   it('ignores a second loadMore call while the first one is still in flight', async () => {
@@ -83,7 +84,7 @@ describe('InfiniteMovieGrid', () => {
     );
 
     render(
-      <InfiniteMovieGrid initialPage={1} initialMovies={[createMovie({ id: 1, title: 'Film A' })]} category='popular' />,
+      <InfiniteMovieGrid initialPage={1} initialMovies={[createMovie({ id: 1, title: 'Film A' })]} category='popular' locale='en' />,
     );
 
     act(() => {
