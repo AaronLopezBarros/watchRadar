@@ -17,6 +17,10 @@ export const useInfiniteScroll = (
   { onIntersect, rootMargin, resetKey }: UseInfiniteScrollOptions,
 ) => {
   useEffect(() => {
+    const sentinel = sentinelRef.current;
+
+    if (!sentinel) return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) onIntersect();
@@ -24,7 +28,7 @@ export const useInfiniteScroll = (
       { rootMargin },
     );
 
-    observer.observe(sentinelRef.current!);
+    observer.observe(sentinel);
 
     return () => observer.disconnect();
   }, [onIntersect, rootMargin, sentinelRef, resetKey]);
