@@ -3,7 +3,7 @@
 import { useCallback } from 'react';
 
 import { searchMovies } from '@/lib/api/tmdb/actions';
-import { useTranslations } from '@/src/components/LocaleProvider';
+import { useLocale, useTranslations } from '@/src/components/LocaleProvider';
 import { usePaginatedMovies } from '@/src/components/MovieGrid/hooks/usePaginatedMovies';
 import { MovieGrid } from '@/src/components/MovieGrid/MovieGrid';
 
@@ -13,7 +13,8 @@ type SearchResultsGridProps = {
 
 export function SearchResultsGrid({ query }: SearchResultsGridProps) {
   const dict = useTranslations();
-  const fetchPage = useCallback((page: number) => searchMovies(query, page), [query]);
+  const locale = useLocale();
+  const fetchPage = useCallback((page: number) => searchMovies(query, page, locale), [query, locale]);
   const { movies, isLoading, error, loadMore } = usePaginatedMovies({
     initialMovies: [],
     initialPage: 0,

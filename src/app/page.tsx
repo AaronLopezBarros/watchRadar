@@ -24,7 +24,7 @@ export default async function Home({ searchParams }: HomeProps) {
     <SearchProvider>
       <CategoryTabs active={category} locale={locale} />
       <SearchGridSwitch>
-        <CategoryMovies key={category} category={category} />
+        <CategoryMovies key={category} category={category} locale={locale} />
       </SearchGridSwitch>
     </SearchProvider>
   );
