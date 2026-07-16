@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { searchMovies } from '@/lib/api/tmdb/actions';
+import { LocaleProvider } from '@/src/components/LocaleProvider';
 import { SearchResultsGrid } from '@/src/components/SearchBar/SearchResultsGrid';
 import { createMovie } from '@/tests/factories/movie.factory';
 
@@ -46,14 +47,18 @@ describe('SearchResultsGrid', () => {
     expect(screen.getAllByTestId('skeleton').length).toBeGreaterThan(0);
   });
 
-  it('fetches and renders results for the given query', async () => {
+  it('fetches and renders results for the given query and locale', async () => {
     vi.mocked(searchMovies).mockResolvedValue([createMovie({ id: 1, title: 'Batman' })]);
-    render(<SearchResultsGrid query='batman' />);
+    render(
+      <LocaleProvider locale='es'>
+        <SearchResultsGrid query='batman' />
+      </LocaleProvider>,
+    );
 
     act(() => triggerIntersection(true));
 
     await waitFor(() => expect(screen.getByTestId('movie-card')).toHaveTextContent('Batman'));
-    expect(searchMovies).toHaveBeenCalledWith('batman', 1, 'en');
+    expect(searchMovies).toHaveBeenCalledWith('batman', 1, 'es');
   });
 
   it('shows an empty state when the search resolves with no results', async () => {
