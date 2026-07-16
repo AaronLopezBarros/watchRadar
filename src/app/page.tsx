@@ -13,7 +13,7 @@ type HomeProps = {
 };
 
 const isMovieCategory = (value: string | undefined): value is MovieCategory =>
-  MOVIE_CATEGORIES.some(({ value: category }) => category === value);
+  MOVIE_CATEGORIES.some(category => category === value);
 
 export default async function Home({ searchParams }: HomeProps) {
   const { category: rawCategory } = await searchParams;
