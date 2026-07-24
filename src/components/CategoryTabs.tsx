@@ -27,7 +27,9 @@ export function CategoryTabs({ active, locale }: CategoryTabsProps) {
             aria-current={value === active ? 'true' : undefined}
             className={cn(
               'shrink-0 rounded-full px-4 py-1.5 text-sm transition-colors',
-              value === active ? 'bg-white/20 font-medium text-white' : 'bg-white/5 text-white/60 hover:bg-white/10',
+              value === active
+                ? 'bg-white/20 font-medium text-white'
+                : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white',
             )}
           >
             {dict.category[value]}
