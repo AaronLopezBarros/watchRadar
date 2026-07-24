@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { POSTER_H, POSTER_W } from '@/src/components/MovieCard/constants';
 import { useWatchProviders } from '@/src/components/MovieCard/hooks/useWatchProviders';
 import { ImageCard } from '@/src/components/MovieCard/ImageCard';
-import { MovieBottomSheet } from '@/src/components/MovieCard/MovieBottomSheet';
+import { MovieDialog } from '@/src/components/MovieCard/MovieDialog';
 import type { Movie } from '@/src/lib/api/tmdb/types';
 
 type MovieCardProps = {
@@ -53,7 +53,7 @@ export function MovieCard({ movie, priority = false }: MovieCardProps) {
         <ImageCard movie={movie} priority={priority} />
       </button>
       {isOpen && (
-        <MovieBottomSheet
+        <MovieDialog
           movie={movie}
           providers={providers}
           isLoadingProviders={isLoadingProviders}

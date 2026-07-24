@@ -10,20 +10,20 @@ import { getPosterUrl } from '@/src/lib/utils';
 const POSTER_W = 80;
 const POSTER_H = 120;
 
-type MovieBottomSheetProps = {
+type MovieDialogProps = {
   movie: Movie;
   providers: WatchProvider[];
   isLoadingProviders: boolean;
   onClose: () => void;
 };
 
-export function MovieBottomSheet({ movie, providers, isLoadingProviders, onClose }: MovieBottomSheetProps) {
+export function MovieDialog({ movie, providers, isLoadingProviders, onClose }: MovieDialogProps) {
   const year = movie.release_date?.slice(0, 4);
 
   return (
     <div className='fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4'>
       <div
-        data-testid='bottom-sheet-backdrop'
+        data-testid='movie-dialog-backdrop'
         className='absolute inset-0 animate-[fade-in_300ms_ease-out] bg-black/50'
         onClick={event => {
           event.stopPropagation();
