@@ -40,7 +40,7 @@ export function MovieBottomSheet({ movie, providers, isLoadingProviders, onClose
         <div className='flex justify-center pt-3 pb-4 sm:hidden'>
           <div className='h-1 w-10 rounded-full bg-zinc-300' />
         </div>
-        <div className='max-h-[70vh] overflow-y-auto px-4 pb-8 sm:pt-64'>
+        <div className='max-h-[70vh] overflow-y-auto px-4 pb-8 sm:pt-4'>
           <div className='mb-4 flex gap-4'>
             <div className='relative shrink-0 overflow-hidden rounded-md' style={{ width: POSTER_W, height: POSTER_H }}>
               <Image

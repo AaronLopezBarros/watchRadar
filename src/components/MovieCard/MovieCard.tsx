@@ -37,7 +37,10 @@ export function MovieCard({ movie, priority = false }: MovieCardProps) {
   }, [isOpen]);
 
   return (
-    <article className='relative shrink-0 animate-[card-in_300ms_ease-out]' style={{ width: POSTER_W, height: POSTER_H }}>
+    <article
+      className='relative shrink-0 animate-[card-in_300ms_ease-out]'
+      style={{ width: POSTER_W, height: POSTER_H }}
+    >
       <button
         ref={triggerRef}
         type='button'
