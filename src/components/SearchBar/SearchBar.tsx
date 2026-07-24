@@ -1,7 +1,8 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { cn } from '@/lib/utils';
 import { useTranslations } from '@/src/components/LocaleProvider';
 import { useSearch } from '@/src/components/SearchBar/SearchProvider';
 
@@ -12,6 +13,8 @@ export function SearchBar() {
   const [isOpen, setIsOpen] = useState(false);
   const [text, setText] = useState('');
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const refocusTriggerRef = useRef(false);
   const { setDebouncedQuery } = useSearch();
   const dict = useTranslations();
 
@@ -29,16 +32,36 @@ export function SearchBar() {
     setIsOpen(true);
   };
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     clearTimeout(debounceRef.current);
     setIsOpen(false);
     setText('');
     setDebouncedQuery('');
-  };
+  }, [setDebouncedQuery]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      refocusTriggerRef.current = true;
+      handleClose();
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, handleClose]);
+
+  useEffect(() => {
+    if (isOpen || !refocusTriggerRef.current) return;
+    refocusTriggerRef.current = false;
+    triggerRef.current?.focus();
+  }, [isOpen]);
 
   if (!isOpen) {
     return (
       <button
+        ref={triggerRef}
         type='button'
         onClick={handleOpen}
         aria-label={dict.search.openAriaLabel}
@@ -51,7 +74,7 @@ export function SearchBar() {
 
   return (
     <div className='flex min-w-0 flex-1 items-center gap-1.5 rounded-full bg-white/10 pr-1 pl-3'>
-      <SearchIcon />
+      <SearchIcon className='text-white/40' />
       <input
         type='text'
         value={text}
@@ -72,14 +95,14 @@ export function SearchBar() {
   );
 }
 
-function SearchIcon() {
+function SearchIcon({ className }: { className?: string }) {
   return (
     <svg
       viewBox='0 0 24 24'
       fill='none'
       stroke='currentColor'
       strokeWidth={2}
-      className={'h-4 w-4 shrink-0 text-white/40'}
+      className={cn('h-4 w-4 shrink-0', className)}
     >
       <circle cx='11' cy='11' r='7' />
       <line x1='21' y1='21' x2='16.65' y2='16.65' />

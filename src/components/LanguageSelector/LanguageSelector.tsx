@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState, useTransition } from 'react';
+import { useEffect, useRef, useState, useTransition } from 'react';
 
 import { setLocale } from '@/lib/i18n/actions';
 import { getDictionary } from '@/lib/i18n/dictionary';
@@ -18,6 +18,7 @@ type LanguageSelectorProps = {
 export function LanguageSelector({ locale }: LanguageSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
   const dict = getDictionary(locale);
 
@@ -30,9 +31,23 @@ export function LanguageSelector({ locale }: LanguageSelectorProps) {
     });
   };
 
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setIsOpen(false);
+      triggerRef.current?.focus();
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
+
   return (
     <div className='relative shrink-0'>
       <button
+        ref={triggerRef}
         type='button'
         onClick={() => setIsOpen(open => !open)}
         aria-label={dict.language.changeAriaLabel}
