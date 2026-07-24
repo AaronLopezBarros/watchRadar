@@ -54,4 +54,26 @@ describe('LanguageSelector', () => {
     expect(refreshMock).not.toHaveBeenCalled();
     expect(screen.queryByRole('button', { name: 'Switch to English' })).not.toBeInTheDocument();
   });
+
+  it('closes the options and returns focus to the toggle on Escape', () => {
+    render(<LanguageSelector locale='en' />);
+    const toggle = screen.getByRole('button', { name: 'Change language' });
+
+    fireEvent.click(toggle);
+    expect(screen.getByRole('button', { name: 'Switch to Español' })).toBeInTheDocument();
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    expect(screen.queryByRole('button', { name: 'Switch to Español' })).not.toBeInTheDocument();
+    expect(toggle).toHaveFocus();
+  });
+
+  it('ignores other key presses while the options are open', () => {
+    render(<LanguageSelector locale='en' />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Change language' }));
+    fireEvent.keyDown(document, { key: 'a' });
+
+    expect(screen.getByRole('button', { name: 'Switch to Español' })).toBeInTheDocument();
+  });
 });

@@ -80,4 +80,24 @@ describe('SearchBar', () => {
     expect(setDebouncedQuery).toHaveBeenCalledWith('');
     expect(screen.getByRole('button', { name: 'Search movies' })).toBeInTheDocument();
   });
+
+  it('closes the search and returns focus to the trigger on Escape', () => {
+    render(<SearchBar />);
+    const trigger = screen.getByRole('button', { name: 'Search movies' });
+    fireEvent.click(trigger);
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    expect(screen.queryByPlaceholderText('Search movies…')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Search movies' })).toHaveFocus();
+  });
+
+  it('ignores other key presses while open', () => {
+    render(<SearchBar />);
+    fireEvent.click(screen.getByRole('button', { name: 'Search movies' }));
+
+    fireEvent.keyDown(document, { key: 'a' });
+
+    expect(screen.getByPlaceholderText('Search movies…')).toBeInTheDocument();
+  });
 });

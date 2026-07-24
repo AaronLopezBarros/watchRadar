@@ -26,7 +26,7 @@ export function ProviderSection({ providers, isLoading, maxVisible }: ProviderSe
       {isLoading && (
         <div className='flex gap-1.5'>
           {Array.from({ length: SKELETON_COUNT }, (_, index) => (
-            <div key={index} className='h-8 w-8 animate-pulse rounded-sm bg-zinc-200' />
+            <div key={index} data-testid='provider-skeleton' className='h-8 w-8 animate-pulse rounded-sm bg-zinc-200' />
           ))}
         </div>
       )}

@@ -49,6 +49,12 @@ describe('MovieDialog', () => {
     expect(screen.getByRole('img', { name: 'Netflix' })).toBeInTheDocument();
   });
 
+  it('shows provider skeletons while loading', () => {
+    render(<MovieDialog movie={createMovie()} providers={[]} isLoadingProviders={true} onClose={() => {}} />);
+
+    expect(screen.getAllByTestId('provider-skeleton')).toHaveLength(3);
+  });
+
   it('does not call onClose when clicking inside the sheet', async () => {
     const onClose = vi.fn();
     const movie = createMovie({ title: 'Inception' });

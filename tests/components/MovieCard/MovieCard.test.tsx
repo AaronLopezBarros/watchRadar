@@ -1,182 +1,99 @@
-/* eslint-disable id-length */
-import { act, cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { useIsTouchDevice } from '@/src/components/MovieCard/hooks/useIsTouchDevice';
 import { MovieCard } from '@/src/components/MovieCard/MovieCard';
 import { Movie } from '@/src/lib/api/tmdb/types';
 import { createMovie } from '@/tests/factories/movie.factory';
 
-const movieMock = createMovie();
+const movieMock = createMovie({ title: 'Inception' });
 
 vi.mock('@/src/components/MovieCard/ImageCard', () => ({
   ImageCard: ({ movie }: { movie: Movie }) => <div>{movie.backdrop_path}</div>,
 }));
 
-vi.mock('@/src/components/MovieCard/MovieCardInfo', () => ({
-  MovieCardInfo: () => <div data-testid='movie-card-info-mock' />,
+const fetchProviders = vi.fn();
+
+vi.mock('@/src/components/MovieCard/hooks/useWatchProviders', () => ({
+  useWatchProviders: () => ({ providers: [], isLoading: false, fetchProviders }),
 }));
 
-vi.mock('@/src/components/MovieCard/hooks/useIsTouchDevice', () => ({
-  useIsTouchDevice: vi.fn(() => false),
-}));
-
-vi.mock('@/src/components/MovieCard/MovieBottomSheet', () => ({
-  MovieBottomSheet: ({ onClose }: { onClose: () => void }) => (
-    <div
-      data-testid='movie-bottom-sheet-mock'
-      onClick={event => {
-        event.stopPropagation();
-        onClose();
-      }}
-    />
+vi.mock('@/src/components/MovieCard/MovieDialog', () => ({
+  MovieDialog: ({ onClose }: { onClose: () => void }) => (
+    <div data-testid='movie-dialog-mock'>
+      <button type='button' onClick={onClose}>
+        close
+      </button>
+    </div>
   ),
 }));
 
-vi.mock('@/src/components/MovieCard/hooks/useWatchProviders', () => ({
-  useWatchProviders: () => ({ providers: [], isLoading: false, fetchProviders: vi.fn() }),
-}));
-
 describe('MovieCard', () => {
-  beforeEach(() => {
-    vi.useFakeTimers();
-  });
-
   afterEach(() => {
-    vi.useRealTimers();
+    fetchProviders.mockClear();
     cleanup();
   });
 
-  it('should render', () => {
+  it('renders a focusable button with the movie title as its accessible name', () => {
     render(<MovieCard movie={movieMock} />);
 
-    expect(screen.getByRole('article')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Inception' })).toBeInTheDocument();
   });
 
-  describe('touch behavior', () => {
-    beforeEach(() => {
-      vi.useRealTimers();
-    });
+  it('does not render the dialog before the card is activated', () => {
+    render(<MovieCard movie={movieMock} />);
 
-    afterEach(() => {
-      vi.mocked(useIsTouchDevice).mockReturnValue(false);
-    });
-
-    it('does not open the hover card on a touch device', async () => {
-      vi.mocked(useIsTouchDevice).mockReturnValue(true);
-      render(<MovieCard movie={movieMock} />);
-
-      await userEvent.hover(screen.getByRole('article'));
-
-      expect(screen.getByTestId('movie-card-container')).toHaveClass('z-0');
-    });
-
-    it('does not open the bottom sheet on click on a desktop device', async () => {
-      render(<MovieCard movie={movieMock} />);
-
-      await userEvent.click(screen.getByRole('article'));
-
-      expect(screen.queryByTestId('movie-bottom-sheet-mock')).not.toBeInTheDocument();
-    });
-
-    it('opens the bottom sheet on click when on a touch device', async () => {
-      vi.mocked(useIsTouchDevice).mockReturnValue(true);
-      render(<MovieCard movie={movieMock} />);
-
-      await userEvent.click(screen.getByRole('article'));
-
-      expect(screen.getByTestId('movie-bottom-sheet-mock')).toBeInTheDocument();
-    });
-
-    it('closes the bottom sheet when onClose is called', async () => {
-      vi.mocked(useIsTouchDevice).mockReturnValue(true);
-      render(<MovieCard movie={movieMock} />);
-
-      await userEvent.click(screen.getByRole('article'));
-      await userEvent.click(screen.getByTestId('movie-bottom-sheet-mock'));
-
-      expect(screen.queryByTestId('movie-bottom-sheet-mock')).not.toBeInTheDocument();
-    });
+    expect(screen.queryByTestId('movie-dialog-mock')).not.toBeInTheDocument();
   });
 
-  describe('handle', () => {
-    const HOVER_DELAY = 175;
+  it('opens the dialog and fetches providers on click', async () => {
+    render(<MovieCard movie={movieMock} />);
 
-    let user: ReturnType<typeof userEvent.setup>;
+    await userEvent.click(screen.getByRole('button', { name: 'Inception' }));
 
-    beforeEach(() => {
-      vi.mocked(useIsTouchDevice).mockReturnValue(false);
-      vi.stubGlobal('jest', {
-        advanceTimersByTime: vi.advanceTimersByTime.bind(vi),
-      });
-      user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
-    });
+    expect(screen.getByTestId('movie-dialog-mock')).toBeInTheDocument();
+    expect(fetchProviders).toHaveBeenCalledOnce();
+  });
 
-    afterEach(() => {
-      vi.unstubAllGlobals();
-    });
+  it('reflects the open state through aria-expanded', async () => {
+    render(<MovieCard movie={movieMock} />);
+    const trigger = screen.getByRole('button', { name: 'Inception' });
 
-    it('sets flipX when there is not enough horizontal space', async () => {
-      render(<MovieCard movie={movieMock} />);
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
 
-      const article = screen.getByRole('article');
+    await userEvent.click(trigger);
 
-      Object.defineProperty(window, 'innerWidth', {
-        configurable: true,
-        value: 1000,
-      });
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  });
 
-      vi.spyOn(article, 'getBoundingClientRect').mockReturnValue({
-        x: 800,
-        y: 100,
-        left: 800,
-        top: 100,
-        right: 850,
-        bottom: 180,
-        width: 50,
-        height: 80,
-        toJSON: () => {},
-      } as DOMRect);
+  it('closes the dialog when onClose is called', async () => {
+    render(<MovieCard movie={movieMock} />);
 
-      await user.hover(article);
-      act(() => vi.advanceTimersByTime(HOVER_DELAY));
+    await userEvent.click(screen.getByRole('button', { name: 'Inception' }));
+    await userEvent.click(screen.getByText('close'));
 
-      const container = screen.getByTestId('movie-card-container');
+    expect(screen.queryByTestId('movie-dialog-mock')).not.toBeInTheDocument();
+  });
 
-      expect(container).toHaveClass('right-0');
-      expect(container).toHaveClass('flex-row-reverse');
-    });
+  it('closes the dialog on Escape and returns focus to the trigger', async () => {
+    render(<MovieCard movie={movieMock} />);
+    const trigger = screen.getByRole('button', { name: 'Inception' });
 
-    it('sets flipY when there is not enough vertical space', async () => {
-      render(<MovieCard movie={movieMock} />);
+    await userEvent.click(trigger);
+    expect(screen.getByTestId('movie-dialog-mock')).toBeInTheDocument();
 
-      const article = screen.getByRole('article');
+    await userEvent.keyboard('{Escape}');
 
-      Object.defineProperty(window, 'innerHeight', {
-        configurable: true,
-        value: 800,
-      });
+    expect(screen.queryByTestId('movie-dialog-mock')).not.toBeInTheDocument();
+    expect(trigger).toHaveFocus();
+  });
 
-      vi.spyOn(article, 'getBoundingClientRect').mockReturnValue({
-        x: 100,
-        y: 600,
-        left: 100,
-        top: 600,
-        right: 150,
-        bottom: 680,
-        width: 50,
-        height: 80,
-        toJSON: () => {},
-      } as DOMRect);
+  it('ignores other key presses while the dialog is open', async () => {
+    render(<MovieCard movie={movieMock} />);
 
-      await user.hover(article);
+    await userEvent.click(screen.getByRole('button', { name: 'Inception' }));
+    await userEvent.keyboard('a');
 
-      act(() => vi.advanceTimersByTime(HOVER_DELAY));
-
-      const container = screen.getByTestId('movie-card-container');
-
-      expect(container).toHaveClass('bottom-0');
-    });
+    expect(screen.getByTestId('movie-dialog-mock')).toBeInTheDocument();
   });
 });
