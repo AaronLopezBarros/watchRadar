@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
 import { LanguageSelector } from '@/src/components/LanguageSelector/LanguageSelector';
@@ -24,10 +25,10 @@ describe('LanguageSelector', () => {
     expect(screen.queryByRole('button', { name: 'Switch to Español' })).not.toBeInTheDocument();
   });
 
-  it('opens the options and marks the current locale as pressed', () => {
+  it('opens the options and marks the current locale as pressed', async () => {
     render(<LanguageSelector locale='en' />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Change language' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Change language' }));
 
     expect(screen.getByRole('button', { name: 'Switch to English' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: 'Switch to Español' })).toHaveAttribute('aria-pressed', 'false');
@@ -36,43 +37,43 @@ describe('LanguageSelector', () => {
   it('switches locale, refreshes the router and closes when picking a different language', async () => {
     render(<LanguageSelector locale='en' />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Change language' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Switch to Español' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Change language' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Switch to Español' }));
 
     await waitFor(() => expect(refreshMock).toHaveBeenCalled());
     expect(setLocaleMock).toHaveBeenCalledWith('es');
     expect(screen.queryByRole('button', { name: 'Switch to Español' })).not.toBeInTheDocument();
   });
 
-  it('closes without switching when clicking the already-active locale', () => {
+  it('closes without switching when clicking the already-active locale', async () => {
     render(<LanguageSelector locale='en' />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Change language' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Switch to English' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Change language' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Switch to English' }));
 
     expect(setLocaleMock).not.toHaveBeenCalled();
     expect(refreshMock).not.toHaveBeenCalled();
     expect(screen.queryByRole('button', { name: 'Switch to English' })).not.toBeInTheDocument();
   });
 
-  it('closes the options and returns focus to the toggle on Escape', () => {
+  it('closes the options and returns focus to the toggle on Escape', async () => {
     render(<LanguageSelector locale='en' />);
     const toggle = screen.getByRole('button', { name: 'Change language' });
 
-    fireEvent.click(toggle);
+    await userEvent.click(toggle);
     expect(screen.getByRole('button', { name: 'Switch to Español' })).toBeInTheDocument();
 
-    fireEvent.keyDown(document, { key: 'Escape' });
+    await userEvent.keyboard('{Escape}');
 
     expect(screen.queryByRole('button', { name: 'Switch to Español' })).not.toBeInTheDocument();
     expect(toggle).toHaveFocus();
   });
 
-  it('ignores other key presses while the options are open', () => {
+  it('ignores other key presses while the options are open', async () => {
     render(<LanguageSelector locale='en' />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Change language' }));
-    fireEvent.keyDown(document, { key: 'a' });
+    await userEvent.click(screen.getByRole('button', { name: 'Change language' }));
+    await userEvent.keyboard('a');
 
     expect(screen.getByRole('button', { name: 'Switch to Español' })).toBeInTheDocument();
   });

@@ -1,4 +1,5 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SearchBar } from '@/src/components/SearchBar/SearchBar';
@@ -10,8 +11,11 @@ vi.mock('@/src/components/SearchBar/SearchProvider', () => ({
 }));
 
 describe('SearchBar', () => {
+  let user: ReturnType<typeof userEvent.setup>;
+
   beforeEach(() => {
-    vi.useFakeTimers();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
   });
 
   afterEach(() => {
@@ -25,42 +29,42 @@ describe('SearchBar', () => {
     expect(screen.queryByPlaceholderText('Search movies…')).not.toBeInTheDocument();
   });
 
-  it('opens the input when the search button is clicked', () => {
+  it('opens the input when the search button is clicked', async () => {
     render(<SearchBar />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Search movies' }));
+    await user.click(screen.getByRole('button', { name: 'Search movies' }));
 
     expect(screen.getByPlaceholderText('Search movies…')).toBeInTheDocument();
   });
 
-  it('does not commit a query shorter than the minimum length', () => {
+  it('does not commit a query shorter than the minimum length', async () => {
     render(<SearchBar />);
-    fireEvent.click(screen.getByRole('button', { name: 'Search movies' }));
+    await user.click(screen.getByRole('button', { name: 'Search movies' }));
 
-    fireEvent.change(screen.getByPlaceholderText('Search movies…'), { target: { value: 'b' } });
+    await user.type(screen.getByPlaceholderText('Search movies…'), 'b');
     act(() => vi.advanceTimersByTime(350));
 
     expect(setDebouncedQuery).toHaveBeenCalledWith('');
   });
 
-  it('commits the trimmed query after the debounce delay', () => {
+  it('commits the trimmed query after the debounce delay', async () => {
     render(<SearchBar />);
-    fireEvent.click(screen.getByRole('button', { name: 'Search movies' }));
+    await user.click(screen.getByRole('button', { name: 'Search movies' }));
 
-    fireEvent.change(screen.getByPlaceholderText('Search movies…'), { target: { value: '  batman  ' } });
+    await user.type(screen.getByPlaceholderText('Search movies…'), '  batman  ');
     act(() => vi.advanceTimersByTime(350));
 
     expect(setDebouncedQuery).toHaveBeenCalledWith('batman');
   });
 
-  it('resets the debounce timer on each keystroke', () => {
+  it('resets the debounce timer on each keystroke', async () => {
     render(<SearchBar />);
-    fireEvent.click(screen.getByRole('button', { name: 'Search movies' }));
+    await user.click(screen.getByRole('button', { name: 'Search movies' }));
     const input = screen.getByPlaceholderText('Search movies…');
 
-    fireEvent.change(input, { target: { value: 'bat' } });
+    await user.type(input, 'bat');
     act(() => vi.advanceTimersByTime(200));
-    fireEvent.change(input, { target: { value: 'batman' } });
+    await user.type(input, 'man');
     act(() => vi.advanceTimersByTime(200));
 
     expect(setDebouncedQuery).not.toHaveBeenCalled();
@@ -70,33 +74,33 @@ describe('SearchBar', () => {
     expect(setDebouncedQuery).toHaveBeenCalledWith('batman');
   });
 
-  it('closes the search, clears the text and resets the query', () => {
+  it('closes the search, clears the text and resets the query', async () => {
     render(<SearchBar />);
-    fireEvent.click(screen.getByRole('button', { name: 'Search movies' }));
-    fireEvent.change(screen.getByPlaceholderText('Search movies…'), { target: { value: 'batman' } });
+    await user.click(screen.getByRole('button', { name: 'Search movies' }));
+    await user.type(screen.getByPlaceholderText('Search movies…'), 'batman');
 
-    fireEvent.click(screen.getByRole('button', { name: 'Close search' }));
+    await user.click(screen.getByRole('button', { name: 'Close search' }));
 
     expect(setDebouncedQuery).toHaveBeenCalledWith('');
     expect(screen.getByRole('button', { name: 'Search movies' })).toBeInTheDocument();
   });
 
-  it('closes the search and returns focus to the trigger on Escape', () => {
+  it('closes the search and returns focus to the trigger on Escape', async () => {
     render(<SearchBar />);
     const trigger = screen.getByRole('button', { name: 'Search movies' });
-    fireEvent.click(trigger);
+    await user.click(trigger);
 
-    fireEvent.keyDown(document, { key: 'Escape' });
+    await user.keyboard('{Escape}');
 
     expect(screen.queryByPlaceholderText('Search movies…')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Search movies' })).toHaveFocus();
   });
 
-  it('ignores other key presses while open', () => {
+  it('ignores other key presses while open', async () => {
     render(<SearchBar />);
-    fireEvent.click(screen.getByRole('button', { name: 'Search movies' }));
+    await user.click(screen.getByRole('button', { name: 'Search movies' }));
 
-    fireEvent.keyDown(document, { key: 'a' });
+    await user.keyboard('a');
 
     expect(screen.getByPlaceholderText('Search movies…')).toBeInTheDocument();
   });

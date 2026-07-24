@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
 import { SearchProvider, useSearch } from '@/src/components/SearchBar/SearchProvider';
@@ -17,7 +18,7 @@ function Consumer() {
 }
 
 describe('SearchProvider', () => {
-  it('provides an empty debouncedQuery by default and updates it via setDebouncedQuery', () => {
+  it('provides an empty debouncedQuery by default and updates it via setDebouncedQuery', async () => {
     render(
       <SearchProvider>
         <Consumer />
@@ -26,17 +27,17 @@ describe('SearchProvider', () => {
 
     expect(screen.getByTestId('query')).toHaveTextContent('');
 
-    fireEvent.click(screen.getByRole('button', { name: 'set' }));
+    await userEvent.click(screen.getByRole('button', { name: 'set' }));
 
     expect(screen.getByTestId('query')).toHaveTextContent('batman');
   });
 
-  it('exposes a no-op setDebouncedQuery as the default context value outside a provider', () => {
+  it('exposes a no-op setDebouncedQuery as the default context value outside a provider', async () => {
     render(<Consumer />);
 
     expect(screen.getByTestId('query')).toHaveTextContent('');
 
-    fireEvent.click(screen.getByRole('button', { name: 'set' }));
+    await userEvent.click(screen.getByRole('button', { name: 'set' }));
 
     expect(screen.getByTestId('query')).toHaveTextContent('');
   });

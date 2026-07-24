@@ -1,4 +1,5 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { searchMovies } from '@/lib/api/tmdb/actions';
@@ -90,7 +91,7 @@ describe('SearchResultsGrid', () => {
     expect(screen.getByText('The search could not be completed.')).toBeInTheDocument();
 
     vi.mocked(searchMovies).mockResolvedValueOnce([createMovie({ id: 1, title: 'Batman' })]);
-    fireEvent.click(retryButton);
+    await userEvent.click(retryButton);
 
     await waitFor(() => expect(screen.getByTestId('movie-card')).toHaveTextContent('Batman'));
   });
