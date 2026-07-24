@@ -15,7 +15,7 @@ export function SearchResultsGrid({ query }: SearchResultsGridProps) {
   const dict = useTranslations();
   const locale = useLocale();
   const fetchPage = useCallback((page: number) => searchMovies(query, page, locale), [query, locale]);
-  const { movies, isLoading, error, loadMore } = usePaginatedMovies({
+  const { movies, isLoading, error, loadNextPage } = usePaginatedMovies({
     initialMovies: [],
     initialPage: 0,
     fetchPage,
@@ -28,7 +28,7 @@ export function SearchResultsGrid({ query }: SearchResultsGridProps) {
         <p>{dict.search.error}</p>
         <button
           type='button'
-          onClick={loadMore}
+          onClick={loadNextPage}
           className='rounded-full bg-white/10 px-4 py-1.5 text-sm text-white transition-colors hover:bg-white/20'
         >
           {dict.search.retry}
@@ -47,5 +47,5 @@ export function SearchResultsGrid({ query }: SearchResultsGridProps) {
     );
   }
 
-  return <MovieGrid movies={movies} isLoading={isLoading} onIntersect={loadMore} />;
+  return <MovieGrid movies={movies} isLoading={isLoading} onIntersect={loadNextPage} />;
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import type { Movie } from '@/src/lib/api/tmdb/types';
 
@@ -24,8 +24,9 @@ export const usePaginatedMovies = ({
   const isLoadingRef = useRef(false);
   const pageRef = useRef(initialPage);
   const seenIdsRef = useRef(new Set(initialMovies.map(movie => movie.id)));
+  const hasStartedRef = useRef(false);
 
-  const loadMore = useCallback(async () => {
+  const loadNextPage = useCallback(async () => {
     if (isLoadingRef.current) return;
 
     isLoadingRef.current = true;
@@ -48,5 +49,15 @@ export const usePaginatedMovies = ({
     }
   }, [fetchPage]);
 
-  return { movies, isLoading, error, loadMore };
+  // Search starts with no movies and relies on this effect to fetch page 1 itself,
+  // instead of waiting for the sentinel to intersect: on narrow viewports the initial
+  // skeletons push the sentinel out of view, so it never intersects and loadNextPage never runs.
+  useEffect(() => {
+    if (!startLoading || hasStartedRef.current) return;
+
+    hasStartedRef.current = true;
+    loadNextPage();
+  }, [startLoading, loadNextPage]);
+
+  return { movies, isLoading, error, loadNextPage };
 };

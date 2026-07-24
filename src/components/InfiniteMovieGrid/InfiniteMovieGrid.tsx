@@ -17,7 +17,7 @@ type InfiniteMovieGridProps = {
 
 export function InfiniteMovieGrid({ initialMovies, initialPage, category, locale }: InfiniteMovieGridProps) {
   const fetchPage = useCallback((page: number) => fetchMovies(category, page, locale), [category, locale]);
-  const { movies, isLoading, loadMore } = usePaginatedMovies({ initialMovies, initialPage, fetchPage });
+  const { movies, isLoading, loadNextPage } = usePaginatedMovies({ initialMovies, initialPage, fetchPage });
 
-  return <MovieGrid movies={movies} isLoading={isLoading} onIntersect={loadMore} />;
+  return <MovieGrid movies={movies} isLoading={isLoading} onIntersect={loadNextPage} />;
 }
