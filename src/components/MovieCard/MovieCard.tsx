@@ -48,7 +48,7 @@ export function MovieCard({ movie, priority = false }: MovieCardProps) {
         aria-label={movie.title}
         aria-haspopup='dialog'
         aria-expanded={isOpen}
-        className='block h-full w-full cursor-pointer overflow-hidden rounded-md shadow-2xl transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'
+        className='block h-full w-full cursor-pointer overflow-hidden rounded-md shadow-2xl transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'
       >
         <ImageCard movie={movie} priority={priority} />
       </button>

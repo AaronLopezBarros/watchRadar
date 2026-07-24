@@ -87,7 +87,7 @@ export function SearchBar() {
         type='button'
         onClick={handleClose}
         aria-label={dict.search.closeAriaLabel}
-        className='flex shrink-0 items-center justify-center rounded-full p-1.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white'
+        className='flex shrink-0 cursor-pointer items-center justify-center rounded-full p-1.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white'
       >
         <CloseIcon />
       </button>
