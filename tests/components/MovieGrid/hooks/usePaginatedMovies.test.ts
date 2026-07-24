@@ -7,9 +7,7 @@ import { createMovie } from '@/tests/factories/movie.factory';
 describe('usePaginatedMovies', () => {
   it('starts with the initial movies and isLoading false by default', () => {
     const initialMovies = [createMovie({ id: 1 })];
-    const { result } = renderHook(() =>
-      usePaginatedMovies({ initialMovies, initialPage: 1, fetchPage: vi.fn() }),
-    );
+    const { result } = renderHook(() => usePaginatedMovies({ initialMovies, initialPage: 1, fetchPage: vi.fn() }));
 
     expect(result.current.movies).toEqual(initialMovies);
     expect(result.current.isLoading).toBe(false);
@@ -24,13 +22,31 @@ describe('usePaginatedMovies', () => {
     expect(result.current.isLoading).toBe(true);
   });
 
+  it('fetches the first page on its own when startLoading is set, without waiting for loadNextPage to be called', async () => {
+    const fetchPage = vi.fn().mockResolvedValue([createMovie({ id: 1 })]);
+    const { result } = renderHook(() =>
+      usePaginatedMovies({ initialMovies: [], initialPage: 0, fetchPage, startLoading: true }),
+    );
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(fetchPage).toHaveBeenCalledWith(1);
+    expect(result.current.movies).toEqual([createMovie({ id: 1 })]);
+  });
+
+  it('does not fetch on mount when startLoading is not set', () => {
+    const fetchPage = vi.fn();
+    renderHook(() => usePaginatedMovies({ initialMovies: [], initialPage: 1, fetchPage }));
+
+    expect(fetchPage).not.toHaveBeenCalled();
+  });
+
   it('fetches the next page and appends the results', async () => {
     const initialMovies = [createMovie({ id: 1 })];
     const fetchPage = vi.fn().mockResolvedValue([createMovie({ id: 2 })]);
     const { result } = renderHook(() => usePaginatedMovies({ initialMovies, initialPage: 1, fetchPage }));
 
     act(() => {
-      result.current.loadMore();
+      result.current.loadNextPage();
     });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
@@ -44,14 +60,14 @@ describe('usePaginatedMovies', () => {
     const { result } = renderHook(() => usePaginatedMovies({ initialMovies, initialPage: 1, fetchPage }));
 
     act(() => {
-      result.current.loadMore();
+      result.current.loadNextPage();
     });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(result.current.movies).toEqual([createMovie({ id: 1 }), createMovie({ id: 2 })]);
   });
 
-  it('ignores a second loadMore call while the first one is still in flight', async () => {
+  it('ignores a second loadNextPage call while the first one is still in flight', async () => {
     // eslint-disable-next-line no-unused-vars -- `movies` names the parameter for documentation, TS function types require a name
     let resolveFetch: ((movies: ReturnType<typeof createMovie>[]) => void) | undefined;
     const fetchPage = vi.fn().mockImplementation(
@@ -65,8 +81,8 @@ describe('usePaginatedMovies', () => {
     );
 
     act(() => {
-      result.current.loadMore();
-      result.current.loadMore();
+      result.current.loadNextPage();
+      result.current.loadNextPage();
     });
 
     expect(fetchPage).toHaveBeenCalledTimes(1);
@@ -83,14 +99,14 @@ describe('usePaginatedMovies', () => {
     );
 
     act(() => {
-      result.current.loadMore();
+      result.current.loadNextPage();
     });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(result.current.error).toBe(true);
   });
 
-  it('clears the error once a following loadMore call succeeds', async () => {
+  it('clears the error once a following loadNextPage call succeeds', async () => {
     const fetchPage = vi
       .fn()
       .mockRejectedValueOnce(new Error('boom'))
@@ -100,12 +116,12 @@ describe('usePaginatedMovies', () => {
     );
 
     act(() => {
-      result.current.loadMore();
+      result.current.loadNextPage();
     });
     await waitFor(() => expect(result.current.error).toBe(true));
 
     act(() => {
-      result.current.loadMore();
+      result.current.loadNextPage();
     });
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 

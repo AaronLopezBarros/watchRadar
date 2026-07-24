@@ -11,9 +11,7 @@ vi.mock('@/lib/api/tmdb/actions', () => ({
 }));
 
 vi.mock('@/src/components/MovieCard/MovieCard', () => ({
-  MovieCard: ({ movie }: { movie: { id: number; title: string } }) => (
-    <div data-testid='movie-card'>{movie.title}</div>
-  ),
+  MovieCard: ({ movie }: { movie: { id: number; title: string } }) => <div data-testid='movie-card'>{movie.title}</div>,
 }));
 
 vi.mock('@/src/components/MovieCard/MovieCardSkeleton', () => ({
@@ -47,7 +45,10 @@ describe('SearchResultsGrid', () => {
     expect(screen.getAllByTestId('skeleton').length).toBeGreaterThan(0);
   });
 
-  it('fetches and renders results for the given query and locale', async () => {
+  it('fetches and renders results for the given query and locale without needing the sentinel to intersect', async () => {
+    // Regression test: on narrow (mobile) viewports the initial skeletons push the sentinel
+    // out of view, so the IntersectionObserver never fires. The first page must load on its
+    // own regardless of intersection, which is why `triggerIntersection` is never called here.
     vi.mocked(searchMovies).mockResolvedValue([createMovie({ id: 1, title: 'Batman' })]);
     render(
       <LocaleProvider locale='es'>
@@ -55,17 +56,27 @@ describe('SearchResultsGrid', () => {
       </LocaleProvider>,
     );
 
-    act(() => triggerIntersection(true));
-
     await waitFor(() => expect(screen.getByTestId('movie-card')).toHaveTextContent('Batman'));
     expect(searchMovies).toHaveBeenCalledWith('batman', 1, 'es');
+  });
+
+  it('loads the next page when the sentinel intersects after the first page has loaded', async () => {
+    vi.mocked(searchMovies)
+      .mockResolvedValueOnce([createMovie({ id: 1, title: 'Batman' })])
+      .mockResolvedValueOnce([createMovie({ id: 2, title: 'Batman Returns' })]);
+    render(<SearchResultsGrid query='batman' />);
+
+    await waitFor(() => expect(screen.getAllByTestId('movie-card')).toHaveLength(1));
+
+    act(() => triggerIntersection(true));
+
+    await waitFor(() => expect(screen.getAllByTestId('movie-card')).toHaveLength(2));
+    expect(searchMovies).toHaveBeenCalledWith('batman', 2, 'en');
   });
 
   it('shows an empty state when the search resolves with no results', async () => {
     vi.mocked(searchMovies).mockResolvedValue([]);
     render(<SearchResultsGrid query='batman' />);
-
-    act(() => triggerIntersection(true));
 
     const message = await screen.findByText(/No results found for/);
     expect(message).toHaveTextContent('batman');
@@ -74,8 +85,6 @@ describe('SearchResultsGrid', () => {
   it('shows an error state with a retry action, and recovers on retry', async () => {
     vi.mocked(searchMovies).mockRejectedValueOnce(new Error('boom'));
     render(<SearchResultsGrid query='batman' />);
-
-    act(() => triggerIntersection(true));
 
     const retryButton = await screen.findByRole('button', { name: 'Retry' });
     expect(screen.getByText('The search could not be completed.')).toBeInTheDocument();
