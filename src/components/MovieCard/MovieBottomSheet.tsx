@@ -21,7 +21,7 @@ export function MovieBottomSheet({ movie, providers, isLoadingProviders, onClose
   const year = movie.release_date?.slice(0, 4);
 
   return (
-    <div className='fixed inset-0 z-50 flex items-end'>
+    <div className='fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4'>
       <div
         data-testid='bottom-sheet-backdrop'
         className='absolute inset-0 animate-[fade-in_300ms_ease-out] bg-black/50'
@@ -31,13 +31,16 @@ export function MovieBottomSheet({ movie, providers, isLoadingProviders, onClose
         }}
       />
       <div
-        className='relative w-full animate-[slide-up_300ms_ease-out] rounded-t-2xl bg-white'
+        role='dialog'
+        aria-modal='true'
+        aria-label={movie.title}
+        className='relative w-full animate-[slide-up_300ms_ease-out] rounded-t-2xl bg-white sm:max-w-md sm:animate-[fade-in_200ms_ease-out] sm:rounded-2xl'
         onClick={event => event.stopPropagation()}
       >
-        <div className='flex justify-center pt-3 pb-4'>
+        <div className='flex justify-center pt-3 pb-4 sm:hidden'>
           <div className='h-1 w-10 rounded-full bg-zinc-300' />
         </div>
-        <div className='max-h-[70vh] overflow-y-auto px-4 pb-8'>
+        <div className='max-h-[70vh] overflow-y-auto px-4 pb-8 sm:pt-64'>
           <div className='mb-4 flex gap-4'>
             <div className='relative shrink-0 overflow-hidden rounded-md' style={{ width: POSTER_W, height: POSTER_H }}>
               <Image

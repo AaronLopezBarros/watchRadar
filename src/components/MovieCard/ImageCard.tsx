@@ -1,41 +1,22 @@
 import Image from 'next/image';
 
-import { POSTER_H_HOVER, POSTER_W, POSTER_W_HOVER } from '@/src/components/MovieCard/constants';
+import { POSTER_W } from '@/src/components/MovieCard/constants';
 import { Movie } from '@/src/lib/api/tmdb/types';
-import { cn, getPosterUrl } from '@/src/lib/utils';
+import { getPosterUrl } from '@/src/lib/utils';
 
 type ImageCardProps = {
   movie: Movie;
-  isHovered: boolean;
-  flipX: boolean;
-  flipY: boolean;
   priority?: boolean;
 };
 
-export function ImageCard({ movie, isHovered, flipX, flipY, priority = false }: ImageCardProps) {
-  // Scales the whole poster render down to the collapsed size instead of animating
-  // width/height, so the transition never triggers layout (no CLS).
-  const scale = isHovered ? 1 : POSTER_W / POSTER_W_HOVER;
-
+export function ImageCard({ movie, priority = false }: ImageCardProps) {
   return (
-    <div
-      data-testid='image-card-container'
-      className={cn(
-        'relative shrink-0 overflow-hidden shadow-2xl transition-transform duration-300 ease-out',
-        isHovered ? (flipX ? 'rounded-r-md' : 'rounded-l-md') : 'rounded-md',
-      )}
-      style={{
-        width: POSTER_W_HOVER,
-        height: POSTER_H_HOVER,
-        transform: `scale(${scale})`,
-        transformOrigin: `${flipX ? 'right' : 'left'} ${flipY ? 'bottom' : 'top'}`,
-      }}
-    >
+    <div data-testid='image-card-container' className='relative h-full w-full'>
       <Image
         src={getPosterUrl(movie.poster_path)}
         alt={movie.title}
         fill
-        sizes={`${POSTER_W_HOVER}px`}
+        sizes={`${POSTER_W}px`}
         className='object-cover'
         priority={priority}
         fetchPriority={priority ? 'high' : undefined}
