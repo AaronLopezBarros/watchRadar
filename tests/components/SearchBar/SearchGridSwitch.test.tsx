@@ -1,19 +1,29 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { useEffect } from 'react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { LocaleProvider } from '@/src/components/LocaleProvider';
 import { SearchGridSwitch } from '@/src/components/SearchBar/SearchGridSwitch';
 
 const useSearchMock = vi.fn();
+const mountCount = vi.fn();
 
 vi.mock('@/src/components/SearchBar/SearchProvider', () => ({
   useSearch: () => useSearchMock(),
 }));
 
 vi.mock('@/src/components/SearchBar/SearchResultsGrid', () => ({
-  SearchResultsGrid: ({ query }: { query: string }) => <div data-testid='search-results'>{query}</div>,
+  SearchResultsGrid: ({ query }: { query: string }) => {
+    useEffect(() => mountCount(), []);
+    return <div data-testid='search-results'>{query}</div>;
+  },
 }));
 
 describe('SearchGridSwitch', () => {
+  afterEach(() => {
+    mountCount.mockClear();
+  });
+
   it('renders the children when there is no debounced query', () => {
     useSearchMock.mockReturnValue({ debouncedQuery: '' });
 
@@ -38,5 +48,29 @@ describe('SearchGridSwitch', () => {
 
     expect(screen.getByTestId('search-results')).toHaveTextContent('batman');
     expect(screen.queryByTestId('children')).not.toBeInTheDocument();
+  });
+
+  it('remounts SearchResultsGrid when the locale changes for the same query', () => {
+    useSearchMock.mockReturnValue({ debouncedQuery: 'batman' });
+
+    const { rerender } = render(
+      <LocaleProvider locale='en'>
+        <SearchGridSwitch>
+          <div data-testid='children' />
+        </SearchGridSwitch>
+      </LocaleProvider>,
+    );
+
+    expect(mountCount).toHaveBeenCalledTimes(1);
+
+    rerender(
+      <LocaleProvider locale='es'>
+        <SearchGridSwitch>
+          <div data-testid='children' />
+        </SearchGridSwitch>
+      </LocaleProvider>,
+    );
+
+    expect(mountCount).toHaveBeenCalledTimes(2);
   });
 });
