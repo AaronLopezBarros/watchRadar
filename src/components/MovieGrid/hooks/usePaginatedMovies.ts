@@ -25,9 +25,13 @@ export const usePaginatedMovies = ({
   const pageRef = useRef(initialPage);
   const seenIdsRef = useRef(new Set(initialMovies.map(movie => movie.id)));
   const hasStartedRef = useRef(false);
+  // Once a page comes back with nothing new, the sentinel keeps re-triggering onIntersect
+  // (see useInfiniteScroll's resetKey) every time it's still in view, which would otherwise
+  // hammer fetchPage forever instead of stopping once the results are exhausted.
+  const hasMoreRef = useRef(true);
 
   const loadNextPage = useCallback(async () => {
-    if (isLoadingRef.current) return;
+    if (isLoadingRef.current || !hasMoreRef.current) return;
 
     isLoadingRef.current = true;
     setIsLoading(true);
@@ -38,9 +42,13 @@ export const usePaginatedMovies = ({
       const newMovies = await fetchPage(nextPage);
       const unique = newMovies.filter(movie => !seenIdsRef.current.has(movie.id));
 
-      unique.forEach(movie => seenIdsRef.current.add(movie.id));
-      setMovies(prev => [...prev, ...unique]);
-      pageRef.current = nextPage;
+      if (unique.length === 0) {
+        hasMoreRef.current = false;
+      } else {
+        unique.forEach(movie => seenIdsRef.current.add(movie.id));
+        setMovies(prev => [...prev, ...unique]);
+        pageRef.current = nextPage;
+      }
     } catch {
       setError(true);
     } finally {
