@@ -9,13 +9,37 @@ import { useSearch } from '@/src/components/SearchBar/SearchProvider';
 const MIN_QUERY_LENGTH = 2;
 const DEBOUNCE_DELAY_MS = 350;
 
+function SearchIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox='0 0 24 24'
+      fill='none'
+      stroke='currentColor'
+      strokeWidth={2}
+      className={cn('h-4 w-4 shrink-0', className)}
+    >
+      <circle cx='11' cy='11' r='7' />
+      <line x1='21' y1='21' x2='16.65' y2='16.65' />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth={2} className='h-4 w-4'>
+      <line x1='18' y1='6' x2='6' y2='18' />
+      <line x1='6' y1='6' x2='18' y2='18' />
+    </svg>
+  );
+}
+
 export function SearchBar() {
   const [isOpen, setIsOpen] = useState(false);
   const [text, setText] = useState('');
+  const { setDebouncedQuery } = useSearch();
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const refocusTriggerRef = useRef(false);
-  const { setDebouncedQuery } = useSearch();
   const dict = useTranslations();
 
   const handleChange = (value: string) => {
@@ -92,29 +116,5 @@ export function SearchBar() {
         <CloseIcon />
       </button>
     </div>
-  );
-}
-
-function SearchIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox='0 0 24 24'
-      fill='none'
-      stroke='currentColor'
-      strokeWidth={2}
-      className={cn('h-4 w-4 shrink-0', className)}
-    >
-      <circle cx='11' cy='11' r='7' />
-      <line x1='21' y1='21' x2='16.65' y2='16.65' />
-    </svg>
-  );
-}
-
-function CloseIcon() {
-  return (
-    <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth={2} className='h-4 w-4'>
-      <line x1='18' y1='6' x2='6' y2='18' />
-      <line x1='6' y1='6' x2='18' y2='18' />
-    </svg>
   );
 }

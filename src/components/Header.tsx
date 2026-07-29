@@ -15,7 +15,7 @@ export function Header({ locale }: HeaderProps) {
 
   return (
     <header className='flex justify-center px-4 pt-6'>
-      <div className='@container w-full max-w-[640px]'>
+      <div className='@container w-full max-w-160'>
         <div
           className='relative flex w-full items-center justify-center gap-[3.667cqw] overflow-hidden px-[5cqw]'
           style={{ aspectRatio: '1200 / 320' }}
@@ -27,7 +27,7 @@ export function Header({ locale }: HeaderProps) {
             <div className='absolute inset-y-[0.5cqw] left-1/2 w-[0.125cqw] -translate-x-1/2 bg-[rgba(5,217,232,0.35)]' />
             <div className='absolute inset-x-[0.5cqw] top-1/2 h-[0.125cqw] -translate-y-1/2 bg-[rgba(5,217,232,0.35)]' />
             <div
-              className='motion-reduce:animate-none absolute inset-[0.25cqw] animate-[wr-sweep_3.4s_linear_infinite] rounded-full'
+              className='absolute inset-[0.25cqw] animate-[wr-sweep_3.4s_linear_infinite] rounded-full motion-reduce:animate-none'
               style={{
                 background:
                   'conic-gradient(from 0deg, rgba(255,45,149,.65), rgba(255,45,149,0) 70deg, transparent 360deg)',
@@ -35,11 +35,11 @@ export function Header({ locale }: HeaderProps) {
                 mask: 'radial-gradient(circle, transparent 0, #000 0.333cqw)',
               }}
             />
-            <div className='motion-reduce:animate-none absolute top-[34%] left-[70%] h-[1.333cqw] w-[1.333cqw] animate-[wr-blip_3.4s_ease-in-out_infinite] rounded-full bg-[#ff2d95] shadow-[0_0_14px_#ff2d95,0_0_26px_#ff2d95]' />
+            <div className='absolute top-[34%] left-[70%] h-[1.333cqw] w-[1.333cqw] animate-[wr-blip_3.4s_ease-in-out_infinite] rounded-full bg-[#ff2d95] shadow-[0_0_14px_#ff2d95,0_0_26px_#ff2d95] motion-reduce:animate-none' />
             <div className='absolute top-1/2 left-1/2 h-[1cqw] w-[1cqw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#05d9e8] shadow-[0_0_12px_#05d9e8]' />
           </div>
 
-          <div className='motion-reduce:animate-none flex animate-[wr-flicker_6s_infinite] flex-col leading-[0.9]'>
+          <div className='flex animate-[wr-flicker_6s_infinite] flex-col leading-[0.9] motion-reduce:animate-none'>
             <h1
               aria-label='WatchRadar'
               className={`${anton.className} text-[8.667cqw] tracking-[-0.167cqw] whitespace-nowrap`}
