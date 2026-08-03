@@ -50,7 +50,7 @@ export function LanguageSelector({ locale }: LanguageSelectorProps) {
         ref={triggerRef}
         type='button'
         onClick={() => setIsOpen(open => !open)}
-        aria-label={dict.language.changeAriaLabel}
+        aria-label={`${dict.language.changeAriaLabel}: ${LOCALE_LABEL[locale]}`}
         aria-expanded={isOpen}
         disabled={isPending}
         className='flex h-11 min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-full bg-white/5 px-2.5 text-xs font-medium text-white/60 transition-colors hover:bg-white/10 hover:text-white disabled:cursor-default'
@@ -69,7 +69,7 @@ export function LanguageSelector({ locale }: LanguageSelectorProps) {
               type='button'
               onClick={() => handleSelect(value)}
               aria-pressed={value === locale}
-              aria-label={`Switch to ${LOCALE_NAME[value]}`}
+              aria-label={`Switch to ${LOCALE_NAME[value]}: ${LOCALE_LABEL[value]}`}
               className={cn(
                 'flex h-11 min-w-11 cursor-pointer items-center justify-center rounded-full px-3 whitespace-nowrap transition-colors',
                 value === locale ? 'bg-white/20 font-medium text-white' : 'text-white/60 hover:bg-white/10',
