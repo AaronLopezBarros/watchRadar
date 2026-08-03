@@ -18,7 +18,7 @@ export function CategoryTabs({ active, locale }: CategoryTabsProps) {
 
   return (
     <nav className='sticky top-0 z-30 flex flex-col gap-2 px-5 pt-4 pb-3 backdrop-blur-md md:flex-row md:items-center'>
-      <div className='scrollbar-hidden flex min-w-0 flex-1 justify-start gap-2 overflow-x-auto sm:justify-center'>
+      <div className='flex min-w-0 flex-1 gap-1.5 md:justify-center'>
         {MOVIE_CATEGORIES.map(value => (
           <Link
             key={value}
@@ -26,7 +26,7 @@ export function CategoryTabs({ active, locale }: CategoryTabsProps) {
             scroll={false}
             aria-current={value === active ? 'true' : undefined}
             className={cn(
-              'shrink-0 rounded-full px-4 py-1.5 text-sm transition-colors',
+              'flex min-h-11 min-w-0 flex-1 items-center justify-center truncate rounded-full px-1.5 text-center text-xs transition-colors md:flex-none md:px-4 md:text-sm',
               value === active
                 ? 'bg-white/20 font-medium text-white'
                 : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white',

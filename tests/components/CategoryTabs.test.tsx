@@ -12,15 +12,15 @@ describe('CategoryTabs', () => {
     render(<CategoryTabs active='popular' locale='en' />);
 
     expect(screen.getByRole('link', { name: 'Popular' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Top Rated' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Top' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Upcoming' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Now Playing' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Playing' })).toBeInTheDocument();
   });
 
   it('marks the active category and links to the right href', () => {
     render(<CategoryTabs active='top_rated' locale='en' />);
 
-    const active = screen.getByRole('link', { name: 'Top Rated' });
+    const active = screen.getByRole('link', { name: 'Top' });
     expect(active).toHaveAttribute('aria-current', 'true');
     expect(active).toHaveAttribute('href', '/?category=top_rated');
 

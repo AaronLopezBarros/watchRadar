@@ -43,9 +43,9 @@ const translations: Record<Locale, Dictionary> = {
     },
     category: {
       popular: 'Popular',
-      top_rated: 'Top Rated',
+      top_rated: 'Top',
       upcoming: 'Upcoming',
-      now_playing: 'Now Playing',
+      now_playing: 'Playing',
     },
     search: {
       openAriaLabel: 'Search movies',
@@ -82,9 +82,9 @@ const translations: Record<Locale, Dictionary> = {
     },
     category: {
       popular: 'Populares',
-      top_rated: 'Mejor valoradas',
-      upcoming: 'Próximamente',
-      now_playing: 'En cartelera',
+      top_rated: 'Favoritas',
+      upcoming: 'Estrenos',
+      now_playing: 'Cartelera',
     },
     search: {
       openAriaLabel: 'Buscar películas',

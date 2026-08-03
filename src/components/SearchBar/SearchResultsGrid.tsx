@@ -29,7 +29,7 @@ export function SearchResultsGrid({ query }: SearchResultsGridProps) {
         <button
           type='button'
           onClick={loadNextPage}
-          className='rounded-full bg-white/10 px-4 py-1.5 text-sm text-white transition-colors hover:bg-white/20'
+          className='flex min-h-11 items-center justify-center rounded-full bg-white/10 px-4 text-sm text-white transition-colors hover:bg-white/20'
         >
           {dict.search.retry}
         </button>

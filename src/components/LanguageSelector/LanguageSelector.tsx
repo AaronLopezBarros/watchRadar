@@ -53,7 +53,7 @@ export function LanguageSelector({ locale }: LanguageSelectorProps) {
         aria-label={dict.language.changeAriaLabel}
         aria-expanded={isOpen}
         disabled={isPending}
-        className='flex shrink-0 cursor-pointer items-center justify-center rounded-full bg-white/5 px-2.5 py-2 text-xs font-medium text-white/60 transition-colors hover:bg-white/10 hover:text-white disabled:cursor-default'
+        className='flex h-11 min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-full bg-white/5 px-2.5 text-xs font-medium text-white/60 transition-colors hover:bg-white/10 hover:text-white disabled:cursor-default'
       >
         {LOCALE_LABEL[locale]}
       </button>
@@ -71,7 +71,7 @@ export function LanguageSelector({ locale }: LanguageSelectorProps) {
               aria-pressed={value === locale}
               aria-label={`Switch to ${LOCALE_NAME[value]}`}
               className={cn(
-                'cursor-pointer rounded-full px-3 py-1.5 whitespace-nowrap transition-colors',
+                'flex h-11 min-w-11 cursor-pointer items-center justify-center rounded-full px-3 whitespace-nowrap transition-colors',
                 value === locale ? 'bg-white/20 font-medium text-white' : 'text-white/60 hover:bg-white/10',
               )}
             >

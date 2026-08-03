@@ -89,7 +89,7 @@ export function SearchBar() {
         type='button'
         onClick={handleOpen}
         aria-label={dict.search.openAriaLabel}
-        className='flex shrink-0 cursor-pointer items-center justify-center rounded-full bg-white/5 p-2 text-white/60 transition-colors hover:bg-white/10 hover:text-white'
+        className='flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full bg-white/5 text-white/60 transition-colors hover:bg-white/10 hover:text-white'
       >
         <SearchIcon />
       </button>
@@ -111,7 +111,7 @@ export function SearchBar() {
         type='button'
         onClick={handleClose}
         aria-label={dict.search.closeAriaLabel}
-        className='flex shrink-0 cursor-pointer items-center justify-center rounded-full p-1.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white'
+        className='flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/10 hover:text-white'
       >
         <CloseIcon />
       </button>
