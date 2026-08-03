@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { usePaginatedMovies } from '@/src/components/MovieGrid/hooks/usePaginatedMovies';
+import { usePaginatedMovies } from '@/src/lib/hooks/usePaginatedMovies';
 import { createMovie } from '@/tests/factories/movie.factory';
 
 describe('usePaginatedMovies', () => {
