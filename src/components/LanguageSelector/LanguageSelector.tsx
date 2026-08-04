@@ -25,6 +25,8 @@ export function LanguageSelector({ locale }: LanguageSelectorProps) {
   const handleSelect = (next: Locale) => {
     setIsOpen(false);
     if (next === locale) return;
+    window.scrollTo({ top: 0 });
+
     startTransition(async () => {
       await setLocale(next);
       router.refresh();

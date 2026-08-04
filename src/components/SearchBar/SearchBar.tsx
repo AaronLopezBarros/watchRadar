@@ -48,6 +48,8 @@ export function SearchBar() {
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       const trimmed = value.trim();
+      window.scrollTo({ top: 0 });
+
       setDebouncedQuery(trimmed.length >= MIN_QUERY_LENGTH ? trimmed : '');
     }, DEBOUNCE_DELAY_MS);
   };

@@ -23,7 +23,6 @@ export function CategoryTabs({ active, locale }: CategoryTabsProps) {
           <Link
             key={value}
             href={value === 'popular' ? '/' : `/?category=${value}`}
-            scroll={false}
             aria-current={value === active ? 'true' : undefined}
             className={cn(
               'flex min-h-11 min-w-0 flex-1 items-center justify-center truncate rounded-full px-1.5 text-center text-xs transition-colors md:flex-none md:px-4 md:text-sm',
