@@ -42,7 +42,7 @@ export function Header({ locale }: HeaderProps) {
           <div className='flex animate-[wr-flicker_6s_infinite] flex-col leading-[0.9] motion-reduce:animate-none'>
             <h1
               aria-label='WatchRadar'
-              className={`${anton.className} text-[8.667cqw] tracking-[-0.167cqw] whitespace-nowrap`}
+              className={`${anton.className} text-[clamp(2rem,8.667cqw,3.467rem)] tracking-[-0.167cqw] whitespace-nowrap`}
             >
               <span
                 aria-hidden='true'
@@ -58,7 +58,7 @@ export function Header({ locale }: HeaderProps) {
               </span>
             </h1>
             <p
-              className={`${audiowide.className} mt-[0.667cqw] pl-[0.5cqw] text-[1.417cqw] tracking-[0.625cqw] whitespace-nowrap text-[#8fb6d9] uppercase`}
+              className={`${audiowide.className} mt-[0.667cqw] pl-[0.5cqw] text-[clamp(0.4375rem,1.417cqw,0.4375rem)] tracking-[0.625cqw] text-[#8fb6d9] uppercase`}
             >
               {dict.header.tagline}
             </p>
