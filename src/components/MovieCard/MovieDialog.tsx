@@ -2,13 +2,11 @@
 
 import Image from 'next/image';
 
+import { POSTER_H, POSTER_W } from '@/src/components/MovieCard/constants';
 import { ProviderSection } from '@/src/components/MovieCard/ProviderSection';
 import { RatingBadge } from '@/src/components/MovieCard/RatingBadge';
 import type { Movie, WatchProvider } from '@/src/lib/api/tmdb/types';
 import { getPosterUrl } from '@/src/lib/utils';
-
-const POSTER_W = 80;
-const POSTER_H = 120;
 
 type MovieDialogProps = {
   movie: Movie;
