@@ -27,7 +27,7 @@ export function MovieGrid({ movies, isLoading, onIntersect }: MovieGridProps) {
   });
 
   return (
-    <div className='flex flex-wrap items-center justify-center gap-5 overflow-visible px-5 py-10'>
+    <div className='flex flex-wrap items-center justify-center gap-4 overflow-visible px-3 py-10 max-[380px]:gap-3 max-[380px]:px-2 sm:gap-5 sm:px-5'>
       {movies.map((movie, index) => (
         <MovieCard key={movie.id} movie={movie} priority={index < PRIORITY_COUNT} />
       ))}
