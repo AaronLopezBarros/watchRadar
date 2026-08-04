@@ -64,4 +64,45 @@ describe('MovieDialog', () => {
 
     expect(onClose).not.toHaveBeenCalled();
   });
+
+  it('calls onClose when the drag handle is swiped down past the threshold', async () => {
+    const onClose = vi.fn();
+    render(<MovieDialog movie={createMovie()} providers={[]} isLoadingProviders={false} onClose={onClose} />);
+
+    const handle = screen.getByTestId('movie-dialog-drag-handle');
+    await userEvent.pointer([
+      { target: handle, keys: '[TouchA>]', coords: { clientY: 0 } },
+      { target: handle, coords: { clientY: 150 } },
+      { target: handle, keys: '[/TouchA]' },
+    ]);
+
+    expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it('does not call onClose when the drag does not pass the threshold', async () => {
+    const onClose = vi.fn();
+    render(<MovieDialog movie={createMovie()} providers={[]} isLoadingProviders={false} onClose={onClose} />);
+
+    const handle = screen.getByTestId('movie-dialog-drag-handle');
+    await userEvent.pointer([
+      { target: handle, keys: '[TouchA>]', coords: { clientY: 0 } },
+      { target: handle, coords: { clientY: 40 } },
+      { target: handle, keys: '[/TouchA]' },
+    ]);
+
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it('ignores pointer move and release when no drag is in progress', async () => {
+    const onClose = vi.fn();
+    render(<MovieDialog movie={createMovie()} providers={[]} isLoadingProviders={false} onClose={onClose} />);
+
+    const handle = screen.getByTestId('movie-dialog-drag-handle');
+    await userEvent.pointer([
+      { target: handle, coords: { clientY: 200 } },
+      { target: handle, keys: '[TouchA>][/TouchA]', coords: { clientY: 200 } },
+    ]);
+
+    expect(onClose).not.toHaveBeenCalled();
+  });
 });
