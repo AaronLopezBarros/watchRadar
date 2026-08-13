@@ -31,19 +31,6 @@ Requires either `TMDB_TOKEN` (preferred, Bearer token) or `TMDB_API_KEY` in `.en
 
 ## Architecture
 
-**Data flow:** Next.js App Router RSC pages → server components fetch TMDB data → pass to client components for interactivity.
-
-- `src/lib/api/tmdb/client.ts` — thin fetch wrapper for TMDB API v3. Handles auth, query params, and Next.js `revalidate` (default 1 hour). All TMDB calls go through `tmdbClient<T>()`.
-- `src/lib/api/tmdb/actions.ts` — server actions on top of the client. `fetchMovies(category, page)` hits `/movie/{category}` for any `MovieCategory` (`popular`, `top_rated`, `upcoming`, `now_playing`, listed in `MOVIE_CATEGORIES` in `constants.ts`).
-- `src/app/page.tsx` — reads the `category` searchParam (validated against `MOVIE_CATEGORIES`, defaults to `popular`), renders `CategoryTabs` and `CategoryMovies` (keyed by category so switching tabs remounts the grid).
-- `src/components/CategoryTabs.tsx` — server component; renders one `Link` per category, updates the `?category=` searchParam.
-- `src/components/CategoryMovies.tsx` — async RSC; fetches page 1 for the given category and renders `InfiniteMovieGrid`, which paginates further pages of that same category on scroll.
-- `src/components/MovieCard/` — split into `MovieCard.tsx` (client component, hover/flip logic) and `ImageCard.tsx`. `MovieCard` calculates whether the expanded panel would overflow the viewport and flips direction accordingly.
-
-**Path aliases** (defined in both `tsconfig.json` and `vitest.config.ts`):
-- `@/src/*` → `src/*`
-- `@/lib/*` → `src/lib/*`
-- `@/components/*` → `src/components/*`
-- `@/tests/*` → `tests/*`
+See [README.md](./README.md#architecture) for the file-by-file breakdown and path aliases. Key rule when writing code: favor the existing patterns documented there (RSC/client boundaries, server actions in `src/lib/api/tmdb/actions.ts`, etc.) over introducing new ones.
 
 **Testing:** Vitest + jsdom + Testing Library. Tests live in `tests/` mirroring `src/`. Factories are in `tests/factories/`. Coverage excludes `src/app/` (route files).
