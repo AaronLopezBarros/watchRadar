@@ -50,18 +50,16 @@ pnpm vitest run tests/lib/utils/getPosterUrl.test.ts
 
 ## Architecture
 
-**Data flow:** App Router RSC pages fetch TMDB data on the server and pass it to client components for interactivity.
+**Data flow:** App Router RSC pages fetch TMDB data on the server through server actions, and pass it down to client components for interactivity (infinite scroll, search, the movie detail dialog, locale switching).
 
-| File | Role |
+| Folder | Contains |
 | --- | --- |
-| `src/lib/api/tmdb/client.ts` | Thin `fetch` wrapper for TMDB API v3: auth, query params, `revalidate` (default 1h). All TMDB calls go through `tmdbClient<T>()`. |
-| `src/lib/api/tmdb/actions.ts` | Server actions. `fetchMovies(category, page)` → `/movie/{category}` for any `MovieCategory` (see `MOVIE_CATEGORIES` in `constants.ts`). |
-| `src/app/page.tsx` | Reads searchParam `category` (validated against `MOVIE_CATEGORIES`, defaults to `popular`). Renders `CategoryTabs` + `CategoryMovies`, keyed by category/locale so switching remounts the grid. |
-| `src/components/CategoryTabs.tsx` | Server component. One `Link` per category, updates `?category=`. |
-| `src/components/CategoryMovies.tsx` | Async RSC. Fetches page 1 and renders `InfiniteMovieGrid` (paginates further pages on scroll). |
-| `src/components/MovieCard/` | `MovieCard.tsx` (client, hover/flip; calculates whether the expanded panel would overflow the viewport and flips direction) + `ImageCard.tsx`. |
-| `src/components/SearchBar/` | Movie search: `SearchProvider` (context) + `SearchGridSwitch`, which toggles between the per-category grid and the search results grid. |
-| `src/lib/i18n/` | Language support (`en`/`es`) backed by a cookie (`LOCALE_COOKIE_NAME`), with a translation dictionary and a mapping to TMDB's language codes (`TMDB_LANGUAGE`). |
+| `src/app/` | Routes, root layout and metadata. |
+| `src/components/` | UI, grouped by feature: category tabs/grid, movie card/dialog, infinite scroll grid, search, language selector, header. |
+| `src/lib/api/tmdb/` | TMDB API client, server actions and types. |
+| `src/lib/i18n/` | Locale detection/switching (cookie-based) and the translation dictionary. |
+| `src/lib/hooks/` | Shared client hooks. |
+| `src/lib/utils/` | Small utility helpers. |
 
 ### Path aliases
 
@@ -70,6 +68,7 @@ Defined in both `tsconfig.json` and `vitest.config.ts`:
 | Alias | Points to |
 | --- | --- |
 | `@/src/*` | `src/*` |
+| `@/app/*` | `src/app/*` |
 | `@/lib/*` | `src/lib/*` |
 | `@/components/*` | `src/components/*` |
 | `@/tests/*` | `tests/*` |
