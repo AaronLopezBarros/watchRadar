@@ -27,12 +27,12 @@ export function MovieGrid({ movies, isLoading, onIntersect }: MovieGridProps) {
   });
 
   return (
-    <div className='flex flex-wrap items-center justify-center gap-4 overflow-visible px-3 py-10 max-[380px]:gap-3 max-[380px]:px-2 sm:gap-5 sm:px-5'>
+    <div className='grid grid-cols-3 gap-4 px-3 py-10 max-[380px]:gap-3 max-[380px]:px-2 sm:flex sm:flex-wrap sm:items-center sm:justify-center sm:gap-5 sm:px-5'>
       {movies.map((movie, index) => (
         <MovieCard key={movie.id} movie={movie} priority={index < PRIORITY_COUNT} />
       ))}
       {isLoading && Array.from({ length: SKELETON_COUNT }, (_, index) => <MovieCardSkeleton key={index} />)}
-      <div ref={sentinelRef} className='w-full' />
+      <div ref={sentinelRef} className='col-span-3 sm:w-full' />
     </div>
   );
 }

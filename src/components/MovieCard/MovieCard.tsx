@@ -38,8 +38,8 @@ export function MovieCard({ movie, priority = false }: MovieCardProps) {
 
   return (
     <article
-      className='relative shrink-0 animate-[card-in_300ms_ease-out]'
-      style={{ width: POSTER_W, height: POSTER_H }}
+      className='relative w-full shrink-0 animate-[card-in_300ms_ease-out] sm:w-27.5'
+      style={{ aspectRatio: `${POSTER_W} / ${POSTER_H}` }}
     >
       <button
         ref={triggerRef}
