@@ -15,11 +15,13 @@ vi.mock('@/src/components/InfiniteMovieGrid/InfiniteMovieGrid', () => ({
     initialMovies,
     initialPage,
     category,
+    genre,
     locale,
   }: {
     initialMovies: unknown[];
     initialPage: number;
     category: string;
+    genre?: string;
     locale: string;
   }) => (
     <div
@@ -27,6 +29,7 @@ vi.mock('@/src/components/InfiniteMovieGrid/InfiniteMovieGrid', () => ({
       data-page={initialPage}
       data-count={initialMovies.length}
       data-category={category}
+      data-genre={genre}
       data-locale={locale}
     />
   ),
@@ -46,12 +49,40 @@ describe('CategoryMovies', () => {
     render(await CategoryMovies({ category: 'top_rated', locale: 'en' }));
 
     const grid = screen.getByTestId('infinite-grid');
-    expect(fetchMovies).toHaveBeenCalledWith('top_rated', 1, 'en');
-    expect(fetchMovies).toHaveBeenCalledWith('top_rated', 2, 'en');
-    expect(fetchMovies).toHaveBeenCalledWith('top_rated', 3, 'en');
+    expect(fetchMovies).toHaveBeenCalledWith('top_rated', 1, 'en', undefined);
+    expect(fetchMovies).toHaveBeenCalledWith('top_rated', 2, 'en', undefined);
+    expect(fetchMovies).toHaveBeenCalledWith('top_rated', 3, 'en', undefined);
     expect(grid).toHaveAttribute('data-page', '3');
     expect(grid).toHaveAttribute('data-count', '4');
     expect(grid).toHaveAttribute('data-category', 'top_rated');
     expect(grid).toHaveAttribute('data-locale', 'en');
+  });
+
+  it('fetches and forwards the selected genre', async () => {
+    vi.mocked(fetchMovies).mockResolvedValue([createMovie({ id: 1 })]);
+
+    render(await CategoryMovies({ category: 'popular', genre: 'horror', locale: 'en' }));
+
+    expect(fetchMovies).toHaveBeenCalledWith('popular', 1, 'en', 'horror');
+    expect(screen.getByTestId('infinite-grid')).toHaveAttribute('data-genre', 'horror');
+  });
+
+  it('drops movies repeated across the initial pages', async () => {
+    vi.mocked(fetchMovies).mockImplementation(async (_category, page) =>
+      page === 1 ? [createMovie({ id: 1 }), createMovie({ id: 2 })] : [createMovie({ id: 2 }), createMovie({ id: 3 })],
+    );
+
+    render(await CategoryMovies({ category: 'popular', genre: 'horror', locale: 'en' }));
+
+    expect(screen.getByTestId('infinite-grid')).toHaveAttribute('data-count', '3');
+  });
+
+  it('shows an empty state when the category has no movies for the genre', async () => {
+    vi.mocked(fetchMovies).mockResolvedValue([]);
+
+    render(await CategoryMovies({ category: 'now_playing', genre: 'romance', locale: 'es' }));
+
+    expect(screen.getByText('No hay películas para este género.')).toBeInTheDocument();
+    expect(screen.queryByTestId('infinite-grid')).not.toBeInTheDocument();
   });
 });

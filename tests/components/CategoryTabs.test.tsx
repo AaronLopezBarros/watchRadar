@@ -28,4 +28,11 @@ describe('CategoryTabs', () => {
     expect(inactive).not.toHaveAttribute('aria-current');
     expect(inactive).toHaveAttribute('href', '/');
   });
+
+  it('keeps the active genre when switching category', () => {
+    render(<CategoryTabs active='popular' genre='horror' locale='en' />);
+
+    expect(screen.getByRole('link', { name: 'Popular' })).toHaveAttribute('href', '/?genre=horror');
+    expect(screen.getByRole('link', { name: 'Top' })).toHaveAttribute('href', '/?category=top_rated&genre=horror');
+  });
 });
