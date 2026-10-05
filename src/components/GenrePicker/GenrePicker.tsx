@@ -9,7 +9,6 @@ import { buildHomeHref, cn } from '@/lib/utils';
 import { useTranslations } from '@/src/components/LocaleProvider';
 import { useSearch } from '@/src/components/SearchBar/SearchProvider';
 
-// Only the mobile bottom sheet locks the page; the desktop popover leaves scrolling alone.
 const SCROLL_LOCK_CLASS_NAME = 'max-sm:overflow-hidden';
 
 const CHIP_CLASS_NAME =
@@ -124,7 +123,6 @@ export function GenrePicker({ category, genre }: GenrePickerProps) {
             className='fixed inset-0 z-40 animate-[fade-in_300ms_ease-out] bg-black/50 sm:animate-none sm:bg-transparent'
             onClick={handleClose}
           />
-          {/* Bottom sheet on mobile, popover anchored to the chip from sm up. */}
           <div
             role='dialog'
             aria-modal='true'
