@@ -91,7 +91,7 @@ describe('GenrePicker', () => {
     render(<Harness />);
 
     await user.click(screen.getByRole('button', { name: 'Géneros' }));
-    await user.click(screen.getByTestId('genre-picker-backdrop'));
+    await user.click(screen.getByTestId('bottom-sheet-backdrop'));
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });

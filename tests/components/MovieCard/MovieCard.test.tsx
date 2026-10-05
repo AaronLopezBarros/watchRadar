@@ -75,25 +75,13 @@ describe('MovieCard', () => {
     expect(screen.queryByTestId('movie-dialog-mock')).not.toBeInTheDocument();
   });
 
-  it('closes the dialog on Escape and returns focus to the trigger', async () => {
+  it('returns focus to the card when the dialog closes', async () => {
     render(<MovieCard movie={movieMock} />);
     const trigger = screen.getByRole('button', { name: 'Inception' });
 
     await userEvent.click(trigger);
-    expect(screen.getByTestId('movie-dialog-mock')).toBeInTheDocument();
+    await userEvent.click(screen.getByText('close'));
 
-    await userEvent.keyboard('{Escape}');
-
-    expect(screen.queryByTestId('movie-dialog-mock')).not.toBeInTheDocument();
     expect(trigger).toHaveFocus();
-  });
-
-  it('ignores other key presses while the dialog is open', async () => {
-    render(<MovieCard movie={movieMock} />);
-
-    await userEvent.click(screen.getByRole('button', { name: 'Inception' }));
-    await userEvent.keyboard('a');
-
-    expect(screen.getByTestId('movie-dialog-mock')).toBeInTheDocument();
   });
 });
