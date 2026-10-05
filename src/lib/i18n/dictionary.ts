@@ -1,4 +1,4 @@
-import type { MovieCategory } from '@/lib/api/tmdb/types';
+import type { MovieCategory, MovieGenre } from '@/lib/api/tmdb/types';
 import type { Locale } from '@/lib/i18n/locale';
 
 export type Dictionary = {
@@ -6,6 +6,13 @@ export type Dictionary = {
     tagline: string;
   };
   category: Record<MovieCategory, string>;
+  genre: Record<MovieGenre, string>;
+  genrePicker: {
+    title: string;
+    all: string;
+    clearAriaLabel: string;
+    noResults: string;
+  };
   search: {
     openAriaLabel: string;
     placeholder: string;
@@ -47,6 +54,25 @@ const translations: Record<Locale, Dictionary> = {
       upcoming: 'Upcoming',
       now_playing: 'Playing',
     },
+    genre: {
+      action: 'Action',
+      adventure: 'Adventure',
+      animation: 'Animation',
+      comedy: 'Comedy',
+      crime: 'Crime',
+      drama: 'Drama',
+      fantasy: 'Fantasy',
+      horror: 'Horror',
+      romance: 'Romance',
+      science_fiction: 'Science Fiction',
+      thriller: 'Thriller',
+    },
+    genrePicker: {
+      title: 'Genres',
+      all: 'All',
+      clearAriaLabel: 'Remove genre filter',
+      noResults: 'No movies found for this genre.',
+    },
     search: {
       openAriaLabel: 'Search movies',
       placeholder: 'Search movies…',
@@ -85,6 +111,25 @@ const translations: Record<Locale, Dictionary> = {
       top_rated: 'Favoritas',
       upcoming: 'Estrenos',
       now_playing: 'Cartelera',
+    },
+    genre: {
+      action: 'Acción',
+      adventure: 'Aventura',
+      animation: 'Animación',
+      comedy: 'Comedia',
+      crime: 'Crimen',
+      drama: 'Drama',
+      fantasy: 'Fantasía',
+      horror: 'Terror',
+      romance: 'Romance',
+      science_fiction: 'Ciencia ficción',
+      thriller: 'Suspense',
+    },
+    genrePicker: {
+      title: 'Géneros',
+      all: 'Todos',
+      clearAriaLabel: 'Quitar filtro de género',
+      noResults: 'No hay películas para este género.',
     },
     search: {
       openAriaLabel: 'Buscar películas',
