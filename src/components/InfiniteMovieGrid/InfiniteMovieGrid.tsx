@@ -3,7 +3,7 @@
 import { useCallback } from 'react';
 
 import { fetchMovies } from '@/lib/api/tmdb/actions';
-import type { Movie, MovieCategory, MovieGenre } from '@/lib/api/tmdb/types';
+import type { Movie, MovieCategory, MovieFilters } from '@/lib/api/tmdb/types';
 import type { Locale } from '@/lib/i18n/locale';
 import { MovieGrid } from '@/src/components/MovieGrid/MovieGrid';
 import { usePaginatedMovies } from '@/src/lib/hooks/usePaginatedMovies';
@@ -12,14 +12,14 @@ type InfiniteMovieGridProps = {
   initialMovies: Movie[];
   initialPage: number;
   category: MovieCategory;
-  genre?: MovieGenre;
+  filters?: MovieFilters;
   locale: Locale;
 };
 
-export function InfiniteMovieGrid({ initialMovies, initialPage, category, genre, locale }: InfiniteMovieGridProps) {
+export function InfiniteMovieGrid({ initialMovies, initialPage, category, filters, locale }: InfiniteMovieGridProps) {
   const fetchPage = useCallback(
-    (page: number) => fetchMovies(category, page, locale, genre),
-    [category, locale, genre],
+    (page: number) => fetchMovies(category, page, locale, filters),
+    [category, locale, filters],
   );
   const { movies, isLoading, loadNextPage } = usePaginatedMovies({ initialMovies, initialPage, fetchPage });
 
