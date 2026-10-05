@@ -6,9 +6,16 @@ import { SearchBar } from '@/src/components/SearchBar/SearchBar';
 
 const setDebouncedQuery = vi.fn();
 
-vi.mock('@/src/components/SearchBar/SearchProvider', () => ({
-  useSearch: () => ({ debouncedQuery: '', setDebouncedQuery }),
-}));
+vi.mock('@/src/components/SearchBar/SearchProvider', async () => {
+  const { useState } = await import('react');
+
+  return {
+    useSearch: () => {
+      const [isSearchOpen, setIsSearchOpen] = useState(false);
+      return { debouncedQuery: '', setDebouncedQuery, isSearchOpen, setIsSearchOpen };
+    },
+  };
+});
 
 describe('SearchBar', () => {
   let user: ReturnType<typeof userEvent.setup>;
