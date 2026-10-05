@@ -1,9 +1,9 @@
 'use server';
 
 import { tmdbClient } from '@/lib/api/tmdb/client';
-import { TMDB_GENRE_ID, TMDB_LANGUAGE } from '@/lib/api/tmdb/constants';
-import { getDiscoverParams } from '@/lib/api/tmdb/discover';
-import type { Movie, MovieCategory, MovieGenre, MoviesResponse, WatchProvidersResponse } from '@/lib/api/tmdb/types';
+import { TMDB_LANGUAGE } from '@/lib/api/tmdb/constants';
+import { getDiscoverParams, hasFilters } from '@/lib/api/tmdb/discover';
+import type { Movie, MovieCategory, MovieFilters, MoviesResponse, WatchProvidersResponse } from '@/lib/api/tmdb/types';
 import type { Locale } from '@/lib/i18n/locale';
 
 export const fetchMovieWatchProviders = async (movieId: number): Promise<WatchProvidersResponse> =>
@@ -13,18 +13,13 @@ export const fetchMovies = async (
   category: MovieCategory,
   page: number,
   locale: Locale,
-  genre?: MovieGenre,
+  filters: MovieFilters = {},
 ): Promise<Movie[]> => {
   const params = { page, language: TMDB_LANGUAGE[locale] };
 
-  const data = genre
+  const data = hasFilters(filters)
     ? await tmdbClient<MoviesResponse>('/discover/movie', {
-        params: {
-          ...params,
-          ...getDiscoverParams(category, new Date()),
-          with_genres: TMDB_GENRE_ID[genre],
-          include_adult: false,
-        },
+        params: { ...params, ...getDiscoverParams(category, filters, new Date()), include_adult: false },
       })
     : await tmdbClient<MoviesResponse>(`/movie/${category}`, { params });
   return data.results;

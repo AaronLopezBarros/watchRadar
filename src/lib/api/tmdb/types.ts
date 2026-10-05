@@ -13,6 +13,11 @@ export type MovieGenre =
   | 'science_fiction'
   | 'thriller';
 
+export type MovieFilters = {
+  genre?: MovieGenre;
+  streaming?: boolean;
+};
+
 export type Movie = {
   adult: boolean;
   backdrop_path: string | null;

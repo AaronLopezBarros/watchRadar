@@ -33,6 +33,12 @@ export const TMDB_GENRE_ID: Record<MovieGenre, number> = {
   thriller: 53,
 };
 
+// Cinema-based lists barely overlap with what's already on streaming, and TMDB counts regional re-releases
+// as theatrical, so combining them returns odd results (old blockbusters under "now playing").
+export const STREAMING_CATEGORIES: MovieCategory[] = ['popular', 'top_rated'];
+
+export const TMDB_WATCH_REGION = 'ES';
+
 export const TMDB_LANGUAGE: Record<Locale, string> = {
   en: 'en-US',
   es: 'es-ES',

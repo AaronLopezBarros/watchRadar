@@ -7,9 +7,12 @@ export type Dictionary = {
   };
   category: Record<MovieCategory, string>;
   genre: Record<MovieGenre, string>;
-  genrePicker: {
+  filters: {
     title: string;
-    all: string;
+    genres: string;
+    allGenres: string;
+    streaming: string;
+    streamingOnly: string;
     clearAriaLabel: string;
     noResults: string;
   };
@@ -67,11 +70,14 @@ const translations: Record<Locale, Dictionary> = {
       science_fiction: 'Science Fiction',
       thriller: 'Thriller',
     },
-    genrePicker: {
-      title: 'Genres',
-      all: 'All',
-      clearAriaLabel: 'Remove genre filter',
-      noResults: 'No movies found for this genre.',
+    filters: {
+      title: 'Filters',
+      genres: 'Genres',
+      allGenres: 'All',
+      streaming: 'Streaming',
+      streamingOnly: 'Streaming only',
+      clearAriaLabel: 'Clear filters',
+      noResults: 'No movies match these filters.',
     },
     search: {
       openAriaLabel: 'Search movies',
@@ -125,11 +131,14 @@ const translations: Record<Locale, Dictionary> = {
       science_fiction: 'Ciencia ficción',
       thriller: 'Suspense',
     },
-    genrePicker: {
-      title: 'Géneros',
-      all: 'Todos',
-      clearAriaLabel: 'Quitar filtro de género',
-      noResults: 'No hay películas para este género.',
+    filters: {
+      title: 'Filtros',
+      genres: 'Géneros',
+      allGenres: 'Todos',
+      streaming: 'Streaming',
+      streamingOnly: 'Solo en streaming',
+      clearAriaLabel: 'Quitar filtros',
+      noResults: 'No hay películas con estos filtros.',
     },
     search: {
       openAriaLabel: 'Buscar películas',

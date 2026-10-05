@@ -1,6 +1,7 @@
-import type { MovieCategory } from '@/lib/api/tmdb/types';
+import { TMDB_GENRE_ID, TMDB_WATCH_REGION } from '@/lib/api/tmdb/constants';
+import type { MovieCategory, MovieFilters } from '@/lib/api/tmdb/types';
 
-type DiscoverParams = Record<string, string | number>;
+type DiscoverParams = Record<string, string | number | undefined>;
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const RELEASE_WINDOW_DAYS = 42;
@@ -13,9 +14,8 @@ const toDateParam = (date: Date) => date.toISOString().slice(0, 10);
 
 const addDays = (date: Date, days: number) => new Date(date.getTime() + days * DAY_MS);
 
-// /movie/{category} ignores with_genres, so a genre-filtered category is rebuilt as an equivalent
-// /discover/movie query. Discover already sorts by popularity.desc by default.
-export const getDiscoverParams = (category: MovieCategory, today: Date): DiscoverParams => {
+// Discover already sorts by popularity.desc by default.
+const getCategoryParams = (category: MovieCategory, today: Date): DiscoverParams => {
   switch (category) {
     case 'popular':
       return {};
@@ -35,3 +35,13 @@ export const getDiscoverParams = (category: MovieCategory, today: Date): Discove
       };
   }
 };
+
+export const hasFilters = ({ genre, streaming }: MovieFilters) => Boolean(genre || streaming);
+
+// /movie/{category} ignores with_genres and the watch filters, so a filtered category is rebuilt as an
+// equivalent /discover/movie query. TMDB ignores the monetization filter unless watch_region is set.
+export const getDiscoverParams = (category: MovieCategory, filters: MovieFilters, today: Date): DiscoverParams => ({
+  ...getCategoryParams(category, today),
+  with_genres: filters.genre && TMDB_GENRE_ID[filters.genre],
+  ...(filters.streaming && { watch_region: TMDB_WATCH_REGION, with_watch_monetization_types: 'flatrate' }),
+});
