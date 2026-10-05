@@ -29,10 +29,22 @@ describe('CategoryTabs', () => {
     expect(inactive).toHaveAttribute('href', '/');
   });
 
-  it('keeps the active genre when switching category', () => {
-    render(<CategoryTabs active='popular' genre='horror' locale='en' />);
+  it('keeps the active filters when switching category', () => {
+    render(<CategoryTabs active='popular' filters={{ genre: 'horror', streaming: true }} locale='en' />);
 
-    expect(screen.getByRole('link', { name: 'Popular' })).toHaveAttribute('href', '/?genre=horror');
-    expect(screen.getByRole('link', { name: 'Top' })).toHaveAttribute('href', '/?category=top_rated&genre=horror');
+    expect(screen.getByRole('link', { name: 'Popular' })).toHaveAttribute('href', '/?genre=horror&streaming=1');
+    expect(screen.getByRole('link', { name: 'Top' })).toHaveAttribute(
+      'href',
+      '/?category=top_rated&genre=horror&streaming=1',
+    );
+  });
+
+  it('drops streaming on the cinema tabs, where it does not apply', () => {
+    render(<CategoryTabs active='popular' filters={{ genre: 'horror', streaming: true }} locale='en' />);
+
+    expect(screen.getByRole('link', { name: 'Playing' })).toHaveAttribute(
+      'href',
+      '/?category=now_playing&genre=horror',
+    );
   });
 });
