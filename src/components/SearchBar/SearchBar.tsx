@@ -34,9 +34,8 @@ function CloseIcon() {
 }
 
 export function SearchBar() {
-  const [isOpen, setIsOpen] = useState(false);
   const [text, setText] = useState('');
-  const { setDebouncedQuery } = useSearch();
+  const { setDebouncedQuery, isSearchOpen: isOpen, setIsSearchOpen: setIsOpen } = useSearch();
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const refocusTriggerRef = useRef(false);
@@ -63,7 +62,7 @@ export function SearchBar() {
     setIsOpen(false);
     setText('');
     setDebouncedQuery('');
-  }, [setDebouncedQuery]);
+  }, [setDebouncedQuery, setIsOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
