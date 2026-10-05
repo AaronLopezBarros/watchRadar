@@ -70,7 +70,25 @@ describe('InfiniteMovieGrid', () => {
     act(() => triggerIntersection(true));
 
     await waitFor(() => expect(screen.getAllByTestId('movie-card')).toHaveLength(2));
-    expect(fetchMovies).toHaveBeenCalledWith('top_rated', 2, 'en');
+    expect(fetchMovies).toHaveBeenCalledWith('top_rated', 2, 'en', undefined);
+  });
+
+  it('keeps the genre filter when loading more movies', async () => {
+    vi.mocked(fetchMovies).mockResolvedValue([createMovie({ id: 2, title: 'Film B' })]);
+
+    render(
+      <InfiniteMovieGrid
+        initialPage={1}
+        initialMovies={[createMovie({ id: 1, title: 'Film A' })]}
+        category='upcoming'
+        genre='horror'
+        locale='es'
+      />,
+    );
+    act(() => triggerIntersection(true));
+
+    await waitFor(() => expect(screen.getAllByTestId('movie-card')).toHaveLength(2));
+    expect(fetchMovies).toHaveBeenCalledWith('upcoming', 2, 'es', 'horror');
   });
 
   it('ignores a second loadMore call while the first one is still in flight', async () => {
