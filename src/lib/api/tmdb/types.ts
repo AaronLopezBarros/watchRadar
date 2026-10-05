@@ -1,5 +1,23 @@
 export type MovieCategory = 'popular' | 'top_rated' | 'upcoming' | 'now_playing';
 
+export type MovieGenre =
+  | 'action'
+  | 'adventure'
+  | 'animation'
+  | 'comedy'
+  | 'crime'
+  | 'drama'
+  | 'fantasy'
+  | 'horror'
+  | 'romance'
+  | 'science_fiction'
+  | 'thriller';
+
+export type MovieFilters = {
+  genre?: MovieGenre;
+  streaming?: boolean;
+};
+
 export type Movie = {
   adult: boolean;
   backdrop_path: string | null;

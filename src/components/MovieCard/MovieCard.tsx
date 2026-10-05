@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { POSTER_H, POSTER_W } from '@/src/components/MovieCard/constants';
 import { useWatchProviders } from '@/src/components/MovieCard/hooks/useWatchProviders';
@@ -23,18 +23,10 @@ export function MovieCard({ movie, priority = false }: MovieCardProps) {
     setIsOpen(true);
   };
 
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape') return;
-      setIsOpen(false);
-      triggerRef.current?.focus();
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen]);
+  const handleClose = () => {
+    setIsOpen(false);
+    triggerRef.current?.focus();
+  };
 
   return (
     <article
@@ -57,7 +49,7 @@ export function MovieCard({ movie, priority = false }: MovieCardProps) {
           movie={movie}
           providers={providers}
           isLoadingProviders={isLoadingProviders}
-          onClose={() => setIsOpen(false)}
+          onClose={handleClose}
         />
       )}
     </article>

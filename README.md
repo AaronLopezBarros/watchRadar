@@ -1,6 +1,6 @@
 # WatchRadar
 
-A Next.js (App Router) app for discovering movies using the TMDB API: category browsing, infinite scroll, search, per-title streaming provider availability, and multi-language support (English/Spanish).
+A Next.js (App Router) app for discovering movies using the TMDB API: category browsing with genre and streaming filters, infinite scroll, search, per-title streaming provider availability, and multi-language support (English/Spanish).
 
 ## Requirements
 
@@ -55,7 +55,7 @@ pnpm vitest run tests/lib/utils/getPosterUrl.test.ts
 | Folder | Contains |
 | --- | --- |
 | `src/app/` | Routes, root layout and metadata. |
-| `src/components/` | UI, grouped by feature: category tabs/grid, movie card/dialog, infinite scroll grid, search, language selector, header. |
+| `src/components/` | UI, grouped by feature: category tabs/grid, filter picker, shared bottom sheet, movie card/dialog, infinite scroll grid, search, language selector, header. |
 | `src/lib/api/tmdb/` | TMDB API client, server actions and types. |
 | `src/lib/i18n/` | Locale detection/switching (cookie-based) and the translation dictionary. |
 | `src/lib/hooks/` | Shared client hooks. |

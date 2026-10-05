@@ -1,4 +1,4 @@
-import type { MovieCategory } from '@/lib/api/tmdb/types';
+import type { MovieCategory, MovieGenre } from '@/lib/api/tmdb/types';
 import type { Locale } from '@/lib/i18n/locale';
 
 export type Dictionary = {
@@ -6,6 +6,16 @@ export type Dictionary = {
     tagline: string;
   };
   category: Record<MovieCategory, string>;
+  genre: Record<MovieGenre, string>;
+  filters: {
+    title: string;
+    genres: string;
+    allGenres: string;
+    streaming: string;
+    streamingOnly: string;
+    clearAriaLabel: string;
+    noResults: string;
+  };
   search: {
     openAriaLabel: string;
     placeholder: string;
@@ -47,6 +57,28 @@ const translations: Record<Locale, Dictionary> = {
       upcoming: 'Upcoming',
       now_playing: 'Playing',
     },
+    genre: {
+      action: 'Action',
+      adventure: 'Adventure',
+      animation: 'Animation',
+      comedy: 'Comedy',
+      crime: 'Crime',
+      drama: 'Drama',
+      fantasy: 'Fantasy',
+      horror: 'Horror',
+      romance: 'Romance',
+      science_fiction: 'Science Fiction',
+      thriller: 'Thriller',
+    },
+    filters: {
+      title: 'Filters',
+      genres: 'Genres',
+      allGenres: 'All',
+      streaming: 'Streaming',
+      streamingOnly: 'Streaming only',
+      clearAriaLabel: 'Clear filters',
+      noResults: 'No movies match these filters.',
+    },
     search: {
       openAriaLabel: 'Search movies',
       placeholder: 'Search movies…',
@@ -85,6 +117,28 @@ const translations: Record<Locale, Dictionary> = {
       top_rated: 'Favoritas',
       upcoming: 'Estrenos',
       now_playing: 'Cartelera',
+    },
+    genre: {
+      action: 'Acción',
+      adventure: 'Aventura',
+      animation: 'Animación',
+      comedy: 'Comedia',
+      crime: 'Crimen',
+      drama: 'Drama',
+      fantasy: 'Fantasía',
+      horror: 'Terror',
+      romance: 'Romance',
+      science_fiction: 'Ciencia ficción',
+      thriller: 'Suspense',
+    },
+    filters: {
+      title: 'Filtros',
+      genres: 'Géneros',
+      allGenres: 'Todos',
+      streaming: 'Streaming',
+      streamingOnly: 'Solo en streaming',
+      clearAriaLabel: 'Quitar filtros',
+      noResults: 'No hay películas con estos filtros.',
     },
     search: {
       openAriaLabel: 'Buscar películas',

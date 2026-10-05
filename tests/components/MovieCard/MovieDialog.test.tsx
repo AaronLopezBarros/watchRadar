@@ -1,5 +1,4 @@
 import { cleanup, render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { MovieDialog } from '@/src/components/MovieCard/MovieDialog';
@@ -31,15 +30,6 @@ describe('MovieDialog', () => {
     expect(screen.queryByText(/^\d{4}$/)).not.toBeInTheDocument();
   });
 
-  it('calls onClose when the backdrop is clicked', async () => {
-    const onClose = vi.fn();
-    render(<MovieDialog movie={createMovie()} providers={[]} isLoadingProviders={false} onClose={onClose} />);
-
-    await userEvent.click(screen.getByTestId('movie-dialog-backdrop'));
-
-    expect(onClose).toHaveBeenCalledOnce();
-  });
-
   it('shows provider logos', () => {
     const providers = [createProvider({ provider_name: 'Netflix' })];
     render(
@@ -55,54 +45,16 @@ describe('MovieDialog', () => {
     expect(screen.getAllByTestId('provider-skeleton')).toHaveLength(3);
   });
 
-  it('does not call onClose when clicking inside the sheet', async () => {
-    const onClose = vi.fn();
-    const movie = createMovie({ title: 'Inception' });
-    render(<MovieDialog movie={movie} providers={[]} isLoadingProviders={false} onClose={onClose} />);
+  it('labels the dialog with the movie title', () => {
+    render(
+      <MovieDialog
+        movie={createMovie({ title: 'Inception' })}
+        providers={[]}
+        isLoadingProviders={false}
+        onClose={() => {}}
+      />,
+    );
 
-    await userEvent.click(screen.getByText('Inception'));
-
-    expect(onClose).not.toHaveBeenCalled();
-  });
-
-  it('calls onClose when the drag handle is swiped down past the threshold', async () => {
-    const onClose = vi.fn();
-    render(<MovieDialog movie={createMovie()} providers={[]} isLoadingProviders={false} onClose={onClose} />);
-
-    const handle = screen.getByTestId('movie-dialog-drag-handle');
-    await userEvent.pointer([
-      { target: handle, keys: '[TouchA>]', coords: { clientY: 0 } },
-      { target: handle, coords: { clientY: 150 } },
-      { target: handle, keys: '[/TouchA]' },
-    ]);
-
-    expect(onClose).toHaveBeenCalledOnce();
-  });
-
-  it('does not call onClose when the drag does not pass the threshold', async () => {
-    const onClose = vi.fn();
-    render(<MovieDialog movie={createMovie()} providers={[]} isLoadingProviders={false} onClose={onClose} />);
-
-    const handle = screen.getByTestId('movie-dialog-drag-handle');
-    await userEvent.pointer([
-      { target: handle, keys: '[TouchA>]', coords: { clientY: 0 } },
-      { target: handle, coords: { clientY: 40 } },
-      { target: handle, keys: '[/TouchA]' },
-    ]);
-
-    expect(onClose).not.toHaveBeenCalled();
-  });
-
-  it('ignores pointer move and release when no drag is in progress', async () => {
-    const onClose = vi.fn();
-    render(<MovieDialog movie={createMovie()} providers={[]} isLoadingProviders={false} onClose={onClose} />);
-
-    const handle = screen.getByTestId('movie-dialog-drag-handle');
-    await userEvent.pointer([
-      { target: handle, coords: { clientY: 200 } },
-      { target: handle, keys: '[TouchA>][/TouchA]', coords: { clientY: 200 } },
-    ]);
-
-    expect(onClose).not.toHaveBeenCalled();
+    expect(screen.getByRole('dialog', { name: 'Inception' })).toBeInTheDocument();
   });
 });
