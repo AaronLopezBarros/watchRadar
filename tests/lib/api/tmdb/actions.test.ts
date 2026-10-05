@@ -56,12 +56,12 @@ describe('actions', () => {
       expect(tmdbClient).toHaveBeenCalledWith('/movie/popular', { params: { page: 1, language: 'es-ES' } });
     });
 
-    it('queries /discover/movie with the genre id and the category-equivalent params when a genre is given', async () => {
+    it('queries /discover/movie with the category-equivalent params when a genre is given', async () => {
       vi.useFakeTimers({ now: new Date('2026-10-05T12:00:00Z') });
       const movies = [{ id: 1 }];
       vi.mocked(tmdbClient).mockResolvedValue({ results: movies });
 
-      const result = await fetchMovies('upcoming', 2, 'es', 'horror');
+      const result = await fetchMovies('upcoming', 2, 'es', { genre: 'horror' });
 
       expect(tmdbClient).toHaveBeenCalledWith('/discover/movie', {
         params: {
@@ -75,6 +75,30 @@ describe('actions', () => {
         },
       });
       expect(result).toEqual(movies);
+    });
+
+    it('queries /discover/movie restricted to subscription streaming when streaming is on', async () => {
+      vi.mocked(tmdbClient).mockResolvedValue({ results: [] });
+
+      await fetchMovies('popular', 1, 'es', { streaming: true });
+
+      expect(tmdbClient).toHaveBeenCalledWith('/discover/movie', {
+        params: {
+          page: 1,
+          language: 'es-ES',
+          watch_region: 'ES',
+          with_watch_monetization_types: 'flatrate',
+          include_adult: false,
+        },
+      });
+    });
+
+    it('keeps the category endpoint when no filter is active', async () => {
+      vi.mocked(tmdbClient).mockResolvedValue({ results: [] });
+
+      await fetchMovies('top_rated', 1, 'en', { streaming: false });
+
+      expect(tmdbClient).toHaveBeenCalledWith('/movie/top_rated', { params: { page: 1, language: 'en-US' } });
     });
   });
 
