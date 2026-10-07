@@ -3,10 +3,8 @@
 import { useCallback, useRef, useState } from 'react';
 
 import { fetchMovieWatchProviders } from '@/lib/api/tmdb/actions';
-import { TMDB_WATCH_REGION } from '@/lib/api/tmdb/constants';
+import { getStreamingProviders } from '@/lib/api/tmdb/providers';
 import type { WatchProvider } from '@/lib/api/tmdb/types';
-
-const MAX_PROVIDERS = 6;
 
 type UseWatchProvidersResult = {
   providers: WatchProvider[];
@@ -24,9 +22,7 @@ export const useWatchProviders = (movieId: number): UseWatchProvidersResult => {
     fetched.current = true;
     setIsLoading(true);
     try {
-      const data = await fetchMovieWatchProviders(movieId);
-      const flatrate = data.results?.[TMDB_WATCH_REGION]?.flatrate ?? [];
-      setProviders(flatrate.slice(0, MAX_PROVIDERS));
+      setProviders(getStreamingProviders(await fetchMovieWatchProviders(movieId)));
     } catch {
       setProviders([]);
     } finally {
