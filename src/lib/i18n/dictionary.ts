@@ -28,6 +28,11 @@ export type Dictionary = {
     whereToWatch: string;
     notAvailable: string;
   };
+  movie: {
+    share: string;
+    linkCopied: string;
+    copyFailed: string;
+  };
   language: {
     changeAriaLabel: string;
     groupAriaLabel: string;
@@ -91,6 +96,11 @@ const translations: Record<Locale, Dictionary> = {
       whereToWatch: 'Where to watch',
       notAvailable: 'Not available for streaming',
     },
+    movie: {
+      share: 'Share',
+      linkCopied: 'Link copied',
+      copyFailed: "Couldn't copy the link",
+    },
     language: {
       changeAriaLabel: 'Change language',
       groupAriaLabel: 'Language',
@@ -151,6 +161,11 @@ const translations: Record<Locale, Dictionary> = {
     provider: {
       whereToWatch: 'Dónde ver',
       notAvailable: 'No disponible en streaming',
+    },
+    movie: {
+      share: 'Compartir',
+      linkCopied: 'Enlace copiado',
+      copyFailed: 'No se pudo copiar el enlace',
     },
     language: {
       changeAriaLabel: 'Cambiar idioma',

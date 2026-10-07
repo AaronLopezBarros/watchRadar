@@ -34,6 +34,8 @@ export type Movie = {
   vote_count: number;
 };
 
+export type MovieDetails = Omit<Movie, 'genre_ids'>;
+
 export type MoviesResponse = {
   page: number;
   results: Movie[];
