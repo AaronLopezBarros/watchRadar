@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { fetchMovieWatchProviders, fetchMovies, searchMovies } from '@/lib/api/tmdb/actions';
+import { fetchMovieDetails, fetchMovieWatchProviders, fetchMovies, searchMovies } from '@/lib/api/tmdb/actions';
 import { tmdbClient } from '@/lib/api/tmdb/client';
 
 vi.mock('@/lib/api/tmdb/client');
@@ -23,6 +23,18 @@ describe('actions', () => {
 
       expect(tmdbClient).toHaveBeenCalledWith('/movie/42/watch/providers');
       expect(result).toEqual(response);
+    });
+  });
+
+  describe('fetchMovieDetails', () => {
+    it('calls tmdbClient with the movie endpoint and the locale language', async () => {
+      const movie = { id: 27205, title: 'Origen' };
+      vi.mocked(tmdbClient).mockResolvedValue(movie);
+
+      const result = await fetchMovieDetails(27205, 'es');
+
+      expect(tmdbClient).toHaveBeenCalledWith('/movie/27205', { params: { language: 'es-ES' } });
+      expect(result).toEqual(movie);
     });
   });
 
