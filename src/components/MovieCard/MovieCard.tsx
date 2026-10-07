@@ -7,6 +7,7 @@ import { useWatchProviders } from '@/src/components/MovieCard/hooks/useWatchProv
 import { ImageCard } from '@/src/components/MovieCard/ImageCard';
 import { MovieDialog } from '@/src/components/MovieCard/MovieDialog';
 import type { Movie } from '@/src/lib/api/tmdb/types';
+import { withMovieParam } from '@/src/lib/utils';
 
 type MovieCardProps = {
   movie: Movie;
@@ -18,13 +19,16 @@ export function MovieCard({ movie, priority = false }: MovieCardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { providers, isLoading: isLoadingProviders, fetchProviders } = useWatchProviders(movie.id);
 
+  // Native history keeps the open movie in the URL without a server round trip that would refetch the grid.
   const handleOpen = () => {
     fetchProviders();
     setIsOpen(true);
+    window.history.replaceState(null, '', withMovieParam(window.location.search, movie.id));
   };
 
   const handleClose = () => {
     setIsOpen(false);
+    window.history.replaceState(null, '', withMovieParam(window.location.search));
     triggerRef.current?.focus();
   };
 

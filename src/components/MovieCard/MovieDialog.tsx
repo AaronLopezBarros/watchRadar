@@ -6,11 +6,12 @@ import { BottomSheet } from '@/src/components/BottomSheet/BottomSheet';
 import { POSTER_H, POSTER_W } from '@/src/components/MovieCard/constants';
 import { ProviderSection } from '@/src/components/MovieCard/ProviderSection';
 import { RatingBadge } from '@/src/components/MovieCard/RatingBadge';
+import { ShareButton } from '@/src/components/MovieCard/ShareButton';
 import type { Movie, WatchProvider } from '@/src/lib/api/tmdb/types';
 import { getPosterUrl } from '@/src/lib/utils';
 
 type MovieDialogProps = {
-  movie: Movie;
+  movie: Pick<Movie, 'id' | 'title' | 'release_date' | 'poster_path' | 'vote_average' | 'overview'>;
   providers: WatchProvider[];
   isLoadingProviders: boolean;
   onClose: () => void;
@@ -37,6 +38,9 @@ export function MovieDialog({ movie, providers, isLoadingProviders, onClose }: M
             {year && <p className='mt-1 text-sm text-zinc-500'>{year}</p>}
             <div className='mt-1.5'>
               <RatingBadge rating={movie.vote_average} />
+            </div>
+            <div className='mt-3'>
+              <ShareButton movieId={movie.id} title={movie.title} />
             </div>
           </div>
         </div>
