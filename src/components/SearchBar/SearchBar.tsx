@@ -74,7 +74,7 @@ export function SearchBar() {
   }
 
   return (
-    <div className='flex min-w-0 flex-1 items-center gap-1.5 rounded-full bg-white/10 pr-1 pl-3'>
+    <div className='flex min-w-0 flex-1 items-center gap-1.5 rounded-full bg-white/10 pl-3'>
       <SearchIcon className='h-4 w-4 shrink-0 text-white/40' />
       <input
         type='text'
