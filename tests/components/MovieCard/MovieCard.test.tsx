@@ -1,12 +1,12 @@
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { MovieCard } from '@/src/components/MovieCard/MovieCard';
 import { Movie } from '@/src/lib/api/tmdb/types';
 import { createMovie } from '@/tests/factories/movie.factory';
 
-const movieMock = createMovie({ title: 'Inception' });
+const movieMock = createMovie({ id: 27205, title: 'Inception' });
 
 vi.mock('@/src/components/MovieCard/ImageCard', () => ({
   ImageCard: ({ movie }: { movie: Movie }) => <div>{movie.backdrop_path}</div>,
@@ -29,6 +29,10 @@ vi.mock('@/src/components/MovieCard/MovieDialog', () => ({
 }));
 
 describe('MovieCard', () => {
+  beforeEach(() => {
+    window.history.replaceState(null, '', '/');
+  });
+
   afterEach(() => {
     fetchProviders.mockClear();
     cleanup();
@@ -83,5 +87,24 @@ describe('MovieCard', () => {
     await userEvent.click(screen.getByText('close'));
 
     expect(trigger).toHaveFocus();
+  });
+
+  it('puts the open movie in the URL keeping the category and filters', async () => {
+    window.history.replaceState(null, '', '/?category=top_rated&genre=horror');
+    render(<MovieCard movie={movieMock} />);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Inception' }));
+
+    expect(window.location.search).toBe('?category=top_rated&genre=horror&movie=27205');
+  });
+
+  it('removes the movie from the URL when the dialog closes', async () => {
+    window.history.replaceState(null, '', '/?category=top_rated');
+    render(<MovieCard movie={movieMock} />);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Inception' }));
+    await userEvent.click(screen.getByText('close'));
+
+    expect(window.location.search).toBe('?category=top_rated');
   });
 });
