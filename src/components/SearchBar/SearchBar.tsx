@@ -1,37 +1,13 @@
 'use client';
 
+import { SearchIcon, XIcon } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { cn } from '@/lib/utils';
 import { useTranslations } from '@/src/components/LocaleProvider';
 import { useSearch } from '@/src/components/SearchBar/SearchProvider';
 
 const MIN_QUERY_LENGTH = 2;
 const DEBOUNCE_DELAY_MS = 350;
-
-function SearchIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox='0 0 24 24'
-      fill='none'
-      stroke='currentColor'
-      strokeWidth={2}
-      className={cn('h-4 w-4 shrink-0', className)}
-    >
-      <circle cx='11' cy='11' r='7' />
-      <line x1='21' y1='21' x2='16.65' y2='16.65' />
-    </svg>
-  );
-}
-
-function CloseIcon() {
-  return (
-    <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth={2} className='h-4 w-4'>
-      <line x1='18' y1='6' x2='6' y2='18' />
-      <line x1='6' y1='6' x2='18' y2='18' />
-    </svg>
-  );
-}
 
 export function SearchBar() {
   const [text, setText] = useState('');
@@ -92,14 +68,14 @@ export function SearchBar() {
         aria-label={dict.search.openAriaLabel}
         className='flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full bg-white/5 text-white/60 transition-colors hover:bg-white/10 hover:text-white'
       >
-        <SearchIcon />
+        <SearchIcon className='h-4 w-4 shrink-0' />
       </button>
     );
   }
 
   return (
-    <div className='flex min-w-0 flex-1 items-center gap-1.5 rounded-full bg-white/10 pr-1 pl-3'>
-      <SearchIcon className='text-white/40' />
+    <div className='flex min-w-0 flex-1 items-center gap-1.5 rounded-full bg-white/10 pl-3'>
+      <SearchIcon className='h-4 w-4 shrink-0 text-white/40' />
       <input
         type='text'
         value={text}
@@ -114,7 +90,7 @@ export function SearchBar() {
         aria-label={dict.search.closeAriaLabel}
         className='flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/10 hover:text-white'
       >
-        <CloseIcon />
+        <XIcon className='h-4 w-4' />
       </button>
     </div>
   );

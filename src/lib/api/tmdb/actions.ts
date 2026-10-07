@@ -3,11 +3,21 @@
 import { tmdbClient } from '@/lib/api/tmdb/client';
 import { TMDB_LANGUAGE } from '@/lib/api/tmdb/constants';
 import { getDiscoverParams, hasFilters } from '@/lib/api/tmdb/discover';
-import type { Movie, MovieCategory, MovieFilters, MoviesResponse, WatchProvidersResponse } from '@/lib/api/tmdb/types';
+import type {
+  Movie,
+  MovieCategory,
+  MovieDetails,
+  MovieFilters,
+  MoviesResponse,
+  WatchProvidersResponse,
+} from '@/lib/api/tmdb/types';
 import type { Locale } from '@/lib/i18n/locale';
 
 export const fetchMovieWatchProviders = async (movieId: number): Promise<WatchProvidersResponse> =>
   tmdbClient<WatchProvidersResponse>(`/movie/${movieId}/watch/providers`);
+
+export const fetchMovieDetails = async (movieId: number, locale: Locale): Promise<MovieDetails> =>
+  tmdbClient<MovieDetails>(`/movie/${movieId}`, { params: { language: TMDB_LANGUAGE[locale] } });
 
 export const fetchMovies = async (
   category: MovieCategory,

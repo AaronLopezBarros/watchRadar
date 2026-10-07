@@ -57,4 +57,10 @@ describe('MovieDialog', () => {
 
     expect(screen.getByRole('dialog', { name: 'Inception' })).toBeInTheDocument();
   });
+
+  it('offers to share the movie', () => {
+    render(<MovieDialog movie={createMovie()} providers={[]} isLoadingProviders={false} onClose={() => {}} />);
+
+    expect(screen.getByRole('button', { name: 'Share' })).toBeInTheDocument();
+  });
 });

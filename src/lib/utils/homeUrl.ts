@@ -12,12 +12,17 @@ export type HomeSearchParams = {
   category?: string;
   genre?: string;
   streaming?: string;
+  movie?: string;
 };
 
 const isMovieCategory = (value: string | undefined): value is MovieCategory =>
   MOVIE_CATEGORIES.some(category => category === value);
 
 const isMovieGenre = (value: string | undefined): value is MovieGenre => MOVIE_GENRES.some(genre => genre === value);
+
+// The id ends up in a TMDB path (`/movie/{id}`) sent with our token, so anything but a plain id must not get through.
+const parseMovieId = (value: string | undefined): number | undefined =>
+  value && /^[1-9]\d*$/.test(value) ? Number(value) : undefined;
 
 export const buildHomeHref = ({ category, genre, streaming }: HomeHrefOptions): string => {
   const searchParams = new URLSearchParams();
@@ -29,7 +34,21 @@ export const buildHomeHref = ({ category, genre, streaming }: HomeHrefOptions): 
   return searchParams.size ? `/?${searchParams.toString()}` : '/';
 };
 
-export const parseHomeSearchParams = (params: HomeSearchParams): { category: MovieCategory; filters: MovieFilters } => {
+export const withMovieParam = (search: string, movieId?: number): string => {
+  const searchParams = new URLSearchParams(search);
+
+  if (movieId) {
+    searchParams.set('movie', String(movieId));
+  } else {
+    searchParams.delete('movie');
+  }
+
+  return searchParams.size ? `/?${searchParams.toString()}` : '/';
+};
+
+export const parseHomeSearchParams = (
+  params: HomeSearchParams,
+): { category: MovieCategory; filters: MovieFilters; movieId?: number } => {
   const category = isMovieCategory(params.category) ? params.category : DEFAULT_CATEGORY;
 
   return {
@@ -38,5 +57,6 @@ export const parseHomeSearchParams = (params: HomeSearchParams): { category: Mov
       genre: isMovieGenre(params.genre) ? params.genre : undefined,
       streaming: params.streaming === STREAMING_ON && STREAMING_CATEGORIES.includes(category),
     },
+    movieId: parseMovieId(params.movie),
   };
 };

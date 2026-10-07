@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildHomeHref, parseHomeSearchParams } from '@/src/lib/utils';
+import { buildHomeHref, parseHomeSearchParams, withMovieParam } from '@/src/lib/utils';
 
 describe('utils: buildHomeHref', () => {
   it('returns the root for popular without filters', () => {
@@ -57,6 +57,14 @@ describe('utils: parseHomeSearchParams', () => {
     expect(parseHomeSearchParams({ category: 'now_playing', streaming: '1' }).filters.streaming).toBe(false);
   });
 
+  it('reads a shared movie id', () => {
+    expect(parseHomeSearchParams({ category: 'top_rated', movie: '27205' }).movieId).toBe(27205);
+  });
+
+  it.each(['abc', '-5', '0', '12.5', '27205abc', '../account'])('ignores the invalid movie id %s', movie => {
+    expect(parseHomeSearchParams({ movie }).movieId).toBeUndefined();
+  });
+
   it('reads back what buildHomeHref writes', () => {
     const href = buildHomeHref({ category: 'top_rated', genre: 'science_fiction', streaming: true });
     const params = Object.fromEntries(new URL(href, 'http://localhost').searchParams);
@@ -65,5 +73,29 @@ describe('utils: parseHomeSearchParams', () => {
       category: 'top_rated',
       filters: { genre: 'science_fiction', streaming: true },
     });
+  });
+});
+
+describe('utils: withMovieParam', () => {
+  it('adds the movie to the root', () => {
+    expect(withMovieParam('', 27205)).toBe('/?movie=27205');
+  });
+
+  it('adds the movie keeping the category and filters', () => {
+    expect(withMovieParam('?category=top_rated&genre=horror', 27205)).toBe(
+      '/?category=top_rated&genre=horror&movie=27205',
+    );
+  });
+
+  it('replaces a previous movie', () => {
+    expect(withMovieParam('?movie=1&genre=horror', 2)).toBe('/?movie=2&genre=horror');
+  });
+
+  it('removes the movie keeping the rest', () => {
+    expect(withMovieParam('?category=top_rated&movie=27205')).toBe('/?category=top_rated');
+  });
+
+  it('returns the root when the movie was the only param', () => {
+    expect(withMovieParam('?movie=27205')).toBe('/');
   });
 });

@@ -1,5 +1,6 @@
 'use client';
 
+import { ChevronDownIcon, XIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 
@@ -11,23 +12,6 @@ import { useTranslations } from '@/src/components/LocaleProvider';
 import { useSearch } from '@/src/components/SearchBar/SearchProvider';
 
 const ALL_GENRES_OPTION = undefined;
-
-function ChevronIcon() {
-  return (
-    <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth={2} className='h-3.5 w-3.5 shrink-0'>
-      <polyline points='6 9 12 15 18 9' />
-    </svg>
-  );
-}
-
-function CloseIcon() {
-  return (
-    <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth={2} className='h-3.5 w-3.5'>
-      <line x1='18' y1='6' x2='6' y2='18' />
-      <line x1='6' y1='6' x2='18' y2='18' />
-    </svg>
-  );
-}
 
 type FilterPickerProps = {
   category: MovieCategory;
@@ -74,7 +58,7 @@ export function FilterPicker({ category, filters }: FilterPickerProps) {
         )}
       >
         <span className='truncate'>{hasActiveFilters ? activeLabels.join(' · ') : dict.filters.title}</span>
-        <ChevronIcon />
+        <ChevronDownIcon className='h-3.5 w-3.5 shrink-0' />
       </button>
       {hasActiveFilters && (
         <Link
@@ -83,7 +67,7 @@ export function FilterPicker({ category, filters }: FilterPickerProps) {
           aria-label={dict.filters.clearAriaLabel}
           className='flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/5 text-white/60 transition-colors hover:bg-white/10 hover:text-white'
         >
-          <CloseIcon />
+          <XIcon className='h-3.5 w-3.5' />
         </Link>
       )}
       {isOpen && (
