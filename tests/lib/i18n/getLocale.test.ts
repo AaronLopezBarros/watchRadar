@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { getLocale } from '@/lib/i18n/getLocale';
+import { getLocale, getMetadataLocale } from '@/lib/i18n/getLocale';
 import { DEFAULT_LOCALE } from '@/lib/i18n/locale';
 
 const getCookieMock = vi.fn();
@@ -45,5 +45,35 @@ describe('getLocale', () => {
     getHeaderMock.mockReturnValue('fr-FR,de;q=0.8');
 
     expect(await getLocale()).toBe(DEFAULT_LOCALE);
+  });
+});
+
+describe('getMetadataLocale', () => {
+  const WHATSAPP_UA = 'WhatsApp/2.23.20.0 A';
+  const BROWSER_UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/141.0 Safari/537.36';
+
+  const mockRequest = ({ userAgent, acceptLanguage }: { userAgent: string; acceptLanguage?: string }) => {
+    getCookieMock.mockReturnValue(undefined);
+    getHeaderMock.mockImplementation((name: string) =>
+      name === 'user-agent' ? userAgent : name === 'accept-language' ? (acceptLanguage ?? null) : null,
+    );
+  };
+
+  it('uses the sharer language for link-preview bots', async () => {
+    mockRequest({ userAgent: WHATSAPP_UA, acceptLanguage: 'en-US' });
+
+    expect(await getMetadataLocale('es')).toBe('es');
+  });
+
+  it("uses the visitor's own language for people opening a shared link", async () => {
+    mockRequest({ userAgent: BROWSER_UA, acceptLanguage: 'en-US' });
+
+    expect(await getMetadataLocale('es')).toBe('en');
+  });
+
+  it('falls back to the usual detection for bots when the link names no language', async () => {
+    mockRequest({ userAgent: WHATSAPP_UA, acceptLanguage: 'es-ES' });
+
+    expect(await getMetadataLocale()).toBe('es');
   });
 });

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildHomeHref, parseHomeSearchParams, withMovieParam } from '@/src/lib/utils';
+import { buildHomeHref, buildShareHref, parseHomeSearchParams, withMovieParam } from '@/src/lib/utils';
 
 describe('utils: buildHomeHref', () => {
   it('returns the root for popular without filters', () => {
@@ -65,6 +65,20 @@ describe('utils: parseHomeSearchParams', () => {
     expect(parseHomeSearchParams({ movie }).movieId).toBeUndefined();
   });
 
+  it('reads the sharer language', () => {
+    expect(parseHomeSearchParams({ movie: '27205', lang: 'es' }).sharedLocale).toBe('es');
+  });
+
+  it.each(['fr', 'ES', ''])('ignores the unsupported sharer language %s', lang => {
+    expect(parseHomeSearchParams({ movie: '27205', lang }).sharedLocale).toBeUndefined();
+  });
+
+  it('reads back what buildShareHref writes', () => {
+    const params = Object.fromEntries(new URL(buildShareHref(27205, 'es'), 'http://localhost').searchParams);
+
+    expect(parseHomeSearchParams(params)).toMatchObject({ movieId: 27205, sharedLocale: 'es' });
+  });
+
   it('reads back what buildHomeHref writes', () => {
     const href = buildHomeHref({ category: 'top_rated', genre: 'science_fiction', streaming: true });
     const params = Object.fromEntries(new URL(href, 'http://localhost').searchParams);
@@ -97,5 +111,15 @@ describe('utils: withMovieParam', () => {
 
   it('returns the root when the movie was the only param', () => {
     expect(withMovieParam('?movie=27205')).toBe('/');
+  });
+
+  it('drops the sharer language along with the movie', () => {
+    expect(withMovieParam('?movie=27205&lang=es')).toBe('/');
+  });
+});
+
+describe('utils: buildShareHref', () => {
+  it('links to just the movie, in the sharer language', () => {
+    expect(buildShareHref(27205, 'es')).toBe('/?movie=27205&lang=es');
   });
 });
