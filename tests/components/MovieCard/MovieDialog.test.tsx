@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { MovieDialog } from '@/src/components/MovieCard/MovieDialog';
@@ -30,13 +30,22 @@ describe('MovieDialog', () => {
     expect(screen.queryByText(/^\d{4}$/)).not.toBeInTheDocument();
   });
 
-  it('lists the movie genres below the year', () => {
+  it('lists the movie genres', () => {
     const movie = createMovie({
       genres: [createGenre({ id: 28, name: 'Acción' }), createGenre({ id: 878, name: 'Ciencia ficción' })],
     });
     render(<MovieDialog movie={movie} providers={[]} isLoadingProviders={false} onClose={() => {}} />);
 
-    expect(screen.getByText('Acción, Ciencia ficción')).toBeInTheDocument();
+    const genres = within(screen.getByRole('list')).getAllByRole('listitem');
+    expect(genres.map(genre => genre.textContent)).toEqual(['Acción', 'Ciencia ficción']);
+  });
+
+  it('shows no genre list when the movie has no genres', () => {
+    render(
+      <MovieDialog movie={createMovie({ genres: [] })} providers={[]} isLoadingProviders={false} onClose={() => {}} />,
+    );
+
+    expect(screen.queryByRole('list')).not.toBeInTheDocument();
   });
 
   it('shows provider logos', () => {
