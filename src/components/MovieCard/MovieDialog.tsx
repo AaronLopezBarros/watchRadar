@@ -4,6 +4,7 @@ import Image from 'next/image';
 
 import { BottomSheet } from '@/src/components/BottomSheet/BottomSheet';
 import { POSTER_H, POSTER_W } from '@/src/components/MovieCard/constants';
+import { GenreBadge } from '@/src/components/MovieCard/GenreBadge';
 import { ProviderSection } from '@/src/components/MovieCard/ProviderSection';
 import { RatingBadge } from '@/src/components/MovieCard/RatingBadge';
 import { ShareButton } from '@/src/components/MovieCard/ShareButton';
@@ -11,7 +12,7 @@ import type { Movie, WatchProvider } from '@/src/lib/api/tmdb/types';
 import { getPosterUrl } from '@/src/lib/utils';
 
 type MovieDialogProps = {
-  movie: Pick<Movie, 'id' | 'title' | 'release_date' | 'poster_path' | 'vote_average' | 'overview'>;
+  movie: Pick<Movie, 'id' | 'title' | 'release_date' | 'poster_path' | 'vote_average' | 'overview' | 'genres'>;
   providers: WatchProvider[];
   isLoadingProviders: boolean;
   onClose: () => void;
@@ -36,6 +37,15 @@ export function MovieDialog({ movie, providers, isLoadingProviders, onClose }: M
           <div className='flex flex-col justify-center'>
             <h2 className='text-base font-semibold text-zinc-900'>{movie.title}</h2>
             {year && <p className='mt-1 text-sm text-zinc-500'>{year}</p>}
+            {movie.genres.length > 0 && (
+              <ul className='mt-1.5 flex flex-wrap gap-1'>
+                {movie.genres.map(genre => (
+                  <li key={genre.id}>
+                    <GenreBadge name={genre.name} />
+                  </li>
+                ))}
+              </ul>
+            )}
             <div className='mt-1.5'>
               <RatingBadge rating={movie.vote_average} />
             </div>

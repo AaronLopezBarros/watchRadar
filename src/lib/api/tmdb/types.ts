@@ -18,7 +18,8 @@ export type MovieFilters = {
   streaming?: boolean;
 };
 
-export type Movie = {
+// Shape of a movie in TMDB list endpoints, which only carry genre ids.
+export type TmdbMovie = {
   adult: boolean;
   backdrop_path: string | null;
   genre_ids: number[];
@@ -34,11 +35,23 @@ export type Movie = {
   vote_count: number;
 };
 
-export type MovieDetails = Omit<Movie, 'genre_ids'>;
+export type Genre = {
+  id: number;
+  name: string;
+};
+
+export type GenresResponse = {
+  genres: Genre[];
+};
+
+// Same shape as TMDB's movie details; list results get their genre names filled in on the server.
+export type Movie = Omit<TmdbMovie, 'genre_ids'> & {
+  genres: Genre[];
+};
 
 export type MoviesResponse = {
   page: number;
-  results: Movie[];
+  results: TmdbMovie[];
   total_pages: number;
   total_results: number;
 };

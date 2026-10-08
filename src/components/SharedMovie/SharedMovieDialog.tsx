@@ -3,11 +3,11 @@
 import { useState } from 'react';
 
 import { MovieDialog } from '@/src/components/MovieCard/MovieDialog';
-import type { MovieDetails, WatchProvider } from '@/src/lib/api/tmdb/types';
+import type { Movie, WatchProvider } from '@/src/lib/api/tmdb/types';
 import { withMovieParam } from '@/src/lib/utils';
 
 type SharedMovieDialogProps = {
-  movie: MovieDetails;
+  movie: Movie;
   providers: WatchProvider[];
 };
 
