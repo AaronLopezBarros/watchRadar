@@ -14,7 +14,7 @@ const movie = createMovie({ id: 27205, title: 'Inception' });
 
 describe('SharedMovieDialog', () => {
   beforeEach(() => {
-    window.history.replaceState(null, '', '/?category=top_rated&movie=27205');
+    window.history.replaceState(null, '', '/?category=top_rated&movie=27205&lang=es');
   });
 
   it('shows the shared movie already open with its providers', () => {
@@ -24,7 +24,7 @@ describe('SharedMovieDialog', () => {
     expect(screen.getByRole('img', { name: 'Netflix' })).toBeInTheDocument();
   });
 
-  it('closes and drops the movie from the URL', async () => {
+  it('closes and drops the movie and the sharer language from the URL', async () => {
     render(<SharedMovieDialog movie={movie} providers={[]} />);
 
     await userEvent.keyboard('{Escape}');

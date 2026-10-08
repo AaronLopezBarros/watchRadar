@@ -34,13 +34,13 @@ describe('ShareButton', () => {
     Reflect.deleteProperty(navigator, 'share');
   });
 
-  it('opens the native share sheet with a link to just the movie on touch devices', async () => {
+  it('opens the native share sheet with a link to just the movie, in the sharer language, on touch devices', async () => {
     const share = mockDevice({ isTouch: true });
     renderShareButton();
 
     await user.click(screen.getByRole('button', { name: 'Compartir' }));
 
-    expect(share).toHaveBeenCalledWith({ title: 'Origen', url: `${window.location.origin}/?movie=27205` });
+    expect(share).toHaveBeenCalledWith({ title: 'Origen', url: `${window.location.origin}/?movie=27205&lang=es` });
     expect(screen.getByRole('status')).toBeEmptyDOMElement();
   });
 
@@ -53,13 +53,13 @@ describe('ShareButton', () => {
     expect(screen.getByRole('status')).toBeEmptyDOMElement();
   });
 
-  it('copies a link to just the movie on desktop even when native sharing exists', async () => {
+  it('copies a link to just the movie, in the sharer language, on desktop even when native sharing exists', async () => {
     const share = mockDevice({ isTouch: false });
     renderShareButton();
 
     await user.click(screen.getByRole('button', { name: 'Compartir' }));
 
-    expect(await navigator.clipboard.readText()).toBe(`${window.location.origin}/?movie=27205`);
+    expect(await navigator.clipboard.readText()).toBe(`${window.location.origin}/?movie=27205&lang=es`);
     expect(screen.getByRole('status')).toHaveTextContent('Enlace copiado');
     expect(share).not.toHaveBeenCalled();
   });
@@ -69,7 +69,7 @@ describe('ShareButton', () => {
 
     await user.click(screen.getByRole('button', { name: 'Compartir' }));
 
-    expect(await navigator.clipboard.readText()).toBe(`${window.location.origin}/?movie=27205`);
+    expect(await navigator.clipboard.readText()).toBe(`${window.location.origin}/?movie=27205&lang=es`);
     expect(screen.getByRole('status')).toHaveTextContent('Enlace copiado');
   });
 
