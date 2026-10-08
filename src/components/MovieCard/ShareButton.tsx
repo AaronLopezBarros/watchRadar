@@ -3,8 +3,8 @@
 import { CheckIcon, ShareIcon, XIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-import { useTranslations } from '@/src/components/LocaleProvider';
-import { cn, withMovieParam } from '@/src/lib/utils';
+import { useLocale, useTranslations } from '@/src/components/LocaleProvider';
+import { buildShareHref, cn } from '@/src/lib/utils';
 
 const FEEDBACK_DURATION_MS = 2000;
 
@@ -24,6 +24,7 @@ type ShareButtonProps = {
 
 export function ShareButton({ movieId, title }: ShareButtonProps) {
   const dict = useTranslations();
+  const locale = useLocale();
   const [feedback, setFeedback] = useState<keyof typeof FEEDBACK_STYLE | null>(null);
 
   useEffect(() => {
@@ -34,8 +35,7 @@ export function ShareButton({ movieId, title }: ShareButtonProps) {
   }, [feedback]);
 
   const handleShare = async () => {
-    // The sender's category and filters stay out: the recipient only cares about the movie.
-    const url = `${window.location.origin}${withMovieParam('', movieId)}`;
+    const url = `${window.location.origin}${buildShareHref(movieId, locale)}`;
 
     if (canUseNativeShare()) {
       try {

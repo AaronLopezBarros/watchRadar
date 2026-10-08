@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 
 import { fetchMovieDetails } from '@/lib/api/tmdb/actions';
-import { getLocale } from '@/lib/i18n/getLocale';
+import { getLocale, getMetadataLocale } from '@/lib/i18n/getLocale';
 import { getPosterUrl, parseHomeSearchParams, type HomeSearchParams } from '@/lib/utils';
 import { CategoryMovies } from '@/src/components/CategoryMovies';
 import { CategoryTabs } from '@/src/components/CategoryTabs';
@@ -14,12 +14,13 @@ type HomeProps = {
   searchParams: Promise<HomeSearchParams>;
 };
 
-// Gives shared movie links a proper preview in chat apps. Next dedupes this TMDB fetch with SharedMovie's.
+// Gives shared movie links a proper preview in chat apps, in the sharer's language. For people the locale matches
+// the page's, so Next dedupes this TMDB fetch with SharedMovie's.
 export async function generateMetadata({ searchParams }: HomeProps): Promise<Metadata> {
-  const { movieId } = parseHomeSearchParams(await searchParams);
+  const { movieId, sharedLocale } = parseHomeSearchParams(await searchParams);
   if (!movieId) return {};
 
-  const movie = await fetchMovieDetails(movieId, await getLocale()).catch(() => null);
+  const movie = await fetchMovieDetails(movieId, await getMetadataLocale(sharedLocale)).catch(() => null);
   if (!movie) return {};
 
   const title = `${movie.title} · WatchRadar`;
