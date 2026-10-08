@@ -11,7 +11,7 @@ import type { Movie, WatchProvider } from '@/src/lib/api/tmdb/types';
 import { getPosterUrl } from '@/src/lib/utils';
 
 type MovieDialogProps = {
-  movie: Pick<Movie, 'id' | 'title' | 'release_date' | 'poster_path' | 'vote_average' | 'overview'>;
+  movie: Pick<Movie, 'id' | 'title' | 'release_date' | 'poster_path' | 'vote_average' | 'overview' | 'genres'>;
   providers: WatchProvider[];
   isLoadingProviders: boolean;
   onClose: () => void;
@@ -36,6 +36,9 @@ export function MovieDialog({ movie, providers, isLoadingProviders, onClose }: M
           <div className='flex flex-col justify-center'>
             <h2 className='text-base font-semibold text-zinc-900'>{movie.title}</h2>
             {year && <p className='mt-1 text-sm text-zinc-500'>{year}</p>}
+            {movie.genres.length > 0 && (
+              <p className='mt-0.5 text-sm text-zinc-500'>{movie.genres.map(genre => genre.name).join(', ')}</p>
+            )}
             <div className='mt-1.5'>
               <RatingBadge rating={movie.vote_average} />
             </div>
