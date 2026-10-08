@@ -1,4 +1,4 @@
-import { Movie, WatchProvider } from '@/src/lib/api/tmdb/types';
+import { Genre, Movie, WatchProvider } from '@/src/lib/api/tmdb/types';
 
 const defaultMovie: Movie = {
   id: 1,
@@ -7,7 +7,7 @@ const defaultMovie: Movie = {
   poster_path: '/test.jpg',
   adult: false,
   backdrop_path: null,
-  genre_ids: [],
+  genres: [],
   original_language: 'en',
   original_title: 'Test Movie',
   overview: '',
@@ -22,6 +22,12 @@ export const createMovie = (overrides: Partial<Movie> = {}): Movie => {
     ...overrides,
   };
 };
+
+export const createGenre = (overrides: Partial<Genre> = {}): Genre => ({
+  id: 28,
+  name: 'Action',
+  ...overrides,
+});
 
 const defaultProvider: WatchProvider = {
   provider_id: 1,

@@ -2,7 +2,7 @@ import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { MovieDialog } from '@/src/components/MovieCard/MovieDialog';
-import { createMovie, createProvider } from '@/tests/factories/movie.factory';
+import { createGenre, createMovie, createProvider } from '@/tests/factories/movie.factory';
 
 vi.mock('next/image', () => ({
   // eslint-disable-next-line @next/next/no-img-element
@@ -30,11 +30,18 @@ describe('MovieDialog', () => {
     expect(screen.queryByText(/^\d{4}$/)).not.toBeInTheDocument();
   });
 
+  it('lists the movie genres below the year', () => {
+    const movie = createMovie({
+      genres: [createGenre({ id: 28, name: 'Acción' }), createGenre({ id: 878, name: 'Ciencia ficción' })],
+    });
+    render(<MovieDialog movie={movie} providers={[]} isLoadingProviders={false} onClose={() => {}} />);
+
+    expect(screen.getByText('Acción, Ciencia ficción')).toBeInTheDocument();
+  });
+
   it('shows provider logos', () => {
     const providers = [createProvider({ provider_name: 'Netflix' })];
-    render(
-      <MovieDialog movie={createMovie()} providers={providers} isLoadingProviders={false} onClose={() => {}} />,
-    );
+    render(<MovieDialog movie={createMovie()} providers={providers} isLoadingProviders={false} onClose={() => {}} />);
 
     expect(screen.getByRole('img', { name: 'Netflix' })).toBeInTheDocument();
   });
