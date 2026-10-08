@@ -4,6 +4,8 @@ import { tmdbClient } from '@/lib/api/tmdb/client';
 import { TMDB_LANGUAGE } from '@/lib/api/tmdb/constants';
 import { getDiscoverParams, hasFilters } from '@/lib/api/tmdb/discover';
 import type {
+  Genre,
+  GenresResponse,
   Movie,
   MovieCategory,
   MovieDetails,
@@ -18,6 +20,15 @@ export const fetchMovieWatchProviders = async (movieId: number): Promise<WatchPr
 
 export const fetchMovieDetails = async (movieId: number, locale: Locale): Promise<MovieDetails> =>
   tmdbClient<MovieDetails>(`/movie/${movieId}`, { params: { language: TMDB_LANGUAGE[locale] } });
+
+// Genre names barely ever change, so one cached request per locale serves every user for a day.
+export const fetchGenres = async (locale: Locale): Promise<Genre[]> => {
+  const data = await tmdbClient<GenresResponse>('/genre/movie/list', {
+    params: { language: TMDB_LANGUAGE[locale] },
+    revalidate: 86400,
+  });
+  return data.genres;
+};
 
 export const fetchMovies = async (
   category: MovieCategory,
