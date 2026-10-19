@@ -72,7 +72,9 @@ describe('CategoryPosters', () => {
 
   it('drops movies repeated across the initial pages', async () => {
     vi.mocked(fetchMedia).mockImplementation(async (_mediaType, _category, page) =>
-      page === 1 ? [createMediaItem({ id: 1 }), createMediaItem({ id: 2 })] : [createMediaItem({ id: 2 }), createMediaItem({ id: 3 })],
+      page === 1
+        ? [createMediaItem({ id: 1 }), createMediaItem({ id: 2 })]
+        : [createMediaItem({ id: 2 }), createMediaItem({ id: 3 })],
     );
 
     render(await CategoryPosters({ category: 'popular', filters: { genre: 'horror' }, locale: 'en' }));

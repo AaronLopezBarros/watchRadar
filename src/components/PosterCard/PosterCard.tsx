@@ -49,12 +49,7 @@ export function PosterCard({ item, priority = false }: PosterCardProps) {
         <ImageCard item={item} priority={priority} />
       </button>
       {isOpen && (
-        <PosterDialog
-          item={item}
-          providers={providers}
-          isLoadingProviders={isLoadingProviders}
-          onClose={handleClose}
-        />
+        <PosterDialog item={item} providers={providers} isLoadingProviders={isLoadingProviders} onClose={handleClose} />
       )}
     </article>
   );

@@ -42,7 +42,12 @@ describe('PosterDialog', () => {
 
   it('shows no genre list when the movie has no genres', () => {
     render(
-      <PosterDialog item={createMediaItem({ genres: [] })} providers={[]} isLoadingProviders={false} onClose={() => {}} />,
+      <PosterDialog
+        item={createMediaItem({ genres: [] })}
+        providers={[]}
+        isLoadingProviders={false}
+        onClose={() => {}}
+      />,
     );
 
     expect(screen.queryByRole('list')).not.toBeInTheDocument();
@@ -50,7 +55,9 @@ describe('PosterDialog', () => {
 
   it('shows provider logos', () => {
     const providers = [createProvider({ provider_name: 'Netflix' })];
-    render(<PosterDialog item={createMediaItem()} providers={providers} isLoadingProviders={false} onClose={() => {}} />);
+    render(
+      <PosterDialog item={createMediaItem()} providers={providers} isLoadingProviders={false} onClose={() => {}} />,
+    );
 
     expect(screen.getByRole('img', { name: 'Netflix' })).toBeInTheDocument();
   });
