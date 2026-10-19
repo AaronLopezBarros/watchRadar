@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { MOVIE_CATEGORIES, MOVIE_GENRES } from '@/lib/api/tmdb/constants';
+import { MEDIA_CONFIG } from '@/lib/api/tmdb/media';
 import { getDictionary } from '@/lib/i18n/dictionary';
 import { SUPPORTED_LOCALES } from '@/lib/i18n/locale';
 
@@ -8,7 +8,7 @@ describe('getDictionary', () => {
   it.each(SUPPORTED_LOCALES)('returns a label for every movie category for locale %s', locale => {
     const dict = getDictionary(locale);
 
-    MOVIE_CATEGORIES.forEach(category => {
+    MEDIA_CONFIG.movie.categories.forEach(category => {
       expect(dict.category[category]).toEqual(expect.any(String));
       expect(dict.category[category].length).toBeGreaterThan(0);
     });
@@ -17,7 +17,7 @@ describe('getDictionary', () => {
   it.each(SUPPORTED_LOCALES)('returns a label for every movie genre for locale %s', locale => {
     const dict = getDictionary(locale);
 
-    MOVIE_GENRES.forEach(genre => {
+    MEDIA_CONFIG.movie.genres.forEach(genre => {
       expect(dict.genre[genre]).toEqual(expect.any(String));
       expect(dict.genre[genre].length).toBeGreaterThan(0);
     });

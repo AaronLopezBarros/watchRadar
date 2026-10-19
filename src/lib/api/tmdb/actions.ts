@@ -3,67 +3,106 @@
 import { tmdbClient } from '@/lib/api/tmdb/client';
 import { TMDB_LANGUAGE } from '@/lib/api/tmdb/constants';
 import { getDiscoverParams, hasFilters } from '@/lib/api/tmdb/discover';
+import { MEDIA_CONFIG, isMediaCategory, isMediaType } from '@/lib/api/tmdb/media';
 import type {
   Genre,
   GenresResponse,
-  Movie,
-  MovieCategory,
-  MovieFilters,
-  MoviesResponse,
-  TmdbMovie,
+  MediaCategory,
+  MediaFilters,
+  MediaItem,
+  MediaType,
+  TmdbItem,
+  TmdbItemDetails,
+  TmdbListResponse,
   WatchProvidersResponse,
 } from '@/lib/api/tmdb/types';
 import type { Locale } from '@/lib/i18n/locale';
 
-export const fetchMovieWatchProviders = async (movieId: number): Promise<WatchProvidersResponse> =>
-  tmdbClient<WatchProvidersResponse>(`/movie/${movieId}/watch/providers`);
+// Every export of a 'use server' file is callable from the client with any arguments, and these end up in a TMDB
+// path sent with our token, so only known values get through.
+const assertMediaType: (value: unknown) => asserts value is MediaType = value => {
+  if (!isMediaType(value)) throw new Error(`Unknown media type: ${String(value)}`);
+};
 
-export const fetchMovieDetails = async (movieId: number, locale: Locale): Promise<Movie> =>
-  tmdbClient<Movie>(`/movie/${movieId}`, { params: { language: TMDB_LANGUAGE[locale] } });
+const assertMediaId = (value: unknown) => {
+  if (!Number.isInteger(value) || (value as number) <= 0) throw new Error(`Invalid media id: ${String(value)}`);
+};
 
-// Genre names barely ever change, so one cached request per locale serves every user for a day.
+export const fetchWatchProviders = async (mediaType: MediaType, id: number): Promise<WatchProvidersResponse> => {
+  assertMediaType(mediaType);
+  assertMediaId(id);
+  return tmdbClient<WatchProvidersResponse>(`/${mediaType}/${id}/watch/providers`);
+};
+
+export const fetchMediaDetails = async <M extends MediaType>(
+  mediaType: M,
+  id: number,
+  locale: Locale,
+): Promise<MediaItem> => {
+  assertMediaType(mediaType);
+  assertMediaId(id);
+  const item = await tmdbClient<TmdbItemDetails<M>>(`/${mediaType}/${id}`, {
+    params: { language: TMDB_LANGUAGE[locale] },
+  });
+  return MEDIA_CONFIG[mediaType].normalize(item, item.genres);
+};
+
+// Genre names barely ever change, so one cached request per media type and locale serves every user for a day.
 // Not exported: every export of a 'use server' file becomes a client-callable action.
-// A failure only costs the genre names, so it shouldn't take the movie list down with it.
-const fetchGenres = async (locale: Locale): Promise<Genre[]> => {
-  const data = await tmdbClient<GenresResponse>('/genre/movie/list', {
+// A failure only costs the genre names, so it shouldn't take the list down with it.
+const fetchGenres = async (mediaType: MediaType, locale: Locale): Promise<Genre[]> => {
+  const data = await tmdbClient<GenresResponse>(`/genre/${mediaType}/list`, {
     params: { language: TMDB_LANGUAGE[locale] },
     revalidate: 86400,
   }).catch(() => ({ genres: [] }));
   return data.genres;
 };
 
-const withGenreNames = (movies: TmdbMovie[], genres: Genre[]): Movie[] =>
-  movies.map(({ genre_ids, ...movie }) => ({
-    ...movie,
-    genres: genre_ids.flatMap(genreId => genres.find(genre => genre.id === genreId) ?? []),
-  }));
+const withGenreNames = <M extends MediaType>(mediaType: M, items: TmdbItem<M>[], genres: Genre[]): MediaItem[] =>
+  items.map(({ genre_ids, ...item }) =>
+    MEDIA_CONFIG[mediaType].normalize(
+      item,
+      genre_ids.flatMap(genreId => genres.find(genre => genre.id === genreId) ?? []),
+    ),
+  );
 
-export const fetchMovies = async (
-  category: MovieCategory,
+export const fetchMedia = async <M extends MediaType>(
+  mediaType: M,
+  category: MediaCategory<M>,
   page: number,
   locale: Locale,
-  filters: MovieFilters = {},
-): Promise<Movie[]> => {
+  filters: MediaFilters<M> = {},
+): Promise<MediaItem[]> => {
+  assertMediaType(mediaType);
+  if (!isMediaCategory(mediaType, category)) throw new Error(`Unknown ${mediaType} category: ${String(category)}`);
+
   const params = { page, language: TMDB_LANGUAGE[locale] };
 
   const [data, genres] = await Promise.all([
     hasFilters(filters)
-      ? tmdbClient<MoviesResponse>('/discover/movie', {
-          params: { ...params, ...getDiscoverParams(category, filters, new Date()), include_adult: false },
+      ? tmdbClient<TmdbListResponse<TmdbItem<M>>>(`/discover/${mediaType}`, {
+          params: { ...params, ...getDiscoverParams(mediaType, category, filters, new Date()), include_adult: false },
         })
-      : tmdbClient<MoviesResponse>(`/movie/${category}`, { params }),
-    fetchGenres(locale),
+      : tmdbClient<TmdbListResponse<TmdbItem<M>>>(`/${mediaType}/${category}`, { params }),
+    fetchGenres(mediaType, locale),
   ]);
-  return withGenreNames(data.results, genres);
+  return withGenreNames(mediaType, data.results, genres);
 };
 
-export const searchMovies = async (query: string, page: number, locale: Locale): Promise<Movie[]> => {
+export const searchMedia = async (
+  mediaType: MediaType,
+  query: string,
+  page: number,
+  locale: Locale,
+): Promise<MediaItem[]> => {
+  assertMediaType(mediaType);
+
   const [data, genres] = await Promise.all([
-    tmdbClient<MoviesResponse>('/search/movie', {
+    tmdbClient<TmdbListResponse<TmdbItem>>(`/search/${mediaType}`, {
       params: { query, page, include_adult: false, language: TMDB_LANGUAGE[locale] },
       revalidate: 60,
     }),
-    fetchGenres(locale),
+    fetchGenres(mediaType, locale),
   ]);
-  return withGenreNames(data.results, genres);
+  return withGenreNames(mediaType, data.results, genres);
 };

@@ -2,10 +2,10 @@
 
 import { useCallback } from 'react';
 
-import { searchMovies } from '@/lib/api/tmdb/actions';
+import { searchMedia } from '@/lib/api/tmdb/actions';
 import { useLocale, useTranslations } from '@/src/components/LocaleProvider';
-import { MovieGrid } from '@/src/components/MovieGrid/MovieGrid';
-import { usePaginatedMovies } from '@/src/lib/hooks/usePaginatedMovies';
+import { PosterGrid } from '@/src/components/PosterGrid/PosterGrid';
+import { usePaginatedMedia } from '@/src/lib/hooks/usePaginatedMedia';
 
 type SearchResultsGridProps = {
   query: string;
@@ -14,15 +14,15 @@ type SearchResultsGridProps = {
 export function SearchResultsGrid({ query }: SearchResultsGridProps) {
   const dict = useTranslations();
   const locale = useLocale();
-  const fetchPage = useCallback((page: number) => searchMovies(query, page, locale), [query, locale]);
-  const { movies, isLoading, error, loadNextPage } = usePaginatedMovies({
-    initialMovies: [],
+  const fetchPage = useCallback((page: number) => searchMedia('movie', query, page, locale), [query, locale]);
+  const { items, isLoading, error, loadNextPage } = usePaginatedMedia({
+    initialItems: [],
     initialPage: 0,
     fetchPage,
     startLoading: true,
   });
 
-  if (error && movies.length === 0) {
+  if (error && items.length === 0) {
     return (
       <div className='flex flex-col items-center gap-3 px-5 py-16 text-center text-white/60'>
         <p>{dict.search.error}</p>
@@ -37,7 +37,7 @@ export function SearchResultsGrid({ query }: SearchResultsGridProps) {
     );
   }
 
-  if (!isLoading && !error && movies.length === 0) {
+  if (!isLoading && !error && items.length === 0) {
     return (
       <div className='px-5 py-16 text-center text-white/60'>
         <p>
@@ -47,5 +47,5 @@ export function SearchResultsGrid({ query }: SearchResultsGridProps) {
     );
   }
 
-  return <MovieGrid movies={movies} isLoading={isLoading} onIntersect={loadNextPage} />;
+  return <PosterGrid items={items} isLoading={isLoading} onIntersect={loadNextPage} />;
 }

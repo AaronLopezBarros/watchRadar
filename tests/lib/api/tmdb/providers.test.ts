@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { getStreamingProviders } from '@/lib/api/tmdb/providers';
-import { createProvider } from '@/tests/factories/movie.factory';
+import { createProvider } from '@/tests/factories/media.factory';
 
 describe('getStreamingProviders', () => {
   it('returns the subscription providers for Spain', () => {

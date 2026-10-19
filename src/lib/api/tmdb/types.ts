@@ -1,3 +1,5 @@
+export type MediaType = 'movie';
+
 export type MovieCategory = 'popular' | 'top_rated' | 'upcoming' | 'now_playing';
 
 export type MovieGenre =
@@ -13,8 +15,20 @@ export type MovieGenre =
   | 'science_fiction'
   | 'thriller';
 
-export type MovieFilters = {
-  genre?: MovieGenre;
+type CategoryByMedia = {
+  movie: MovieCategory;
+};
+
+type GenreByMedia = {
+  movie: MovieGenre;
+};
+
+export type MediaCategory<M extends MediaType = MediaType> = CategoryByMedia[M];
+
+export type MediaGenre<M extends MediaType = MediaType> = GenreByMedia[M];
+
+export type MediaFilters<M extends MediaType = MediaType> = {
+  genre?: MediaGenre<M>;
   streaming?: boolean;
 };
 
@@ -35,6 +49,19 @@ export type TmdbMovie = {
   vote_count: number;
 };
 
+type TmdbItemByMedia = {
+  movie: TmdbMovie;
+};
+
+export type TmdbItem<M extends MediaType = MediaType> = TmdbItemByMedia[M];
+
+// What list and details endpoints have in common: lists carry genre ids, details (`/movie/{id}`) the genres themselves.
+export type TmdbItemBase<M extends MediaType = MediaType> = Omit<TmdbItem<M>, 'genre_ids'>;
+
+export type TmdbItemDetails<M extends MediaType = MediaType> = TmdbItemBase<M> & {
+  genres: Genre[];
+};
+
 export type Genre = {
   id: number;
   name: string;
@@ -44,14 +71,27 @@ export type GenresResponse = {
   genres: Genre[];
 };
 
-// Same shape as TMDB's movie details; list results get their genre names filled in on the server.
-export type Movie = Omit<TmdbMovie, 'genre_ids'> & {
+// What the app shows of any media type, normalized on the server from each type's TMDB shape.
+export type MediaItem = {
+  mediaType: MediaType;
+  adult: boolean;
+  backdrop_path: string | null;
   genres: Genre[];
+  id: number;
+  original_language: string;
+  original_title: string;
+  overview: string;
+  popularity: number;
+  poster_path: string | null;
+  release_date: string;
+  title: string;
+  vote_average: number;
+  vote_count: number;
 };
 
-export type MoviesResponse = {
+export type TmdbListResponse<T> = {
   page: number;
-  results: TmdbMovie[];
+  results: T[];
   total_pages: number;
   total_results: number;
 };
