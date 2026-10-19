@@ -27,6 +27,15 @@ describe('utils: buildHomeHref', () => {
     );
   });
 
+  it('leaves the type out for movies, the default', () => {
+    expect(buildHomeHref({ mediaType: 'movie', category: 'top_rated' })).toBe('/?category=top_rated');
+  });
+
+  it('adds the type for series', () => {
+    expect(buildHomeHref({ mediaType: 'tv', category: 'popular' })).toBe('/?type=tv');
+    expect(buildHomeHref({ mediaType: 'tv', category: 'now_playing' })).toBe('/?type=tv&category=now_playing');
+  });
+
   it('drops streaming for cinema categories', () => {
     expect(buildHomeHref({ category: 'now_playing', genre: 'horror', streaming: true })).toBe(
       '/?category=now_playing&genre=horror',
@@ -36,21 +45,29 @@ describe('utils: buildHomeHref', () => {
 
 describe('utils: parseHomeSearchParams', () => {
   it('defaults to popular without filters', () => {
-    expect(parseHomeSearchParams({})).toEqual({ category: 'popular', filters: { genre: undefined, streaming: false } });
+    expect(parseHomeSearchParams({})).toEqual({
+      mediaType: 'movie',
+      category: 'popular',
+      filters: { genre: undefined, streaming: false },
+    });
   });
 
   it('reads a valid category, genre and streaming flag', () => {
     expect(parseHomeSearchParams({ category: 'top_rated', genre: 'horror', streaming: '1' })).toEqual({
+      mediaType: 'movie',
       category: 'top_rated',
       filters: { genre: 'horror', streaming: true },
     });
   });
 
   it('falls back on unknown values', () => {
-    expect(parseHomeSearchParams({ category: 'trending', genre: 'western', streaming: 'yes' })).toEqual({
-      category: 'popular',
-      filters: { genre: undefined, streaming: false },
-    });
+    expect(parseHomeSearchParams({ type: 'person', category: 'trending', genre: 'western', streaming: 'yes' })).toEqual(
+      {
+        mediaType: 'movie',
+        category: 'popular',
+        filters: { genre: undefined, streaming: false },
+      },
+    );
   });
 
   it('ignores streaming on cinema categories', () => {
@@ -84,9 +101,31 @@ describe('utils: parseHomeSearchParams', () => {
     const params = Object.fromEntries(new URL(href, 'http://localhost').searchParams);
 
     expect(parseHomeSearchParams(params)).toEqual({
+      mediaType: 'movie',
       category: 'top_rated',
       filters: { genre: 'science_fiction', streaming: true },
     });
+  });
+
+  it('reads series with the shared categories', () => {
+    expect(parseHomeSearchParams({ type: 'tv', category: 'now_playing' })).toMatchObject({
+      mediaType: 'tv',
+      category: 'now_playing',
+    });
+  });
+
+  it('ignores movie genres and streaming on series, which cannot be filtered yet', () => {
+    expect(parseHomeSearchParams({ type: 'tv', genre: 'horror', streaming: '1' }).filters).toEqual({
+      genre: undefined,
+      streaming: false,
+    });
+  });
+
+  it('reads back what buildHomeHref writes for series', () => {
+    const href = buildHomeHref({ mediaType: 'tv', category: 'upcoming' });
+    const params = Object.fromEntries(new URL(href, 'http://localhost').searchParams);
+
+    expect(parseHomeSearchParams(params)).toMatchObject({ mediaType: 'tv', category: 'upcoming' });
   });
 });
 

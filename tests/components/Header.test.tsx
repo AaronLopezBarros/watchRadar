@@ -1,7 +1,11 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { Header } from '@/src/components/Header';
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ refresh: vi.fn() }),
+}));
 
 describe('Header', () => {
   it('renders the app name as a heading', () => {
@@ -13,6 +17,12 @@ describe('Header', () => {
   it('renders the tagline translated for the given locale', () => {
     render(<Header locale='es' />);
 
-    expect(screen.getByText('Películas · Valoraciones · Dónde ver')).toBeInTheDocument();
+    expect(screen.getByText('Películas · Series · Dónde ver')).toBeInTheDocument();
+  });
+
+  it('lets the language be changed from the header', () => {
+    render(<Header locale='es' />);
+
+    expect(screen.getByRole('button', { name: 'Cambiar idioma: ES' })).toBeInTheDocument();
   });
 });

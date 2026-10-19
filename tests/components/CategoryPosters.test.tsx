@@ -14,12 +14,14 @@ vi.mock('@/src/components/InfinitePosterGrid/InfinitePosterGrid', () => ({
   InfinitePosterGrid: ({
     initialItems,
     initialPage,
+    mediaType,
     category,
     filters,
     locale,
   }: {
     initialItems: unknown[];
     initialPage: number;
+    mediaType: string;
     category: string;
     filters?: { genre?: string; streaming?: boolean };
     locale: string;
@@ -28,6 +30,7 @@ vi.mock('@/src/components/InfinitePosterGrid/InfinitePosterGrid', () => ({
       data-testid='infinite-grid'
       data-page={initialPage}
       data-count={initialItems.length}
+      data-media-type={mediaType}
       data-category={category}
       data-genre={filters?.genre}
       data-streaming={filters?.streaming}
@@ -47,7 +50,7 @@ describe('CategoryPosters', () => {
       return page3;
     });
 
-    render(await CategoryPosters({ category: 'top_rated', locale: 'en' }));
+    render(await CategoryPosters({ mediaType: 'movie', category: 'top_rated', locale: 'en' }));
 
     const grid = screen.getByTestId('infinite-grid');
     expect(fetchMedia).toHaveBeenCalledWith('movie', 'top_rated', 1, 'en', undefined);
@@ -63,7 +66,7 @@ describe('CategoryPosters', () => {
     vi.mocked(fetchMedia).mockResolvedValue([createMediaItem({ id: 1 })]);
     const filters = { genre: 'horror' as const, streaming: true };
 
-    render(await CategoryPosters({ category: 'popular', filters, locale: 'en' }));
+    render(await CategoryPosters({ mediaType: 'movie', category: 'popular', filters, locale: 'en' }));
 
     expect(fetchMedia).toHaveBeenCalledWith('movie', 'popular', 1, 'en', filters);
     expect(screen.getByTestId('infinite-grid')).toHaveAttribute('data-genre', 'horror');
@@ -77,7 +80,9 @@ describe('CategoryPosters', () => {
         : [createMediaItem({ id: 2 }), createMediaItem({ id: 3 })],
     );
 
-    render(await CategoryPosters({ category: 'popular', filters: { genre: 'horror' }, locale: 'en' }));
+    render(
+      await CategoryPosters({ mediaType: 'movie', category: 'popular', filters: { genre: 'horror' }, locale: 'en' }),
+    );
 
     expect(screen.getByTestId('infinite-grid')).toHaveAttribute('data-count', '3');
   });
@@ -85,9 +90,44 @@ describe('CategoryPosters', () => {
   it('shows an empty state when no movie matches the filters', async () => {
     vi.mocked(fetchMedia).mockResolvedValue([]);
 
-    render(await CategoryPosters({ category: 'now_playing', filters: { genre: 'romance' }, locale: 'es' }));
+    render(
+      await CategoryPosters({
+        mediaType: 'movie',
+        category: 'now_playing',
+        filters: { genre: 'romance' },
+        locale: 'es',
+      }),
+    );
 
     expect(screen.getByText('No hay películas con estos filtros.')).toBeInTheDocument();
     expect(screen.queryByTestId('infinite-grid')).not.toBeInTheDocument();
+  });
+
+  it('fetches series for a series category', async () => {
+    vi.mocked(fetchMedia).mockResolvedValue([createMediaItem({ mediaType: 'tv', id: 1399 })]);
+
+    render(await CategoryPosters({ mediaType: 'tv', category: 'now_playing', locale: 'en' }));
+
+    expect(fetchMedia).toHaveBeenCalledWith('tv', 'now_playing', 1, 'en', undefined);
+    expect(screen.getByTestId('infinite-grid')).toHaveAttribute('data-media-type', 'tv');
+  });
+
+  it('keeps a movie and a series that share an id', async () => {
+    vi.mocked(fetchMedia).mockResolvedValue([
+      createMediaItem({ mediaType: 'movie', id: 1 }),
+      createMediaItem({ mediaType: 'tv', id: 1 }),
+    ]);
+
+    render(await CategoryPosters({ mediaType: 'movie', category: 'popular', locale: 'en' }));
+
+    expect(screen.getByTestId('infinite-grid')).toHaveAttribute('data-count', '2');
+  });
+
+  it('names series in the empty state', async () => {
+    vi.mocked(fetchMedia).mockResolvedValue([]);
+
+    render(await CategoryPosters({ mediaType: 'tv', category: 'upcoming', locale: 'es' }));
+
+    expect(screen.getByText('No hay series con estos filtros.')).toBeInTheDocument();
   });
 });

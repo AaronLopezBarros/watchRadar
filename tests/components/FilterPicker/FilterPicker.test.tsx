@@ -2,14 +2,14 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { MediaFilters, MovieCategory } from '@/lib/api/tmdb/types';
+import type { MediaCategory, MediaFilters } from '@/lib/api/tmdb/types';
 import { FilterPicker } from '@/src/components/FilterPicker/FilterPicker';
 import { LocaleProvider } from '@/src/components/LocaleProvider';
 import { SearchBar } from '@/src/components/SearchBar/SearchBar';
 import { SearchProvider } from '@/src/components/SearchBar/SearchProvider';
 
 type HarnessProps = {
-  category?: MovieCategory;
+  category?: MediaCategory;
   filters?: MediaFilters<'movie'>;
 };
 

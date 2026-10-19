@@ -239,4 +239,79 @@ describe('actions', () => {
       expect(result).toEqual([{ mediaType: 'movie', id: 1, genres: [{ id: 28, name: 'Action' }] }]);
     });
   });
+
+  describe('series', () => {
+    const TV_GENRES_ENDPOINT = '/genre/tv/list';
+    const tmdbSeries = {
+      adult: false,
+      backdrop_path: null,
+      first_air_date: '2011-04-17',
+      genre_ids: [18],
+      id: 1399,
+      name: 'Juego de tronos',
+      original_language: 'en',
+      original_name: 'Game of Thrones',
+      overview: '',
+      popularity: 300,
+      poster_path: '/got.jpg',
+      vote_average: 8.5,
+      vote_count: 25000,
+    };
+
+    beforeEach(() => {
+      vi.mocked(tmdbClient).mockImplementation(async endpoint =>
+        endpoint === TV_GENRES_ENDPOINT ? { genres: [{ id: 18, name: 'Drama' }] } : { results: [tmdbSeries] },
+      );
+    });
+
+    it('lists a series category from its /tv endpoint, named with the series genre list', async () => {
+      const result = await fetchMedia('tv', 'top_rated', 2, 'es');
+
+      expect(tmdbClient).toHaveBeenCalledWith('/tv/top_rated', { params: { page: 2, language: 'es-ES' } });
+      expect(tmdbClient).toHaveBeenCalledWith(TV_GENRES_ENDPOINT, { params: { language: 'es-ES' }, revalidate: 86400 });
+      expect(result).toEqual([
+        expect.objectContaining({
+          mediaType: 'tv',
+          id: 1399,
+          title: 'Juego de tronos',
+          original_title: 'Game of Thrones',
+          release_date: '2011-04-17',
+          genres: [{ id: 18, name: 'Drama' }],
+        }),
+      ]);
+    });
+
+    it('builds a series category without its own endpoint as a /discover/tv query', async () => {
+      vi.useFakeTimers({ now: new Date('2026-10-05T12:00:00Z') });
+
+      await fetchMedia('tv', 'upcoming', 1, 'en');
+
+      expect(tmdbClient).toHaveBeenCalledWith('/discover/tv', {
+        params: {
+          page: 1,
+          language: 'en-US',
+          'first_air_date.gte': '2026-10-06',
+          'first_air_date.lte': '2026-11-16',
+          include_adult: false,
+        },
+      });
+    });
+
+    it('fetches the details of a series from /tv/{id}', async () => {
+      vi.mocked(tmdbClient).mockResolvedValue({ ...tmdbSeries, genres: [{ id: 18, name: 'Drama' }] });
+
+      const result = await fetchMediaDetails('tv', 1399, 'en');
+
+      expect(tmdbClient).toHaveBeenCalledWith('/tv/1399', { params: { language: 'en-US' } });
+      expect(result).toMatchObject({ mediaType: 'tv', title: 'Juego de tronos', genres: [{ id: 18, name: 'Drama' }] });
+    });
+
+    it('fetches the watch providers of a series from /tv/{id}/watch/providers', async () => {
+      vi.mocked(tmdbClient).mockResolvedValue({ id: 1399, results: {} });
+
+      await fetchWatchProviders('tv', 1399);
+
+      expect(tmdbClient).toHaveBeenCalledWith('/tv/1399/watch/providers');
+    });
+  });
 });

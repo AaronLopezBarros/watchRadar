@@ -8,7 +8,7 @@ export const hasFilters = ({ genre, streaming }: MediaFilters) => Boolean(genre 
 // equivalent /discover query. TMDB ignores the monetization filter unless watch_region is set.
 export const getDiscoverParams = <M extends MediaType>(
   mediaType: M,
-  category: MediaCategory<M>,
+  category: MediaCategory,
   filters: MediaFilters<M>,
   today: Date,
 ): DiscoverParams => {

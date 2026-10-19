@@ -1,24 +1,20 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { CategoryTabs } from '@/src/components/CategoryTabs';
 
-vi.mock('@/src/components/LanguageSelector/LanguageSelector', () => ({
-  LanguageSelector: () => <div data-testid='language-selector-mock' />,
-}));
-
 describe('CategoryTabs', () => {
-  it('renders a tab for every movie category', () => {
-    render(<CategoryTabs active='popular' locale='en' />);
+  it('renders a tab for every category', () => {
+    render(<CategoryTabs mediaType='movie' active='popular' locale='en' />);
 
     expect(screen.getByRole('link', { name: 'Popular' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Top' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Upcoming' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Playing' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'New' })).toBeInTheDocument();
   });
 
   it('marks the active category and links to the right href', () => {
-    render(<CategoryTabs active='top_rated' locale='en' />);
+    render(<CategoryTabs mediaType='movie' active='top_rated' locale='en' />);
 
     const active = screen.getByRole('link', { name: 'Top' });
     expect(active).toHaveAttribute('aria-current', 'true');
@@ -30,7 +26,9 @@ describe('CategoryTabs', () => {
   });
 
   it('keeps the active filters when switching category', () => {
-    render(<CategoryTabs active='popular' filters={{ genre: 'horror', streaming: true }} locale='en' />);
+    render(
+      <CategoryTabs mediaType='movie' active='popular' filters={{ genre: 'horror', streaming: true }} locale='en' />,
+    );
 
     expect(screen.getByRole('link', { name: 'Popular' })).toHaveAttribute('href', '/?genre=horror&streaming=1');
     expect(screen.getByRole('link', { name: 'Top' })).toHaveAttribute(
@@ -40,11 +38,44 @@ describe('CategoryTabs', () => {
   });
 
   it('drops streaming on the cinema tabs, where it does not apply', () => {
-    render(<CategoryTabs active='popular' filters={{ genre: 'horror', streaming: true }} locale='en' />);
-
-    expect(screen.getByRole('link', { name: 'Playing' })).toHaveAttribute(
-      'href',
-      '/?category=now_playing&genre=horror',
+    render(
+      <CategoryTabs mediaType='movie' active='popular' filters={{ genre: 'horror', streaming: true }} locale='en' />,
     );
+
+    expect(screen.getByRole('link', { name: 'New' })).toHaveAttribute('href', '/?category=now_playing&genre=horror');
+  });
+
+  it('offers the filters and the search for movies', () => {
+    render(<CategoryTabs mediaType='movie' active='popular' locale='en' />);
+
+    expect(screen.getByRole('button', { name: 'Filters' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Search movies' })).toBeInTheDocument();
+  });
+
+  it('links the same tabs within series', () => {
+    render(<CategoryTabs mediaType='tv' active='now_playing' locale='es' />);
+
+    expect(screen.getByRole('link', { name: 'Populares' })).toHaveAttribute('href', '/?type=tv');
+    expect(screen.getByRole('link', { name: 'Favoritas' })).toHaveAttribute('href', '/?type=tv&category=top_rated');
+    expect(screen.getByRole('link', { name: 'Próximas' })).toHaveAttribute('href', '/?type=tv&category=upcoming');
+    expect(screen.getByRole('link', { name: 'Nuevas', current: true })).toHaveAttribute(
+      'href',
+      '/?type=tv&category=now_playing',
+    );
+  });
+
+  it('leaves out the filters and the search for series, which do not support them yet', () => {
+    render(<CategoryTabs mediaType='tv' active='popular' locale='en' />);
+
+    expect(screen.queryByRole('button', { name: 'Filters' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Search movies' })).not.toBeInTheDocument();
+  });
+
+  it('lets the user switch between movies and series', () => {
+    render(<CategoryTabs mediaType='tv' active='popular' locale='en' />);
+
+    const group = screen.getByRole('group', { name: 'Content type' });
+    expect(group).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Series', current: true })).toBeInTheDocument();
   });
 });

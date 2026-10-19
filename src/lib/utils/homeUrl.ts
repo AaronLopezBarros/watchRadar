@@ -1,16 +1,19 @@
-import { MEDIA_CONFIG, isMediaCategory, isMediaGenre } from '@/lib/api/tmdb/media';
-import type { MediaFilters, MovieCategory } from '@/lib/api/tmdb/types';
+import { canFilterStreaming, isMediaCategory, isMediaGenre, isMediaType } from '@/lib/api/tmdb/media';
+import type { MediaCategory, MediaFilters, MediaType } from '@/lib/api/tmdb/types';
 import { isLocale, type Locale } from '@/lib/i18n/locale';
 
-const DEFAULT_CATEGORY: MovieCategory = 'popular';
+// Without `type` the home shows movies, so links shared before series existed keep working.
+const DEFAULT_MEDIA_TYPE: MediaType = 'movie';
+const DEFAULT_CATEGORY: MediaCategory = 'popular';
 const STREAMING_ON = '1';
-const { streamingCategories } = MEDIA_CONFIG.movie;
 
-type HomeHrefOptions = MediaFilters<'movie'> & {
-  category: MovieCategory;
+type HomeHrefOptions = MediaFilters & {
+  mediaType?: MediaType;
+  category: MediaCategory;
 };
 
 export type HomeSearchParams = {
+  type?: string;
   category?: string;
   genre?: string;
   streaming?: string;
@@ -22,12 +25,18 @@ export type HomeSearchParams = {
 const parseMovieId = (value: string | undefined): number | undefined =>
   value && /^[1-9]\d*$/.test(value) ? Number(value) : undefined;
 
-export const buildHomeHref = ({ category, genre, streaming }: HomeHrefOptions): string => {
+export const buildHomeHref = ({
+  mediaType = DEFAULT_MEDIA_TYPE,
+  category,
+  genre,
+  streaming,
+}: HomeHrefOptions): string => {
   const searchParams = new URLSearchParams();
 
+  if (mediaType !== DEFAULT_MEDIA_TYPE) searchParams.set('type', mediaType);
   if (category !== DEFAULT_CATEGORY) searchParams.set('category', category);
   if (genre) searchParams.set('genre', genre);
-  if (streaming && streamingCategories.includes(category)) searchParams.set('streaming', STREAMING_ON);
+  if (streaming && canFilterStreaming(mediaType, category)) searchParams.set('streaming', STREAMING_ON);
 
   return searchParams.size ? `/?${searchParams.toString()}` : '/';
 };
@@ -53,14 +62,23 @@ export const buildShareHref = (movieId: number, locale: Locale): string =>
 
 export const parseHomeSearchParams = (
   params: HomeSearchParams,
-): { category: MovieCategory; filters: MediaFilters<'movie'>; movieId?: number; sharedLocale?: Locale } => {
-  const category = isMediaCategory('movie', params.category) ? params.category : DEFAULT_CATEGORY;
+): {
+  mediaType: MediaType;
+  category: MediaCategory;
+  filters: MediaFilters;
+  movieId?: number;
+  sharedLocale?: Locale;
+} => {
+  const mediaType = isMediaType(params.type) ? params.type : DEFAULT_MEDIA_TYPE;
+  const category = isMediaCategory(params.category) ? params.category : DEFAULT_CATEGORY;
 
   return {
+    mediaType,
     category,
     filters: {
-      genre: isMediaGenre('movie', params.genre) ? params.genre : undefined,
-      streaming: params.streaming === STREAMING_ON && streamingCategories.includes(category),
+      // Genres only exist within their media type: a movie genre on series is dropped.
+      genre: isMediaGenre(mediaType, params.genre) ? params.genre : undefined,
+      streaming: params.streaming === STREAMING_ON && canFilterStreaming(mediaType, category),
     },
     movieId: parseMovieId(params.movie),
     sharedLocale: isLocale(params.lang) ? params.lang : undefined,
