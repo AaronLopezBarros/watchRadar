@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildHomeHref, buildShareHref, parseHomeSearchParams, withMovieParam } from '@/src/lib/utils';
+import { buildHomeHref, buildShareHref, parseHomeSearchParams, withMediaParam } from '@/src/lib/utils';
 
 describe('utils: buildHomeHref', () => {
   it('returns the root for popular without filters', () => {
@@ -74,12 +74,28 @@ describe('utils: parseHomeSearchParams', () => {
     expect(parseHomeSearchParams({ category: 'upcoming', streaming: '1' }).filters.streaming).toBe(false);
   });
 
-  it('reads a shared movie id', () => {
-    expect(parseHomeSearchParams({ category: 'top_rated', movie: '27205' }).movieId).toBe(27205);
+  it('reads a shared movie', () => {
+    expect(parseHomeSearchParams({ category: 'top_rated', movie: '27205' }).sharedMedia).toEqual({
+      mediaType: 'movie',
+      id: 27205,
+    });
   });
 
-  it.each(['abc', '-5', '0', '12.5', '27205abc', '../account'])('ignores the invalid movie id %s', movie => {
-    expect(parseHomeSearchParams({ movie }).movieId).toBeUndefined();
+  it('reads a shared series', () => {
+    expect(parseHomeSearchParams({ type: 'tv', tv: '1399' }).sharedMedia).toEqual({ mediaType: 'tv', id: 1399 });
+  });
+
+  it('ignores a movie id on series, so it never opens the movie over the series grid', () => {
+    expect(parseHomeSearchParams({ type: 'tv', movie: '1' }).sharedMedia).toBeUndefined();
+  });
+
+  it('ignores a series id without the series type', () => {
+    expect(parseHomeSearchParams({ tv: '1399' }).sharedMedia).toBeUndefined();
+  });
+
+  it.each(['abc', '-5', '0', '12.5', '27205abc', '../account'])('ignores the invalid id %s', id => {
+    expect(parseHomeSearchParams({ movie: id }).sharedMedia).toBeUndefined();
+    expect(parseHomeSearchParams({ type: 'tv', tv: id }).sharedMedia).toBeUndefined();
   });
 
   it('reads the sharer language', () => {
@@ -90,10 +106,17 @@ describe('utils: parseHomeSearchParams', () => {
     expect(parseHomeSearchParams({ movie: '27205', lang }).sharedLocale).toBeUndefined();
   });
 
-  it('reads back what buildShareHref writes', () => {
-    const params = Object.fromEntries(new URL(buildShareHref(27205, 'es'), 'http://localhost').searchParams);
+  it.each([
+    { mediaType: 'movie', id: 27205 },
+    { mediaType: 'tv', id: 1399 },
+  ] as const)('reads back what buildShareHref writes for $mediaType', item => {
+    const params = Object.fromEntries(new URL(buildShareHref(item, 'es'), 'http://localhost').searchParams);
 
-    expect(parseHomeSearchParams(params)).toMatchObject({ movieId: 27205, sharedLocale: 'es' });
+    expect(parseHomeSearchParams(params)).toMatchObject({
+      mediaType: item.mediaType,
+      sharedMedia: item,
+      sharedLocale: 'es',
+    });
   });
 
   it('reads back what buildHomeHref writes', () => {
@@ -133,36 +156,51 @@ describe('utils: parseHomeSearchParams', () => {
   });
 });
 
-describe('utils: withMovieParam', () => {
+describe('utils: withMediaParam', () => {
+  const movie = { mediaType: 'movie', id: 27205 } as const;
+  const series = { mediaType: 'tv', id: 1399 } as const;
+
   it('adds the movie to the root', () => {
-    expect(withMovieParam('', 27205)).toBe('/?movie=27205');
+    expect(withMediaParam('', movie)).toBe('/?movie=27205');
   });
 
   it('adds the movie keeping the category and filters', () => {
-    expect(withMovieParam('?category=top_rated&genre=horror', 27205)).toBe(
+    expect(withMediaParam('?category=top_rated&genre=horror', movie)).toBe(
       '/?category=top_rated&genre=horror&movie=27205',
     );
   });
 
   it('replaces a previous movie', () => {
-    expect(withMovieParam('?movie=1&genre=horror', 2)).toBe('/?movie=2&genre=horror');
+    expect(withMediaParam('?movie=1&genre=horror', { mediaType: 'movie', id: 2 })).toBe('/?genre=horror&movie=2');
+  });
+
+  it('adds a series under its own param, keeping the type', () => {
+    expect(withMediaParam('?type=tv&category=top_rated', series)).toBe('/?type=tv&category=top_rated&tv=1399');
+  });
+
+  it('removes the series keeping the type', () => {
+    expect(withMediaParam('?type=tv&tv=1399&lang=es')).toBe('/?type=tv');
   });
 
   it('removes the movie keeping the rest', () => {
-    expect(withMovieParam('?category=top_rated&movie=27205')).toBe('/?category=top_rated');
+    expect(withMediaParam('?category=top_rated&movie=27205')).toBe('/?category=top_rated');
   });
 
   it('returns the root when the movie was the only param', () => {
-    expect(withMovieParam('?movie=27205')).toBe('/');
+    expect(withMediaParam('?movie=27205')).toBe('/');
   });
 
   it('drops the sharer language along with the movie', () => {
-    expect(withMovieParam('?movie=27205&lang=es')).toBe('/');
+    expect(withMediaParam('?movie=27205&lang=es')).toBe('/');
   });
 });
 
 describe('utils: buildShareHref', () => {
   it('links to just the movie, in the sharer language', () => {
-    expect(buildShareHref(27205, 'es')).toBe('/?movie=27205&lang=es');
+    expect(buildShareHref({ mediaType: 'movie', id: 27205 }, 'es')).toBe('/?movie=27205&lang=es');
+  });
+
+  it('links to just the series, over the series grid', () => {
+    expect(buildShareHref({ mediaType: 'tv', id: 1399 }, 'es')).toBe('/?type=tv&tv=1399&lang=es');
   });
 });
