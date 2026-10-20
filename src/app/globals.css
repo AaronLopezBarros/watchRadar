@@ -18,6 +18,39 @@
   }
 }
 
+/* Exit keyframes have no `from`: they start wherever the element is, e.g. a sheet released mid-drag. */
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-down {
+  to {
+    transform: translateY(100%);
+  }
+}
+
+/* The search field opens out of, and closes back into, a 2.75rem circle at its right end, where the button was. */
+@keyframes search-in {
+  from {
+    clip-path: inset(0 0 0 calc(100% - 2.75rem) round 9999px);
+  }
+  to {
+    clip-path: inset(0 round 9999px);
+  }
+}
+
+@keyframes search-out {
+  /* Explicit `from`: clip-path can't interpolate from the field's resting `none`. */
+  from {
+    clip-path: inset(0 round 9999px);
+  }
+  to {
+    clip-path: inset(0 0 0 calc(100% - 2.75rem) round 9999px);
+  }
+}
+
 @keyframes card-in {
   from {
     opacity: 0;

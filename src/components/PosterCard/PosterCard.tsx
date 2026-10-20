@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, type CSSProperties } from 'react';
 
 import { POSTER_H, POSTER_W } from '@/src/components/PosterCard/constants';
 import { useWatchProviders } from '@/src/components/PosterCard/hooks/useWatchProviders';
@@ -12,9 +12,10 @@ import { withMediaParam } from '@/src/lib/utils';
 type PosterCardProps = {
   item: MediaItem;
   priority?: boolean;
+  enterDelayMs?: number;
 };
 
-export function PosterCard({ item, priority = false }: PosterCardProps) {
+export function PosterCard({ item, priority = false, enterDelayMs }: PosterCardProps) {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const { providers, isLoading: isLoadingProviders, fetchProviders } = useWatchProviders(item.mediaType, item.id);
@@ -34,8 +35,15 @@ export function PosterCard({ item, priority = false }: PosterCardProps) {
 
   return (
     <article
-      className='relative w-full shrink-0 animate-[card-in_300ms_ease-out] sm:w-27.5'
-      style={{ aspectRatio: `${POSTER_W} / ${POSTER_H}` }}
+      // The delay only applies on phones, where the staggered cards fill the first screen; on wider screens the
+      // first rows would enter one by one while the rest are already in. `backwards` hides a card until its turn.
+      className='relative w-full shrink-0 animate-[card-in_300ms_ease-out_backwards] motion-reduce:animate-none max-sm:[animation-delay:var(--enter-delay)] sm:w-27.5'
+      style={
+        {
+          aspectRatio: `${POSTER_W} / ${POSTER_H}`,
+          '--enter-delay': enterDelayMs === undefined ? undefined : `${enterDelayMs}ms`,
+        } as CSSProperties
+      }
     >
       <button
         ref={triggerRef}

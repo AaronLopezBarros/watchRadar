@@ -23,7 +23,11 @@ export function MediaTypeToggle({ active, category, streaming }: MediaTypeToggle
 
   // Switching keeps the tab and streaming, which every media type shares, but not the genre: genres differ by type.
   return (
-    <div role='group' aria-label={dict.mediaType.groupAriaLabel} className='flex shrink-0 rounded-full bg-white/5'>
+    <div
+      role='group'
+      aria-label={dict.mediaType.groupAriaLabel}
+      className='flex shrink-0 animate-[fade-in_200ms_ease-out] rounded-full bg-white/5 motion-reduce:animate-none'
+    >
       {MEDIA_TYPES.map(value => (
         <Link
           key={value}

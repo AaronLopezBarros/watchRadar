@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 
+import { useExitAnimation } from '@/lib/hooks/useExitAnimation';
 import { cn } from '@/lib/utils';
 
 const DRAG_CLOSE_THRESHOLD_PX = 100;
@@ -10,6 +11,12 @@ const SCROLL_LOCK_CLASS_NAME = 'max-sm:overflow-hidden';
 const TONE_CLASS_NAME = {
   light: { panel: 'bg-white', handle: 'bg-zinc-300' },
   dark: { panel: 'bg-slate-950', handle: 'bg-white/20' },
+};
+
+const CLOSING_CLASS_NAME = {
+  // Same length as the panel's: the sheet unmounts when the panel's animation ends.
+  backdrop: 'animate-[fade-out_250ms_ease-in_forwards] sm:animate-[fade-out_150ms_ease-in_forwards]',
+  panel: 'animate-[slide-down_250ms_ease-in_forwards] sm:animate-[fade-out_150ms_ease-in_forwards]',
 };
 
 const DESKTOP_CLASS_NAME = {
@@ -40,10 +47,12 @@ export function BottomSheet({ label, onClose, tone, desktop, className, children
   const [dragY, setDragY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const dragStartYRef = useRef(0);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const { isExiting: isClosing, startExit: requestClose, handleAnimationEnd } = useExitAnimation(panelRef, onClose);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
+      if (event.key === 'Escape') requestClose();
     };
 
     document.body.classList.add(SCROLL_LOCK_CLASS_NAME);
@@ -52,7 +61,7 @@ export function BottomSheet({ label, onClose, tone, desktop, className, children
       document.removeEventListener('keydown', handleKeyDown);
       document.body.classList.remove(SCROLL_LOCK_CLASS_NAME);
     };
-  }, [onClose]);
+  }, [requestClose]);
 
   const handleDragStart = (event: React.PointerEvent<HTMLDivElement>) => {
     setIsDragging(true);
@@ -68,26 +77,35 @@ export function BottomSheet({ label, onClose, tone, desktop, className, children
   const handleDragEnd = () => {
     setIsDragging(false);
     if (dragY > DRAG_CLOSE_THRESHOLD_PX) {
-      onClose();
+      requestClose();
     } else {
       setDragY(0);
     }
   };
 
   return (
-    <div className={cn('fixed inset-0 z-50 flex items-end justify-center', DESKTOP_CLASS_NAME[desktop].container)}>
+    <div
+      className={cn(
+        'fixed inset-0 z-50 flex items-end justify-center',
+        DESKTOP_CLASS_NAME[desktop].container,
+        isClosing && 'pointer-events-none',
+      )}
+    >
       <div
         data-testid='bottom-sheet-backdrop'
         className={cn(
           'fixed inset-0 animate-[fade-in_300ms_ease-out] bg-black/50',
           DESKTOP_CLASS_NAME[desktop].backdrop,
+          isClosing && CLOSING_CLASS_NAME.backdrop,
+          'motion-reduce:animate-none sm:motion-reduce:animate-none',
         )}
         onClick={event => {
           event.stopPropagation();
-          onClose();
+          requestClose();
         }}
       />
       <div
+        ref={panelRef}
         role='dialog'
         aria-modal='true'
         aria-label={label}
@@ -95,10 +113,13 @@ export function BottomSheet({ label, onClose, tone, desktop, className, children
           'relative z-10 w-full animate-[slide-up_300ms_ease-out] rounded-t-2xl',
           TONE_CLASS_NAME[tone].panel,
           DESKTOP_CLASS_NAME[desktop].panel,
+          isClosing && CLOSING_CLASS_NAME.panel,
+          'motion-reduce:animate-none sm:motion-reduce:animate-none',
           className,
         )}
         style={{ transform: `translateY(${dragY}px)`, transition: isDragging ? 'none' : 'transform 200ms ease-out' }}
         onClick={event => event.stopPropagation()}
+        onAnimationEnd={handleAnimationEnd}
       >
         <div
           data-testid='bottom-sheet-drag-handle'

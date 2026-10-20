@@ -5,8 +5,16 @@ import { PosterGrid } from '@/src/components/PosterGrid/PosterGrid';
 import { createMediaItem } from '@/tests/factories/media.factory';
 
 vi.mock('@/src/components/PosterCard/PosterCard', () => ({
-  PosterCard: ({ item, priority }: { item: { id: number; title: string }; priority: boolean }) => (
-    <div data-testid='poster-card' data-priority={priority}>
+  PosterCard: ({
+    item,
+    priority,
+    enterDelayMs,
+  }: {
+    item: { id: number; title: string };
+    priority: boolean;
+    enterDelayMs?: number;
+  }) => (
+    <div data-testid='poster-card' data-priority={priority} data-enter-delay={enterDelayMs}>
       {item.title}
     </div>
   ),
@@ -51,6 +59,16 @@ describe('PosterGrid', () => {
     const cards = screen.getAllByTestId('poster-card');
     expect(cards[0]).toHaveAttribute('data-priority', 'true');
     expect(cards[1]).toHaveAttribute('data-priority', 'false');
+  });
+
+  it('staggers the entrance of the first twelve cards only', () => {
+    const movies = Array.from({ length: 14 }, (_, index) => createMediaItem({ id: index + 1 }));
+    render(<PosterGrid items={movies} isLoading={false} onIntersect={vi.fn()} />);
+
+    const delays = screen.getAllByTestId('poster-card').map(card => card.getAttribute('data-enter-delay'));
+    expect(delays.slice(0, 3)).toEqual(['0', '30', '60']);
+    expect(delays[11]).toBe('330');
+    expect(delays.slice(12)).toEqual([null, null]);
   });
 
   it('renders skeletons while loading', () => {

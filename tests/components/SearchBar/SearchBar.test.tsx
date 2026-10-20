@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -27,6 +27,7 @@ describe('SearchBar', () => {
 
   afterEach(() => {
     vi.useRealTimers();
+    Reflect.deleteProperty(HTMLElement.prototype, 'getAnimations');
   });
 
   it('renders a closed search button initially', () => {
@@ -101,6 +102,27 @@ describe('SearchBar', () => {
 
     expect(screen.queryByPlaceholderText('Search movies…')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Search movies' })).toHaveFocus();
+  });
+
+  it('keeps the field until its closing animation ends, then reopens it fresh', async () => {
+    // jsdom runs no animations; a running CSS animation is what makes the field wait for animationend.
+    HTMLElement.prototype.getAnimations = () => [{ animationName: 'search-out' } as unknown as Animation];
+    render(<SearchBar mediaType='movie' />);
+    await user.click(screen.getByRole('button', { name: 'Search movies' }));
+    const field = screen.getByPlaceholderText('Search movies…');
+
+    await user.click(screen.getByRole('button', { name: 'Close search' }));
+    expect(field).toBeInTheDocument();
+
+    fireEvent.animationEnd(field.parentElement!);
+    expect(field).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Search movies' })).toBeInTheDocument();
+
+    // Reopened, the field starts fresh: its opening animation ending doesn't close it.
+    await user.click(screen.getByRole('button', { name: 'Search movies' }));
+    const reopened = screen.getByPlaceholderText('Search movies…');
+    fireEvent.animationEnd(reopened.parentElement!);
+    expect(reopened).toBeInTheDocument();
   });
 
   it('ignores other key presses while open', async () => {
