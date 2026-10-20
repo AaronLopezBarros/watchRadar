@@ -134,5 +134,15 @@ describe('BottomSheet', () => {
 
       expect(onClose).not.toHaveBeenCalled();
     });
+
+    it('closes at once when only a transition is running, such as the snap back after a short drag', async () => {
+      // A transition never fires animationend, so waiting for one would leave the sheet open.
+      HTMLElement.prototype.getAnimations = () => [{ transitionProperty: 'transform' } as unknown as Animation];
+      const onClose = renderSheet();
+
+      await userEvent.keyboard('{Escape}');
+
+      expect(onClose).toHaveBeenCalledOnce();
+    });
   });
 });
