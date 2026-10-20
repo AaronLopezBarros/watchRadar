@@ -77,6 +77,8 @@ describe('ShareButton', () => {
     renderShareButton();
 
     await user.click(screen.getByRole('button', { name: 'Compartir' }));
+    // The confirmation shows once the clipboard promise settles, which a busy run can delay past the click.
+    expect(await screen.findByText('Enlace copiado')).toBeInTheDocument();
     act(() => vi.advanceTimersByTime(2000));
 
     expect(screen.getByRole('status')).toBeEmptyDOMElement();
