@@ -18,6 +18,19 @@
   }
 }
 
+/* Exit keyframes have no `from`: they start wherever the element is, e.g. a sheet released mid-drag. */
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-down {
+  to {
+    transform: translateY(100%);
+  }
+}
+
 @keyframes card-in {
   from {
     opacity: 0;

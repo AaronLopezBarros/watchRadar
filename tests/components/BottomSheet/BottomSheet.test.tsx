@@ -1,6 +1,6 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { BottomSheet } from '@/src/components/BottomSheet/BottomSheet';
 
@@ -87,5 +87,52 @@ describe('BottomSheet', () => {
     ]);
 
     expect(onClose).not.toHaveBeenCalled();
+  });
+
+  describe('while its exit animation runs', () => {
+    // jsdom runs no animations; a running CSS animation is what makes the sheet wait for animationend.
+    const runExitAnimation = () => {
+      HTMLElement.prototype.getAnimations = () => [{ animationName: 'slide-down' } as unknown as Animation];
+    };
+
+    afterEach(() => {
+      Reflect.deleteProperty(HTMLElement.prototype, 'getAnimations');
+    });
+
+    it.each([
+      ['the backdrop is clicked', () => userEvent.click(screen.getByTestId('bottom-sheet-backdrop'))],
+      ['Escape is pressed', () => userEvent.keyboard('{Escape}')],
+      ['the handle is swiped down', () => drag(0, 150)],
+    ])('closes once the animation ends when %s', async (_case, close) => {
+      runExitAnimation();
+      const onClose = renderSheet();
+
+      await close();
+      expect(onClose).not.toHaveBeenCalled();
+
+      fireEvent.animationEnd(screen.getByRole('dialog'));
+      expect(onClose).toHaveBeenCalledOnce();
+    });
+
+    it('closes only once when Escape is pressed again during the animation', async () => {
+      runExitAnimation();
+      const onClose = renderSheet();
+
+      await userEvent.keyboard('{Escape}');
+      await userEvent.keyboard('{Escape}');
+      fireEvent.animationEnd(screen.getByRole('dialog'));
+
+      expect(onClose).toHaveBeenCalledOnce();
+    });
+
+    it('ignores animations ending inside the sheet', async () => {
+      runExitAnimation();
+      const onClose = renderSheet();
+
+      await userEvent.keyboard('{Escape}');
+      fireEvent.animationEnd(screen.getByText('Sheet content'));
+
+      expect(onClose).not.toHaveBeenCalled();
+    });
   });
 });
