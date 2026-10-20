@@ -1,6 +1,6 @@
 # WatchRadar
 
-A Next.js (App Router) app for discovering movies and series using the TMDB API: category browsing with genre and streaming filters, infinite scroll, search, per-title streaming provider availability, shareable movie links, and multi-language support (English/Spanish).
+A Next.js (App Router) app for discovering movies and series using the TMDB API: category browsing with genre and streaming filters, infinite scroll, search, per-title streaming provider availability, shareable links, and multi-language support (English/Spanish).
 
 ## Requirements
 
