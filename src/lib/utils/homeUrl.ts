@@ -13,7 +13,8 @@ type HomeHrefOptions = MediaFilters & {
 };
 
 // The open item's id goes in a param named after its type (`?movie=27205`, `?tv=1399`): ids repeat across types,
-// so a bare `?id=` couldn't tell a series from the movie with the same id.
+// so a bare `?id=` couldn't tell a series from the movie with the same id. A media type must therefore never be
+// named like another home param below.
 export type HomeSearchParams = Partial<Record<MediaType, string>> & {
   type?: string;
   category?: string;
