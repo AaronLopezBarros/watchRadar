@@ -55,11 +55,11 @@ pnpm vitest run tests/lib/utils/getPosterUrl.test.ts
 | Folder | Contains |
 | --- | --- |
 | `src/app/` | Routes, root layout and metadata. |
-| `src/components/` | UI, grouped by feature: category tabs/grid, filter picker, shared bottom sheet, poster card/dialog, shared-link dialog, infinite scroll poster grid, search, language selector, header. |
+| `src/components/` | UI, grouped by feature: category tabs/grid, filter picker, shared bottom sheet, poster card/dialog, shared-link dialog, infinite scroll poster grid, search, movies/series toggle, language selector, header. |
 | `src/lib/api/tmdb/` | TMDB API client, server actions, types and the per-media-type config (`media.ts`: categories, genres, discover params, normalization). |
 | `src/lib/i18n/` | Locale detection (cookie, then the browser's Accept-Language, then English), switching and the translation dictionary. |
 | `src/lib/hooks/` | Shared client hooks. |
-| `src/lib/utils/` | Small utility helpers. |
+| `src/lib/utils/` | Small utility helpers, including the home URL helpers (`homeUrl.ts`): `?type=tv` switches to series, and without it the home shows movies. |
 
 ### Path aliases
 
