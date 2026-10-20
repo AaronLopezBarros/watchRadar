@@ -14,7 +14,8 @@ const TONE_CLASS_NAME = {
 };
 
 const CLOSING_CLASS_NAME = {
-  backdrop: 'animate-[fade-out_250ms_ease-in_forwards]',
+  // Same length as the panel's: the sheet unmounts when the panel's animation ends.
+  backdrop: 'animate-[fade-out_250ms_ease-in_forwards] sm:animate-[fade-out_150ms_ease-in_forwards]',
   panel: 'animate-[slide-down_250ms_ease-in_forwards] sm:animate-[fade-out_150ms_ease-in_forwards]',
 };
 
