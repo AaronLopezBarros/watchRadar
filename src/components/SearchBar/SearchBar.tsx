@@ -3,13 +3,18 @@
 import { SearchIcon, XIcon } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import type { MediaType } from '@/lib/api/tmdb/types';
 import { useTranslations } from '@/src/components/LocaleProvider';
 import { useSearch } from '@/src/components/SearchBar/SearchProvider';
 
 const MIN_QUERY_LENGTH = 2;
 const DEBOUNCE_DELAY_MS = 350;
 
-export function SearchBar() {
+type SearchBarProps = {
+  mediaType: MediaType;
+};
+
+export function SearchBar({ mediaType }: SearchBarProps) {
   const [text, setText] = useState('');
   const { setDebouncedQuery, isSearchOpen: isOpen, setIsSearchOpen: setIsOpen } = useSearch();
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -65,7 +70,7 @@ export function SearchBar() {
         ref={triggerRef}
         type='button'
         onClick={handleOpen}
-        aria-label={dict.search.openAriaLabel}
+        aria-label={dict.search.openAriaLabel[mediaType]}
         className='flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full bg-white/5 text-white/60 transition-colors hover:bg-white/10 hover:text-white'
       >
         <SearchIcon className='h-4 w-4 shrink-0' />
@@ -80,7 +85,7 @@ export function SearchBar() {
         type='text'
         value={text}
         onChange={event => handleChange(event.target.value)}
-        placeholder={dict.search.placeholder}
+        placeholder={dict.search.placeholder[mediaType]}
         autoFocus
         className='min-w-0 flex-1 bg-transparent py-1.5 text-sm text-white placeholder:text-white/40 focus:outline-none'
       />

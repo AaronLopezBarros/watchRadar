@@ -2,23 +2,24 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { MediaCategory, MediaFilters } from '@/lib/api/tmdb/types';
+import type { MediaCategory, MediaFilters, MediaType } from '@/lib/api/tmdb/types';
 import { FilterPicker } from '@/src/components/FilterPicker/FilterPicker';
 import { LocaleProvider } from '@/src/components/LocaleProvider';
 import { SearchBar } from '@/src/components/SearchBar/SearchBar';
 import { SearchProvider } from '@/src/components/SearchBar/SearchProvider';
 
 type HarnessProps = {
+  mediaType?: MediaType;
   category?: MediaCategory;
-  filters?: MediaFilters<'movie'>;
+  filters?: MediaFilters;
 };
 
-function Harness({ category = 'popular', filters = {} }: HarnessProps) {
+function Harness({ mediaType = 'movie', category = 'popular', filters = {} }: HarnessProps) {
   return (
     <LocaleProvider locale='es'>
       <SearchProvider>
-        <FilterPicker category={category} filters={filters} />
-        <SearchBar />
+        <FilterPicker mediaType={mediaType} category={category} filters={filters} />
+        <SearchBar mediaType={mediaType} />
       </SearchProvider>
     </LocaleProvider>
   );
@@ -98,13 +99,38 @@ describe('FilterPicker', () => {
     expect(screen.getByRole('link', { name: 'Terror' })).toHaveAttribute('href', '/?genre=horror&streaming=1');
   });
 
-  it('hides the streaming toggle on cinema categories', async () => {
+  it('hides the streaming toggle on upcoming, where nothing is streaming yet', async () => {
     const user = userEvent.setup();
-    render(<Harness category='now_playing' />);
+    render(<Harness category='upcoming' />);
 
     await user.click(screen.getByRole('button', { name: 'Filtros' }));
 
     expect(screen.queryByRole('switch')).not.toBeInTheDocument();
+  });
+
+  it('lists the series genres, linked within series', async () => {
+    const user = userEvent.setup();
+    render(<Harness mediaType='tv' category='now_playing' />);
+
+    await user.click(screen.getByRole('button', { name: 'Filtros' }));
+
+    const sheet = screen.getByRole('dialog', { name: 'Filtros' });
+    expect(within(sheet).getAllByRole('listitem')).toHaveLength(11);
+    expect(within(sheet).getByRole('link', { name: 'Ciencia ficción' })).toHaveAttribute(
+      'href',
+      '/?type=tv&category=now_playing&genre=science_fiction',
+    );
+    expect(within(sheet).queryByRole('link', { name: 'Terror' })).not.toBeInTheDocument();
+    expect(within(sheet).getByRole('switch', { name: 'Solo en streaming' })).toHaveAttribute(
+      'href',
+      '/?type=tv&category=now_playing&streaming=1',
+    );
+  });
+
+  it('clears the filters within series', () => {
+    render(<Harness mediaType='tv' filters={{ genre: 'drama' }} />);
+
+    expect(screen.getByRole('link', { name: 'Quitar filtros' })).toHaveAttribute('href', '/?type=tv');
   });
 
   it('closes the sheet on Escape and returns focus to the chip', async () => {

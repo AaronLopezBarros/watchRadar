@@ -3,18 +3,23 @@
 import { useCallback } from 'react';
 
 import { searchMedia } from '@/lib/api/tmdb/actions';
+import type { MediaType } from '@/lib/api/tmdb/types';
 import { useLocale, useTranslations } from '@/src/components/LocaleProvider';
 import { PosterGrid } from '@/src/components/PosterGrid/PosterGrid';
 import { usePaginatedMedia } from '@/src/lib/hooks/usePaginatedMedia';
 
 type SearchResultsGridProps = {
+  mediaType: MediaType;
   query: string;
 };
 
-export function SearchResultsGrid({ query }: SearchResultsGridProps) {
+export function SearchResultsGrid({ mediaType, query }: SearchResultsGridProps) {
   const dict = useTranslations();
   const locale = useLocale();
-  const fetchPage = useCallback((page: number) => searchMedia('movie', query, page, locale), [query, locale]);
+  const fetchPage = useCallback(
+    (page: number) => searchMedia(mediaType, query, page, locale),
+    [mediaType, query, locale],
+  );
   const { items, isLoading, error, loadNextPage } = usePaginatedMedia({
     initialItems: [],
     initialPage: 0,

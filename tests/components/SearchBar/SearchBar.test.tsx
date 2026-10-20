@@ -30,14 +30,14 @@ describe('SearchBar', () => {
   });
 
   it('renders a closed search button initially', () => {
-    render(<SearchBar />);
+    render(<SearchBar mediaType='movie' />);
 
     expect(screen.getByRole('button', { name: 'Search movies' })).toBeInTheDocument();
     expect(screen.queryByPlaceholderText('Search movies…')).not.toBeInTheDocument();
   });
 
   it('opens the input when the search button is clicked', async () => {
-    render(<SearchBar />);
+    render(<SearchBar mediaType='movie' />);
 
     await user.click(screen.getByRole('button', { name: 'Search movies' }));
 
@@ -45,7 +45,7 @@ describe('SearchBar', () => {
   });
 
   it('does not commit a query shorter than the minimum length', async () => {
-    render(<SearchBar />);
+    render(<SearchBar mediaType='movie' />);
     await user.click(screen.getByRole('button', { name: 'Search movies' }));
 
     await user.type(screen.getByPlaceholderText('Search movies…'), 'b');
@@ -55,7 +55,7 @@ describe('SearchBar', () => {
   });
 
   it('commits the trimmed query after the debounce delay', async () => {
-    render(<SearchBar />);
+    render(<SearchBar mediaType='movie' />);
     await user.click(screen.getByRole('button', { name: 'Search movies' }));
 
     await user.type(screen.getByPlaceholderText('Search movies…'), '  batman  ');
@@ -65,7 +65,7 @@ describe('SearchBar', () => {
   });
 
   it('resets the debounce timer on each keystroke', async () => {
-    render(<SearchBar />);
+    render(<SearchBar mediaType='movie' />);
     await user.click(screen.getByRole('button', { name: 'Search movies' }));
     const input = screen.getByPlaceholderText('Search movies…');
 
@@ -82,7 +82,7 @@ describe('SearchBar', () => {
   });
 
   it('closes the search, clears the text and resets the query', async () => {
-    render(<SearchBar />);
+    render(<SearchBar mediaType='movie' />);
     await user.click(screen.getByRole('button', { name: 'Search movies' }));
     await user.type(screen.getByPlaceholderText('Search movies…'), 'batman');
 
@@ -93,7 +93,7 @@ describe('SearchBar', () => {
   });
 
   it('closes the search and returns focus to the trigger on Escape', async () => {
-    render(<SearchBar />);
+    render(<SearchBar mediaType='movie' />);
     const trigger = screen.getByRole('button', { name: 'Search movies' });
     await user.click(trigger);
 
@@ -104,7 +104,7 @@ describe('SearchBar', () => {
   });
 
   it('ignores other key presses while open', async () => {
-    render(<SearchBar />);
+    render(<SearchBar mediaType='movie' />);
     await user.click(screen.getByRole('button', { name: 'Search movies' }));
 
     await user.keyboard('a');

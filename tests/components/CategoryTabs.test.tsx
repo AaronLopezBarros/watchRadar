@@ -37,12 +37,16 @@ describe('CategoryTabs', () => {
     );
   });
 
-  it('drops streaming on the cinema tabs, where it does not apply', () => {
+  it('drops streaming on the upcoming tab, where nothing is streaming yet', () => {
     render(
       <CategoryTabs mediaType='movie' active='popular' filters={{ genre: 'horror', streaming: true }} locale='en' />,
     );
 
-    expect(screen.getByRole('link', { name: 'New' })).toHaveAttribute('href', '/?category=now_playing&genre=horror');
+    expect(screen.getByRole('link', { name: 'Upcoming' })).toHaveAttribute('href', '/?category=upcoming&genre=horror');
+    expect(screen.getByRole('link', { name: 'New' })).toHaveAttribute(
+      'href',
+      '/?category=now_playing&genre=horror&streaming=1',
+    );
   });
 
   it('offers the filters and the search for movies', () => {
@@ -64,11 +68,11 @@ describe('CategoryTabs', () => {
     );
   });
 
-  it('leaves out the filters and the search for series, which do not support them yet', () => {
+  it('offers the filters and the search for series too', () => {
     render(<CategoryTabs mediaType='tv' active='popular' locale='en' />);
 
-    expect(screen.queryByRole('button', { name: 'Filters' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Search movies' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Filters' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Search series' })).toBeInTheDocument();
   });
 
   it('lets the user switch between movies and series', () => {

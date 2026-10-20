@@ -16,10 +16,21 @@ export type MovieGenre =
   | 'science_fiction'
   | 'thriller';
 
+export type TvGenre =
+  | 'action_adventure'
+  | 'animation'
+  | 'comedy'
+  | 'crime'
+  | 'documentary'
+  | 'drama'
+  | 'mystery'
+  | 'reality'
+  | 'science_fiction'
+  | 'war_politics';
+
 type GenreByMedia = {
   movie: MovieGenre;
-  // Series can't be filtered by genre yet.
-  tv: never;
+  tv: TvGenre;
 };
 
 export type MediaGenre<M extends MediaType = MediaType> = GenreByMedia[M];

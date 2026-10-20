@@ -19,7 +19,7 @@ function Harness({ active, category = 'popular', streaming }: HarnessProps) {
     <LocaleProvider locale='es'>
       <SearchProvider>
         <MediaTypeToggle active={active} category={category} streaming={streaming} />
-        <SearchBar />
+        <SearchBar mediaType='movie' />
       </SearchProvider>
     </LocaleProvider>
   );
@@ -34,11 +34,14 @@ describe('MediaTypeToggle', () => {
     expect(screen.getByRole('link', { name: 'Series' })).toHaveAttribute('href', '/?type=tv&category=upcoming');
   });
 
-  it('keeps streaming where the media type supports it', () => {
+  it('keeps streaming when switching', () => {
     render(<Harness active='movie' category='top_rated' streaming />);
 
     expect(screen.getByRole('link', { name: 'Películas' })).toHaveAttribute('href', '/?category=top_rated&streaming=1');
-    expect(screen.getByRole('link', { name: 'Series' })).toHaveAttribute('href', '/?type=tv&category=top_rated');
+    expect(screen.getByRole('link', { name: 'Series' })).toHaveAttribute(
+      'href',
+      '/?type=tv&category=top_rated&streaming=1',
+    );
   });
 
   it('marks the active media type', () => {

@@ -42,11 +42,10 @@ export function CategoryTabs({ mediaType, active, filters = {}, locale }: Catego
         ))}
       </div>
       <div className='flex items-center justify-end gap-2'>
-        {/* Series can't be filtered or searched yet. */}
         <div className='mr-auto min-w-0'>
-          {mediaType === 'movie' && <FilterPicker category={active} filters={filters} />}
+          <FilterPicker mediaType={mediaType} category={active} filters={filters} />
         </div>
-        {mediaType === 'movie' && <SearchBar />}
+        <SearchBar mediaType={mediaType} />
         <MediaTypeToggle active={mediaType} category={active} streaming={filters.streaming} />
       </div>
     </nav>

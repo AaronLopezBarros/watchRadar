@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRef, useState } from 'react';
 
 import { MEDIA_CONFIG, canFilterStreaming } from '@/lib/api/tmdb/media';
-import type { MediaCategory, MediaFilters } from '@/lib/api/tmdb/types';
+import type { MediaCategory, MediaFilters, MediaType } from '@/lib/api/tmdb/types';
 import { buildHomeHref, cn } from '@/lib/utils';
 import { BottomSheet } from '@/src/components/BottomSheet/BottomSheet';
 import { useTranslations } from '@/src/components/LocaleProvider';
@@ -14,17 +14,18 @@ import { useSearch } from '@/src/components/SearchBar/SearchProvider';
 const ALL_GENRES_OPTION = undefined;
 
 type FilterPickerProps = {
+  mediaType: MediaType;
   category: MediaCategory;
   filters: MediaFilters;
 };
 
-export function FilterPicker({ category, filters }: FilterPickerProps) {
+export function FilterPicker({ mediaType, category, filters }: FilterPickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const { isSearchOpen } = useSearch();
   const dict = useTranslations();
   const { genre, streaming } = filters;
-  const canFilterByStreaming = canFilterStreaming('movie', category);
+  const canFilterByStreaming = canFilterStreaming(mediaType, category);
   const activeLabels = [genre && dict.genre[genre], streaming && dict.filters.streaming].filter(Boolean);
   const hasActiveFilters = activeLabels.length > 0;
 
@@ -38,7 +39,7 @@ export function FilterPicker({ category, filters }: FilterPickerProps) {
     window.scrollTo({ top: 0 });
   };
 
-  // /search/movie supports none of these filters, so the picker steps aside while a search is open.
+  // TMDB search supports none of these filters, so the picker steps aside while a search is open.
   if (isSearchOpen) return null;
 
   return (
@@ -70,7 +71,7 @@ export function FilterPicker({ category, filters }: FilterPickerProps) {
         </button>
         {hasActiveFilters && (
           <Link
-            href={buildHomeHref({ category })}
+            href={buildHomeHref({ mediaType, category })}
             onClick={handleSelect}
             aria-label={dict.filters.clearAriaLabel}
             className='flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/10 hover:text-white'
@@ -91,7 +92,7 @@ export function FilterPicker({ category, filters }: FilterPickerProps) {
           {canFilterByStreaming && (
             // Toggling streaming keeps the sheet open so a genre can still be picked in the same visit.
             <Link
-              href={buildHomeHref({ category, genre, streaming: !streaming })}
+              href={buildHomeHref({ mediaType, category, genre, streaming: !streaming })}
               role='switch'
               aria-checked={Boolean(streaming)}
               className='mb-4 flex min-h-11 items-center justify-between rounded-xl bg-white/5 px-4 text-sm text-white transition-colors hover:bg-white/10'
@@ -110,10 +111,10 @@ export function FilterPicker({ category, filters }: FilterPickerProps) {
           )}
           <h3 className='mb-2 text-xs font-medium tracking-wide text-white/40 uppercase'>{dict.filters.genres}</h3>
           <ul className='grid max-h-[50vh] grid-cols-2 gap-2 overflow-y-auto overscroll-contain'>
-            {[ALL_GENRES_OPTION, ...MEDIA_CONFIG.movie.genres].map(value => (
+            {[ALL_GENRES_OPTION, ...MEDIA_CONFIG[mediaType].genres].map(value => (
               <li key={value ?? 'all'}>
                 <Link
-                  href={buildHomeHref({ category, genre: value, streaming })}
+                  href={buildHomeHref({ mediaType, category, genre: value, streaming })}
                   onClick={handleSelect}
                   aria-current={value === genre ? 'true' : undefined}
                   className={cn(
