@@ -7,7 +7,7 @@ import { useWatchProviders } from '@/src/components/PosterCard/hooks/useWatchPro
 import { ImageCard } from '@/src/components/PosterCard/ImageCard';
 import { PosterDialog } from '@/src/components/PosterCard/PosterDialog';
 import type { MediaItem } from '@/src/lib/api/tmdb/types';
-import { withMovieParam } from '@/src/lib/utils';
+import { withMediaParam } from '@/src/lib/utils';
 
 type PosterCardProps = {
   item: MediaItem;
@@ -19,19 +19,16 @@ export function PosterCard({ item, priority = false }: PosterCardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { providers, isLoading: isLoadingProviders, fetchProviders } = useWatchProviders(item.mediaType, item.id);
 
-  // The URL can only point at a movie for now: a series id there would open the movie with that id.
-  const isLinkable = item.mediaType === 'movie';
-
   // Native history keeps the open item in the URL without a server round trip that would refetch the grid.
   const handleOpen = () => {
     fetchProviders();
     setIsOpen(true);
-    if (isLinkable) window.history.replaceState(null, '', withMovieParam(window.location.search, item.id));
+    window.history.replaceState(null, '', withMediaParam(window.location.search, item));
   };
 
   const handleClose = () => {
     setIsOpen(false);
-    if (isLinkable) window.history.replaceState(null, '', withMovieParam(window.location.search));
+    window.history.replaceState(null, '', withMediaParam(window.location.search));
     triggerRef.current?.focus();
   };
 

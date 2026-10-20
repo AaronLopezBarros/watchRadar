@@ -4,11 +4,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { LocaleProvider } from '@/src/components/LocaleProvider';
 import { ShareButton } from '@/src/components/PosterCard/ShareButton';
+import type { MediaItem, MediaRef } from '@/src/lib/api/tmdb/types';
 
-const renderShareButton = () =>
+const movie = { mediaType: 'movie', id: 27205, title: 'Origen' } as const;
+
+const renderShareButton = (item: MediaRef & Pick<MediaItem, 'title'> = movie) =>
   render(
     <LocaleProvider locale='es'>
-      <ShareButton movieId={27205} title='Origen' />
+      <ShareButton item={item} />
     </LocaleProvider>,
   );
 
@@ -71,6 +74,14 @@ describe('ShareButton', () => {
 
     expect(await navigator.clipboard.readText()).toBe(`${window.location.origin}/?movie=27205&lang=es`);
     expect(screen.getByRole('status')).toHaveTextContent('Enlace copiado');
+  });
+
+  it('copies a link that opens the series over the series grid', async () => {
+    renderShareButton({ mediaType: 'tv', id: 1399, title: 'Juego de tronos' });
+
+    await user.click(screen.getByRole('button', { name: 'Compartir' }));
+
+    expect(await navigator.clipboard.readText()).toBe(`${window.location.origin}/?type=tv&tv=1399&lang=es`);
   });
 
   it('hides the confirmation after a couple of seconds', async () => {

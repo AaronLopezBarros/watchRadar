@@ -52,12 +52,9 @@ export function PosterDialog({ item, providers, isLoadingProviders, onClose }: P
             <div className='mt-1.5'>
               <RatingBadge rating={item.vote_average} />
             </div>
-            {/* Share links can only open movies for now. */}
-            {item.mediaType === 'movie' && (
-              <div className='mt-3'>
-                <ShareButton movieId={item.id} title={item.title} />
-              </div>
-            )}
+            <div className='mt-3'>
+              <ShareButton item={item} />
+            </div>
           </div>
         </div>
         <p className='mb-4 text-sm leading-relaxed text-zinc-600'>{item.overview}</p>
