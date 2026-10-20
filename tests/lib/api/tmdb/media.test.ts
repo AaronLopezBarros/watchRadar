@@ -1,10 +1,19 @@
 import { describe, expect, it } from 'vitest';
 
-import { MEDIA_CONFIG, isMediaCategory, isMediaGenre, isMediaType, mediaKey } from '@/lib/api/tmdb/media';
+import {
+  MEDIA_CONFIG,
+  canFilterStreaming,
+  hasCategoryEndpoint,
+  isMediaCategory,
+  isMediaGenre,
+  isMediaType,
+  mediaKey,
+} from '@/lib/api/tmdb/media';
 
 describe('isMediaType', () => {
   it('accepts the supported media types', () => {
     expect(isMediaType('movie')).toBe(true);
+    expect(isMediaType('tv')).toBe(true);
   });
 
   it('rejects anything else', () => {
@@ -14,13 +23,13 @@ describe('isMediaType', () => {
 });
 
 describe('isMediaCategory', () => {
-  it('accepts a category of the media type', () => {
-    expect(isMediaCategory('movie', 'now_playing')).toBe(true);
+  it('accepts the shared categories', () => {
+    expect(isMediaCategory('now_playing')).toBe(true);
   });
 
-  it('rejects a category the media type does not have', () => {
-    expect(isMediaCategory('movie', 'airing_today')).toBe(false);
-    expect(isMediaCategory('movie', undefined)).toBe(false);
+  it('rejects anything else', () => {
+    expect(isMediaCategory('trending')).toBe(false);
+    expect(isMediaCategory(undefined)).toBe(false);
   });
 });
 
@@ -36,7 +45,30 @@ describe('isMediaGenre', () => {
 
 describe('mediaKey', () => {
   it('tells apart items of different media types that share an id', () => {
-    expect(mediaKey({ mediaType: 'movie', id: 1399 })).toBe('movie-1399');
+    expect(mediaKey({ mediaType: 'movie', id: 1399 })).not.toBe(mediaKey({ mediaType: 'tv', id: 1399 }));
+  });
+});
+
+describe('hasCategoryEndpoint', () => {
+  it('is true for the categories TMDB serves under their own endpoint', () => {
+    expect(hasCategoryEndpoint('movie', 'now_playing')).toBe(true);
+    expect(hasCategoryEndpoint('tv', 'top_rated')).toBe(true);
+  });
+
+  it('is false for the series premieres, which only exist as discover queries', () => {
+    expect(hasCategoryEndpoint('tv', 'upcoming')).toBe(false);
+    expect(hasCategoryEndpoint('tv', 'now_playing')).toBe(false);
+  });
+});
+
+describe('canFilterStreaming', () => {
+  it('allows streaming only in the categories that support it', () => {
+    expect(canFilterStreaming('movie', 'top_rated')).toBe(true);
+    expect(canFilterStreaming('movie', 'now_playing')).toBe(false);
+  });
+
+  it('does not allow streaming on series yet', () => {
+    expect(canFilterStreaming('tv', 'popular')).toBe(false);
   });
 });
 
@@ -45,12 +77,6 @@ describe('MEDIA_CONFIG.movie', () => {
     const { genres, genreIds } = MEDIA_CONFIG.movie;
 
     expect(Object.keys(genreIds).sort()).toEqual([...genres].sort());
-  });
-
-  it('only allows streaming in categories it has', () => {
-    const { categories, streamingCategories } = MEDIA_CONFIG.movie;
-
-    streamingCategories.forEach(category => expect(categories).toContain(category));
   });
 
   it('normalizes a TMDB movie into a media item with the given genres', () => {
@@ -89,6 +115,47 @@ describe('MEDIA_CONFIG.movie', () => {
       title: 'Origen',
       vote_average: 8.4,
       vote_count: 35000,
+    });
+  });
+});
+
+describe('MEDIA_CONFIG.tv', () => {
+  it('normalizes a TMDB series into a media item with movie-like title and date fields', () => {
+    const genres = [{ id: 18, name: 'Drama' }];
+
+    expect(
+      MEDIA_CONFIG.tv.normalize(
+        {
+          adult: false,
+          backdrop_path: '/got-backdrop.jpg',
+          first_air_date: '2011-04-17',
+          id: 1399,
+          name: 'Juego de tronos',
+          original_language: 'en',
+          original_name: 'Game of Thrones',
+          overview: 'Siete casas nobles…',
+          popularity: 300,
+          poster_path: '/got.jpg',
+          vote_average: 8.5,
+          vote_count: 25000,
+        },
+        genres,
+      ),
+    ).toEqual({
+      mediaType: 'tv',
+      adult: false,
+      backdrop_path: '/got-backdrop.jpg',
+      genres,
+      id: 1399,
+      original_language: 'en',
+      original_title: 'Game of Thrones',
+      overview: 'Siete casas nobles…',
+      popularity: 300,
+      poster_path: '/got.jpg',
+      release_date: '2011-04-17',
+      title: 'Juego de tronos',
+      vote_average: 8.5,
+      vote_count: 25000,
     });
   });
 });

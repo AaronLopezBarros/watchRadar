@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
-import { MEDIA_CONFIG } from '@/lib/api/tmdb/media';
+import { MEDIA_CATEGORIES, MEDIA_CONFIG } from '@/lib/api/tmdb/media';
 import { getDictionary } from '@/lib/i18n/dictionary';
 import { SUPPORTED_LOCALES } from '@/lib/i18n/locale';
 
 describe('getDictionary', () => {
-  it.each(SUPPORTED_LOCALES)('returns a label for every movie category for locale %s', locale => {
+  it.each(SUPPORTED_LOCALES)('returns a label for every category for locale %s', locale => {
     const dict = getDictionary(locale);
 
-    MEDIA_CONFIG.movie.categories.forEach(category => {
+    MEDIA_CATEGORIES.forEach(category => {
       expect(dict.category[category]).toEqual(expect.any(String));
       expect(dict.category[category].length).toBeGreaterThan(0);
     });

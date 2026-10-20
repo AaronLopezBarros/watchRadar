@@ -12,7 +12,10 @@ import type { MediaItem, WatchProvider } from '@/src/lib/api/tmdb/types';
 import { getPosterUrl } from '@/src/lib/utils';
 
 type PosterDialogProps = {
-  item: Pick<MediaItem, 'id' | 'title' | 'release_date' | 'poster_path' | 'vote_average' | 'overview' | 'genres'>;
+  item: Pick<
+    MediaItem,
+    'mediaType' | 'id' | 'title' | 'release_date' | 'poster_path' | 'vote_average' | 'overview' | 'genres'
+  >;
   providers: WatchProvider[];
   isLoadingProviders: boolean;
   onClose: () => void;
@@ -49,9 +52,12 @@ export function PosterDialog({ item, providers, isLoadingProviders, onClose }: P
             <div className='mt-1.5'>
               <RatingBadge rating={item.vote_average} />
             </div>
-            <div className='mt-3'>
-              <ShareButton movieId={item.id} title={item.title} />
-            </div>
+            {/* Share links can only open movies for now. */}
+            {item.mediaType === 'movie' && (
+              <div className='mt-3'>
+                <ShareButton movieId={item.id} title={item.title} />
+              </div>
+            )}
           </div>
         </div>
         <p className='mb-4 text-sm leading-relaxed text-zinc-600'>{item.overview}</p>

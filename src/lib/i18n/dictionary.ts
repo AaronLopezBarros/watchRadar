@@ -1,12 +1,16 @@
-import type { MovieCategory, MovieGenre } from '@/lib/api/tmdb/types';
+import type { MediaCategory, MediaType, MovieGenre } from '@/lib/api/tmdb/types';
 import type { Locale } from '@/lib/i18n/locale';
 
 export type Dictionary = {
   header: {
     tagline: string;
   };
-  category: Record<MovieCategory, string>;
+  mediaType: Record<MediaType, string> & {
+    groupAriaLabel: string;
+  };
+  category: Record<MediaCategory, string>;
   genre: Record<MovieGenre, string>;
+  emptyList: Record<MediaType, string>;
   filters: {
     title: string;
     genres: string;
@@ -14,7 +18,7 @@ export type Dictionary = {
     streaming: string;
     streamingOnly: string;
     clearAriaLabel: string;
-    noResults: string;
+    noResults: Record<MediaType, string>;
   };
   search: {
     openAriaLabel: string;
@@ -54,13 +58,18 @@ export type Dictionary = {
 const translations: Record<Locale, Dictionary> = {
   en: {
     header: {
-      tagline: 'Films · Ratings · Where to watch',
+      tagline: 'Films · Series · Where to watch',
+    },
+    mediaType: {
+      movie: 'Movies',
+      tv: 'Series',
+      groupAriaLabel: 'Content type',
     },
     category: {
       popular: 'Popular',
       top_rated: 'Top',
       upcoming: 'Upcoming',
-      now_playing: 'Playing',
+      now_playing: 'New',
     },
     genre: {
       action: 'Action',
@@ -75,6 +84,10 @@ const translations: Record<Locale, Dictionary> = {
       science_fiction: 'Science Fiction',
       thriller: 'Thriller',
     },
+    emptyList: {
+      movie: 'No movies to show here.',
+      tv: 'No series to show here.',
+    },
     filters: {
       title: 'Filters',
       genres: 'Genres',
@@ -82,7 +95,10 @@ const translations: Record<Locale, Dictionary> = {
       streaming: 'Streaming',
       streamingOnly: 'Streaming only',
       clearAriaLabel: 'Clear filters',
-      noResults: 'No movies match these filters.',
+      noResults: {
+        movie: 'No movies match these filters.',
+        tv: 'No series match these filters.',
+      },
     },
     search: {
       openAriaLabel: 'Search movies',
@@ -115,18 +131,23 @@ const translations: Record<Locale, Dictionary> = {
       goHome: 'Go home',
     },
     meta: {
-      description: 'Discover popular, top rated, upcoming and now playing movies.',
+      description: 'Discover popular and top rated movies and series, and where to watch them.',
     },
   },
   es: {
     header: {
-      tagline: 'Películas · Valoraciones · Dónde ver',
+      tagline: 'Películas · Series · Dónde ver',
+    },
+    mediaType: {
+      movie: 'Películas',
+      tv: 'Series',
+      groupAriaLabel: 'Tipo de contenido',
     },
     category: {
       popular: 'Populares',
       top_rated: 'Favoritas',
-      upcoming: 'Estrenos',
-      now_playing: 'Cartelera',
+      upcoming: 'Próximas',
+      now_playing: 'Nuevas',
     },
     genre: {
       action: 'Acción',
@@ -141,6 +162,10 @@ const translations: Record<Locale, Dictionary> = {
       science_fiction: 'Ciencia ficción',
       thriller: 'Suspense',
     },
+    emptyList: {
+      movie: 'No hay películas que mostrar.',
+      tv: 'No hay series que mostrar.',
+    },
     filters: {
       title: 'Filtros',
       genres: 'Géneros',
@@ -148,7 +173,10 @@ const translations: Record<Locale, Dictionary> = {
       streaming: 'Streaming',
       streamingOnly: 'Solo en streaming',
       clearAriaLabel: 'Quitar filtros',
-      noResults: 'No hay películas con estos filtros.',
+      noResults: {
+        movie: 'No hay películas con estos filtros.',
+        tv: 'No hay series con estos filtros.',
+      },
     },
     search: {
       openAriaLabel: 'Buscar películas',
@@ -181,7 +209,7 @@ const translations: Record<Locale, Dictionary> = {
       goHome: 'Ir al inicio',
     },
     meta: {
-      description: 'Descubre películas populares, mejor valoradas, próximas y en cartelera.',
+      description: 'Descubre películas y series populares y mejor valoradas, y dónde verlas.',
     },
   },
 };

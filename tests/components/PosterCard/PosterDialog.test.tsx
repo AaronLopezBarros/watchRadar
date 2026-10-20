@@ -86,4 +86,18 @@ describe('PosterDialog', () => {
 
     expect(screen.getByRole('button', { name: 'Share' })).toBeInTheDocument();
   });
+
+  it('does not offer to share a series, which share links cannot open yet', () => {
+    render(
+      <PosterDialog
+        item={createMediaItem({ mediaType: 'tv', title: 'Juego de tronos' })}
+        providers={[]}
+        isLoadingProviders={false}
+        onClose={() => {}}
+      />,
+    );
+
+    expect(screen.getByRole('dialog', { name: 'Juego de tronos' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Share' })).not.toBeInTheDocument();
+  });
 });

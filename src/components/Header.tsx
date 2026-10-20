@@ -2,6 +2,7 @@ import { Anton, Audiowide } from 'next/font/google';
 
 import { getDictionary } from '@/lib/i18n/dictionary';
 import type { Locale } from '@/lib/i18n/locale';
+import { LanguageSelector } from '@/src/components/LanguageSelector/LanguageSelector';
 
 const anton = Anton({ subsets: ['latin'], weight: '400' });
 const audiowide = Audiowide({ subsets: ['latin'], weight: '400' });
@@ -14,7 +15,11 @@ export function Header({ locale }: HeaderProps) {
   const dict = getDictionary(locale);
 
   return (
-    <header className='flex justify-center px-4 pt-6'>
+    <header className='relative flex justify-center px-4 pt-6'>
+      {/* Picked once and rarely touched again, so it lives here instead of taking room in the sticky nav. */}
+      <div className='absolute top-3 right-3 z-10'>
+        <LanguageSelector locale={locale} />
+      </div>
       <div className='@container w-full max-w-160'>
         <div
           className='relative flex w-full items-center justify-center gap-[3.667cqw] overflow-hidden px-[5cqw]'
