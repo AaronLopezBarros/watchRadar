@@ -1,4 +1,12 @@
-import type { Genre, MediaCategory, MediaGenre, MediaItem, MediaType, TmdbItemBase } from '@/lib/api/tmdb/types';
+import type {
+  Genre,
+  MediaCategory,
+  MediaGenre,
+  MediaItem,
+  MediaRef,
+  MediaType,
+  TmdbItemBase,
+} from '@/lib/api/tmdb/types';
 
 export type DiscoverParams = Record<string, string | number | undefined>;
 
@@ -214,4 +222,4 @@ export const canFilterStreaming = (mediaType: MediaType, category: MediaCategory
   MEDIA_CONFIG[mediaType].streamingCategories.some(streamingCategory => streamingCategory === category);
 
 // TMDB ids are only unique within a media type, so anything that tells items apart needs both.
-export const mediaKey = ({ mediaType, id }: Pick<MediaItem, 'mediaType' | 'id'>) => `${mediaType}-${id}`;
+export const mediaKey = ({ mediaType, id }: MediaRef) => `${mediaType}-${id}`;
