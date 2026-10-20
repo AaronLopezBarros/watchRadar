@@ -4,6 +4,7 @@ import { CheckIcon, ShareIcon, XIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { useLocale, useTranslations } from '@/src/components/LocaleProvider';
+import type { MediaItem, MediaRef } from '@/src/lib/api/tmdb/types';
 import { buildShareHref, cn } from '@/src/lib/utils';
 
 const FEEDBACK_DURATION_MS = 2000;
@@ -18,11 +19,10 @@ const FEEDBACK_STYLE = {
 };
 
 type ShareButtonProps = {
-  movieId: number;
-  title: string;
+  item: MediaRef & Pick<MediaItem, 'title'>;
 };
 
-export function ShareButton({ movieId, title }: ShareButtonProps) {
+export function ShareButton({ item }: ShareButtonProps) {
   const dict = useTranslations();
   const locale = useLocale();
   const [feedback, setFeedback] = useState<keyof typeof FEEDBACK_STYLE | null>(null);
@@ -35,11 +35,11 @@ export function ShareButton({ movieId, title }: ShareButtonProps) {
   }, [feedback]);
 
   const handleShare = async () => {
-    const url = `${window.location.origin}${buildShareHref(movieId, locale)}`;
+    const url = `${window.location.origin}${buildShareHref(item, locale)}`;
 
     if (canUseNativeShare()) {
       try {
-        await navigator.share({ title, url });
+        await navigator.share({ title: item.title, url });
       } catch {
         // Dismissing the share sheet rejects too; there is nothing to report.
       }

@@ -32,4 +32,18 @@ describe('SharedMediaDialog', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(window.location.search).toBe('?category=top_rated');
   });
+
+  it('closes a shared series back onto the series grid', async () => {
+    window.history.replaceState(null, '', '/?type=tv&tv=1399&lang=es');
+    render(
+      <SharedMediaDialog
+        item={createMediaItem({ mediaType: 'tv', id: 1399, title: 'Juego de tronos' })}
+        providers={[]}
+      />,
+    );
+
+    await userEvent.keyboard('{Escape}');
+
+    expect(window.location.search).toBe('?type=tv');
+  });
 });

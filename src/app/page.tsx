@@ -14,13 +14,14 @@ type HomeProps = {
   searchParams: Promise<HomeSearchParams>;
 };
 
-// Gives shared movie links a proper preview in chat apps, in the sharer's language. For people the locale matches
+// Gives shared links a proper preview in chat apps, in the sharer's language. For people the locale matches
 // the page's, so Next dedupes this TMDB fetch with SharedMedia's.
 export async function generateMetadata({ searchParams }: HomeProps): Promise<Metadata> {
-  const { movieId, sharedLocale } = parseHomeSearchParams(await searchParams);
-  if (!movieId) return {};
+  const { sharedMedia, sharedLocale } = parseHomeSearchParams(await searchParams);
+  if (!sharedMedia) return {};
 
-  const item = await fetchMediaDetails('movie', movieId, await getMetadataLocale(sharedLocale)).catch(() => null);
+  const { mediaType, id } = sharedMedia;
+  const item = await fetchMediaDetails(mediaType, id, await getMetadataLocale(sharedLocale)).catch(() => null);
   if (!item) return {};
 
   const title = `${item.title} · WatchRadar`;
@@ -38,7 +39,7 @@ export async function generateMetadata({ searchParams }: HomeProps): Promise<Met
 }
 
 export default async function Home({ searchParams }: HomeProps) {
-  const { mediaType, category, filters, movieId } = parseHomeSearchParams(await searchParams);
+  const { mediaType, category, filters, sharedMedia } = parseHomeSearchParams(await searchParams);
   const locale = await getLocale();
 
   return (
@@ -53,9 +54,9 @@ export default async function Home({ searchParams }: HomeProps) {
           locale={locale}
         />
       </SearchGridSwitch>
-      {movieId && (
+      {sharedMedia && (
         <Suspense fallback={null}>
-          <SharedMedia movieId={movieId} locale={locale} />
+          <SharedMedia sharedMedia={sharedMedia} locale={locale} />
         </Suspense>
       )}
     </SearchProvider>

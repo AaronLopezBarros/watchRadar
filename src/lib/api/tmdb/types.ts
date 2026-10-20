@@ -115,6 +115,8 @@ export type MediaItem = {
   vote_count: number;
 };
 
+export type MediaRef = Pick<MediaItem, 'mediaType' | 'id'>;
+
 export type TmdbListResponse<T> = {
   page: number;
   results: T[];

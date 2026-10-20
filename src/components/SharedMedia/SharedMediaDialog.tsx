@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { PosterDialog } from '@/src/components/PosterCard/PosterDialog';
 import type { MediaItem, WatchProvider } from '@/src/lib/api/tmdb/types';
-import { withMovieParam } from '@/src/lib/utils';
+import { withMediaParam } from '@/src/lib/utils';
 
 type SharedMediaDialogProps = {
   item: MediaItem;
@@ -16,7 +16,7 @@ export function SharedMediaDialog({ item, providers }: SharedMediaDialogProps) {
 
   const handleClose = () => {
     setIsOpen(false);
-    window.history.replaceState(null, '', withMovieParam(window.location.search));
+    window.history.replaceState(null, '', withMediaParam(window.location.search));
   };
 
   if (!isOpen) return null;
