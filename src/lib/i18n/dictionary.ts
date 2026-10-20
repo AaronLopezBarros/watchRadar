@@ -10,6 +10,7 @@ export type Dictionary = {
   };
   category: Record<MediaCategory, string>;
   genre: Record<MovieGenre, string>;
+  emptyList: Record<MediaType, string>;
   filters: {
     title: string;
     genres: string;
@@ -82,6 +83,10 @@ const translations: Record<Locale, Dictionary> = {
       romance: 'Romance',
       science_fiction: 'Science Fiction',
       thriller: 'Thriller',
+    },
+    emptyList: {
+      movie: 'No movies to show here.',
+      tv: 'No series to show here.',
     },
     filters: {
       title: 'Filters',
@@ -156,6 +161,10 @@ const translations: Record<Locale, Dictionary> = {
       romance: 'Romance',
       science_fiction: 'Ciencia ficción',
       thriller: 'Suspense',
+    },
+    emptyList: {
+      movie: 'No hay películas que mostrar.',
+      tv: 'No hay series que mostrar.',
     },
     filters: {
       title: 'Filtros',

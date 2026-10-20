@@ -1,4 +1,5 @@
 import { fetchMedia } from '@/lib/api/tmdb/actions';
+import { hasFilters } from '@/lib/api/tmdb/discover';
 import { mediaKey } from '@/lib/api/tmdb/media';
 import type { MediaCategory, MediaFilters, MediaType } from '@/lib/api/tmdb/types';
 import { getDictionary } from '@/lib/i18n/dictionary';
@@ -25,9 +26,11 @@ export async function CategoryPosters({ mediaType, category, filters, locale }: 
   const items = [...new Map(pages.flat().map(item => [mediaKey(item), item])).values()];
 
   if (items.length === 0) {
+    const dict = getDictionary(locale);
+
     return (
       <div className='px-5 py-16 text-center text-white/60'>
-        <p>{getDictionary(locale).filters.noResults[mediaType]}</p>
+        <p>{filters && hasFilters(filters) ? dict.filters.noResults[mediaType] : dict.emptyList[mediaType]}</p>
       </div>
     );
   }

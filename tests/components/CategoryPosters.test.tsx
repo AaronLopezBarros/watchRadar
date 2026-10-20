@@ -123,11 +123,11 @@ describe('CategoryPosters', () => {
     expect(screen.getByTestId('infinite-grid')).toHaveAttribute('data-count', '2');
   });
 
-  it('names series in the empty state', async () => {
+  it('names series in the empty state, without blaming filters when there are none', async () => {
     vi.mocked(fetchMedia).mockResolvedValue([]);
 
     render(await CategoryPosters({ mediaType: 'tv', category: 'upcoming', locale: 'es' }));
 
-    expect(screen.getByText('No hay series con estos filtros.')).toBeInTheDocument();
+    expect(screen.getByText('No hay series que mostrar.')).toBeInTheDocument();
   });
 });
