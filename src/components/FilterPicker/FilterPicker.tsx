@@ -4,8 +4,8 @@ import { ChevronDownIcon, XIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 
-import { MOVIE_GENRES, STREAMING_CATEGORIES } from '@/lib/api/tmdb/constants';
-import type { MovieCategory, MovieFilters } from '@/lib/api/tmdb/types';
+import { MEDIA_CONFIG } from '@/lib/api/tmdb/media';
+import type { MediaFilters, MovieCategory } from '@/lib/api/tmdb/types';
 import { buildHomeHref, cn } from '@/lib/utils';
 import { BottomSheet } from '@/src/components/BottomSheet/BottomSheet';
 import { useTranslations } from '@/src/components/LocaleProvider';
@@ -15,7 +15,7 @@ const ALL_GENRES_OPTION = undefined;
 
 type FilterPickerProps = {
   category: MovieCategory;
-  filters: MovieFilters;
+  filters: MediaFilters<'movie'>;
 };
 
 export function FilterPicker({ category, filters }: FilterPickerProps) {
@@ -24,7 +24,7 @@ export function FilterPicker({ category, filters }: FilterPickerProps) {
   const { isSearchOpen } = useSearch();
   const dict = useTranslations();
   const { genre, streaming } = filters;
-  const canFilterStreaming = STREAMING_CATEGORIES.includes(category);
+  const canFilterStreaming = MEDIA_CONFIG.movie.streamingCategories.includes(category);
   const activeLabels = [genre && dict.genre[genre], streaming && dict.filters.streaming].filter(Boolean);
   const hasActiveFilters = activeLabels.length > 0;
 
@@ -101,7 +101,7 @@ export function FilterPicker({ category, filters }: FilterPickerProps) {
           )}
           <h3 className='mb-2 text-xs font-medium tracking-wide text-white/40 uppercase'>{dict.filters.genres}</h3>
           <ul className='grid max-h-[50vh] grid-cols-2 gap-2 overflow-y-auto overscroll-contain'>
-            {[ALL_GENRES_OPTION, ...MOVIE_GENRES].map(value => (
+            {[ALL_GENRES_OPTION, ...MEDIA_CONFIG.movie.genres].map(value => (
               <li key={value ?? 'all'}>
                 <Link
                   href={buildHomeHref({ category, genre: value, streaming })}

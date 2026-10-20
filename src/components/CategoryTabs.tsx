@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
-import { MOVIE_CATEGORIES } from '@/lib/api/tmdb/constants';
-import type { MovieCategory, MovieFilters } from '@/lib/api/tmdb/types';
+import { MEDIA_CONFIG } from '@/lib/api/tmdb/media';
+import type { MediaFilters, MovieCategory } from '@/lib/api/tmdb/types';
 import { getDictionary } from '@/lib/i18n/dictionary';
 import type { Locale } from '@/lib/i18n/locale';
 import { buildHomeHref, cn } from '@/lib/utils';
@@ -11,7 +11,7 @@ import { SearchBar } from '@/src/components/SearchBar/SearchBar';
 
 type CategoryTabsProps = {
   active: MovieCategory;
-  filters?: MovieFilters;
+  filters?: MediaFilters<'movie'>;
   locale: Locale;
 };
 
@@ -24,7 +24,7 @@ export function CategoryTabs({ active, filters = {}, locale }: CategoryTabsProps
           block for `fixed` descendants and trap the filter sheet inside the nav. */}
       <div aria-hidden='true' className='absolute inset-0 -z-10 backdrop-blur-md' />
       <div className='flex min-w-0 flex-1 gap-1.5 md:justify-center'>
-        {MOVIE_CATEGORIES.map(value => (
+        {MEDIA_CONFIG.movie.categories.map(value => (
           <Link
             key={value}
             href={buildHomeHref({ category: value, ...filters })}

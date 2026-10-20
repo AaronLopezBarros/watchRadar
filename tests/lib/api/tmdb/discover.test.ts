@@ -18,11 +18,11 @@ describe('hasFilters', () => {
 
 describe('getDiscoverParams', () => {
   it('adds only the genre for popular, which is the discover default order', () => {
-    expect(getDiscoverParams('popular', { genre: 'horror' }, TODAY)).toEqual({ with_genres: 27 });
+    expect(getDiscoverParams('movie', 'popular', { genre: 'horror' }, TODAY)).toEqual({ with_genres: 27 });
   });
 
   it('sorts top_rated by rating with a minimum vote count', () => {
-    expect(getDiscoverParams('top_rated', { genre: 'horror' }, TODAY)).toEqual({
+    expect(getDiscoverParams('movie', 'top_rated', { genre: 'horror' }, TODAY)).toEqual({
       sort_by: 'vote_average.desc',
       'vote_count.gte': 300,
       with_genres: 27,
@@ -30,7 +30,7 @@ describe('getDiscoverParams', () => {
   });
 
   it('limits now_playing to theatrical releases from the last six weeks up to today', () => {
-    expect(getDiscoverParams('now_playing', { genre: 'horror' }, TODAY)).toEqual({
+    expect(getDiscoverParams('movie', 'now_playing', { genre: 'horror' }, TODAY)).toEqual({
       with_release_type: '2|3',
       'release_date.gte': '2026-08-24',
       'release_date.lte': '2026-10-05',
@@ -39,7 +39,7 @@ describe('getDiscoverParams', () => {
   });
 
   it('limits upcoming to theatrical releases from tomorrow to six weeks ahead', () => {
-    expect(getDiscoverParams('upcoming', { genre: 'horror' }, TODAY)).toEqual({
+    expect(getDiscoverParams('movie', 'upcoming', { genre: 'horror' }, TODAY)).toEqual({
       with_release_type: '2|3',
       'release_date.gte': '2026-10-06',
       'release_date.lte': '2026-11-16',
@@ -48,7 +48,7 @@ describe('getDiscoverParams', () => {
   });
 
   it('restricts to subscription streaming in the watch region', () => {
-    expect(getDiscoverParams('popular', { streaming: true }, TODAY)).toEqual({
+    expect(getDiscoverParams('movie', 'popular', { streaming: true }, TODAY)).toEqual({
       watch_region: 'ES',
       with_watch_monetization_types: 'flatrate',
     });

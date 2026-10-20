@@ -1,30 +1,30 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 
-import { fetchMovieDetails } from '@/lib/api/tmdb/actions';
+import { fetchMediaDetails } from '@/lib/api/tmdb/actions';
 import { getLocale, getMetadataLocale } from '@/lib/i18n/getLocale';
 import { getPosterUrl, parseHomeSearchParams, type HomeSearchParams } from '@/lib/utils';
-import { CategoryMovies } from '@/src/components/CategoryMovies';
+import { CategoryPosters } from '@/src/components/CategoryPosters';
 import { CategoryTabs } from '@/src/components/CategoryTabs';
 import { SearchGridSwitch } from '@/src/components/SearchBar/SearchGridSwitch';
 import { SearchProvider } from '@/src/components/SearchBar/SearchProvider';
-import { SharedMovie } from '@/src/components/SharedMovie/SharedMovie';
+import { SharedMedia } from '@/src/components/SharedMedia/SharedMedia';
 
 type HomeProps = {
   searchParams: Promise<HomeSearchParams>;
 };
 
 // Gives shared movie links a proper preview in chat apps, in the sharer's language. For people the locale matches
-// the page's, so Next dedupes this TMDB fetch with SharedMovie's.
+// the page's, so Next dedupes this TMDB fetch with SharedMedia's.
 export async function generateMetadata({ searchParams }: HomeProps): Promise<Metadata> {
   const { movieId, sharedLocale } = parseHomeSearchParams(await searchParams);
   if (!movieId) return {};
 
-  const movie = await fetchMovieDetails(movieId, await getMetadataLocale(sharedLocale)).catch(() => null);
-  if (!movie) return {};
+  const item = await fetchMediaDetails('movie', movieId, await getMetadataLocale(sharedLocale)).catch(() => null);
+  if (!item) return {};
 
-  const title = `${movie.title} · WatchRadar`;
-  const description = movie.overview || undefined;
+  const title = `${item.title} · WatchRadar`;
+  const description = item.overview || undefined;
 
   return {
     title,
@@ -32,7 +32,7 @@ export async function generateMetadata({ searchParams }: HomeProps): Promise<Met
     openGraph: {
       title,
       description,
-      images: movie.poster_path ? [getPosterUrl(movie.poster_path)] : undefined,
+      images: item.poster_path ? [getPosterUrl(item.poster_path)] : undefined,
     },
   };
 }
@@ -45,7 +45,7 @@ export default async function Home({ searchParams }: HomeProps) {
     <SearchProvider>
       <CategoryTabs active={category} filters={filters} locale={locale} />
       <SearchGridSwitch>
-        <CategoryMovies
+        <CategoryPosters
           key={`${category}-${filters.genre}-${filters.streaming}-${locale}`}
           category={category}
           filters={filters}
@@ -54,7 +54,7 @@ export default async function Home({ searchParams }: HomeProps) {
       </SearchGridSwitch>
       {movieId && (
         <Suspense fallback={null}>
-          <SharedMovie movieId={movieId} locale={locale} />
+          <SharedMedia movieId={movieId} locale={locale} />
         </Suspense>
       )}
     </SearchProvider>
