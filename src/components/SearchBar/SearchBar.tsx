@@ -4,6 +4,8 @@ import { SearchIcon, XIcon } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import type { MediaType } from '@/lib/api/tmdb/types';
+import { useExitAnimation } from '@/lib/hooks/useExitAnimation';
+import { cn } from '@/lib/utils';
 import { useTranslations } from '@/src/components/LocaleProvider';
 import { useSearch } from '@/src/components/SearchBar/SearchProvider';
 
@@ -20,6 +22,7 @@ export function SearchBar({ mediaType }: SearchBarProps) {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const refocusTriggerRef = useRef(false);
+  const fieldRef = useRef<HTMLDivElement>(null);
   const dict = useTranslations();
 
   const handleChange = (value: string) => {
@@ -38,12 +41,14 @@ export function SearchBar({ mediaType }: SearchBarProps) {
     setIsOpen(true);
   };
 
-  const handleClose = useCallback(() => {
+  const close = useCallback(() => {
     clearTimeout(debounceRef.current);
     setIsOpen(false);
     setText('');
     setDebouncedQuery('');
   }, [setDebouncedQuery, setIsOpen]);
+
+  const { isExiting: isClosing, startExit: handleClose, handleAnimationEnd } = useExitAnimation(fieldRef, close);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -79,7 +84,15 @@ export function SearchBar({ mediaType }: SearchBarProps) {
   }
 
   return (
-    <div className='flex min-w-0 flex-1 items-center gap-1.5 rounded-full bg-white/10 pl-3'>
+    <div
+      ref={fieldRef}
+      className={cn(
+        'flex min-w-0 flex-1 animate-[search-in_200ms_ease-out] items-center gap-1.5 rounded-full bg-white/10 pl-3',
+        isClosing && 'pointer-events-none animate-[search-out_150ms_ease-in_forwards]',
+        'motion-reduce:animate-none',
+      )}
+      onAnimationEnd={handleAnimationEnd}
+    >
       <SearchIcon className='h-4 w-4 shrink-0 text-white/40' />
       <input
         type='text'

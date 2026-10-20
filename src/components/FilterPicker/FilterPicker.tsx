@@ -43,7 +43,7 @@ export function FilterPicker({ mediaType, category, filters }: FilterPickerProps
   if (isSearchOpen) return null;
 
   return (
-    <div className='relative flex min-w-0 items-center'>
+    <div className='relative flex min-w-0 animate-[fade-in_200ms_ease-out] items-center motion-reduce:animate-none'>
       {/* With filters on, the clear link sits inside the chip instead of the chevron: on narrow screens the room it
           saves is what keeps the active filter names readable next to the search and the media type toggle. */}
       <div
