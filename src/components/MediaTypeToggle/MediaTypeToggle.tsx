@@ -18,7 +18,7 @@ export function MediaTypeToggle({ active, category, streaming }: MediaTypeToggle
   const dict = useTranslations();
   const { isSearchOpen } = useSearch();
 
-  // The search only covers movies for now, and switching type would leave its results on screen.
+  // An open search takes the toggle's room; it searches within the active media type.
   if (isSearchOpen) return null;
 
   // Switching keeps the tab and streaming, which every media type shares, but not the genre: genres differ by type.

@@ -36,10 +36,12 @@ describe('isMediaCategory', () => {
 describe('isMediaGenre', () => {
   it('accepts a genre of the media type', () => {
     expect(isMediaGenre('movie', 'horror')).toBe(true);
+    expect(isMediaGenre('tv', 'reality')).toBe(true);
   });
 
   it('rejects a genre the media type does not have', () => {
     expect(isMediaGenre('movie', 'reality')).toBe(false);
+    expect(isMediaGenre('tv', 'horror')).toBe(false);
   });
 });
 
@@ -50,25 +52,25 @@ describe('mediaKey', () => {
 });
 
 describe('hasCategoryEndpoint', () => {
-  it('is true for the categories TMDB serves under their own endpoint', () => {
+  it('is true for the movie categories, which TMDB serves under their own endpoint', () => {
     expect(hasCategoryEndpoint('movie', 'now_playing')).toBe(true);
-    expect(hasCategoryEndpoint('tv', 'top_rated')).toBe(true);
   });
 
-  it('is false for the series premieres, which only exist as discover queries', () => {
-    expect(hasCategoryEndpoint('tv', 'upcoming')).toBe(false);
+  it('is false for every series category, which always goes through discover', () => {
+    expect(hasCategoryEndpoint('tv', 'popular')).toBe(false);
     expect(hasCategoryEndpoint('tv', 'now_playing')).toBe(false);
   });
 });
 
 describe('canFilterStreaming', () => {
-  it('allows streaming only in the categories that support it', () => {
-    expect(canFilterStreaming('movie', 'top_rated')).toBe(true);
-    expect(canFilterStreaming('movie', 'now_playing')).toBe(false);
+  it('allows streaming on everything already released', () => {
+    expect(canFilterStreaming('movie', 'now_playing')).toBe(true);
+    expect(canFilterStreaming('tv', 'popular')).toBe(true);
   });
 
-  it('does not allow streaming on series yet', () => {
-    expect(canFilterStreaming('tv', 'popular')).toBe(false);
+  it('does not allow streaming on upcoming, which is not on streaming yet', () => {
+    expect(canFilterStreaming('movie', 'upcoming')).toBe(false);
+    expect(canFilterStreaming('tv', 'upcoming')).toBe(false);
   });
 });
 
@@ -120,6 +122,12 @@ describe('MEDIA_CONFIG.movie', () => {
 });
 
 describe('MEDIA_CONFIG.tv', () => {
+  it('has a TMDB genre id for every genre it lists', () => {
+    const { genres, genreIds } = MEDIA_CONFIG.tv;
+
+    expect(Object.keys(genreIds).sort()).toEqual([...genres].sort());
+  });
+
   it('normalizes a TMDB series into a media item with movie-like title and date fields', () => {
     const genres = [{ id: 18, name: 'Drama' }];
 

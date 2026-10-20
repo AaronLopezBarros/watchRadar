@@ -2,6 +2,11 @@ import type { Genre, MediaCategory, MediaGenre, MediaItem, MediaType, TmdbItemBa
 
 export type DiscoverParams = Record<string, string | number | undefined>;
 
+type CategoryContext = {
+  today: Date;
+  streaming: boolean;
+};
+
 type MediaConfig<M extends MediaType> = {
   // Categories TMDB serves as `/{mediaType}/{category}`; the rest are always built as a /discover query.
   endpointCategories: readonly MediaCategory[];
@@ -12,17 +17,23 @@ type MediaConfig<M extends MediaType> = {
   genreIds: Record<MediaGenre<M>, number>;
   // The category as a /discover query: what filtered lists, and categories without an endpoint, are built from.
   // eslint-disable-next-line no-unused-vars -- the parameters name what each function takes, TS function types require a name
-  getCategoryParams: (category: MediaCategory, today: Date) => DiscoverParams;
+  getCategoryParams: (category: MediaCategory, context: CategoryContext) => DiscoverParams;
   // eslint-disable-next-line no-unused-vars -- the parameters name what each function takes, TS function types require a name
   normalize: (item: TmdbItemBase<M>, genres: Genre[]) => MediaItem;
 };
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const RELEASE_WINDOW_DAYS = 42;
+// Movies reach subscription streaming one to three months after their premiere.
+const STREAMING_RELEASE_WINDOW_DAYS = 90;
 // Without a vote floor, vote_average.desc is topped by obscure titles with a handful of perfect votes.
 // Series get far fewer votes than movies, so the same floor would leave out well-known ones.
 const MOVIE_TOP_RATED_MIN_VOTES = 300;
 const TV_TOP_RATED_MIN_VOTES = 200;
+// TMDB's series popularity adds up activity across episodes, so a floor keeps out obscure long-running local shows.
+const TV_POPULAR_MIN_VOTES = 100;
+// Talk shows and news top the series lists every day; they're not what people browse series for.
+const TV_EXCLUDED_GENRES = '10767,10763';
 // TMDB release types: 2 = theatrical (limited), 3 = theatrical.
 const THEATRICAL_RELEASE_TYPES = '2|3';
 
@@ -31,13 +42,21 @@ const toDateParam = (date: Date) => date.toISOString().slice(0, 10);
 const addDays = (date: Date, days: number) => new Date(date.getTime() + days * DAY_MS);
 
 // Discover already sorts by popularity.desc by default.
-const getMovieCategoryParams = (category: MediaCategory, today: Date): DiscoverParams => {
+const getMovieCategoryParams = (category: MediaCategory, { today, streaming }: CategoryContext): DiscoverParams => {
   switch (category) {
     case 'popular':
       return {};
     case 'top_rated':
       return { sort_by: 'vote_average.desc', 'vote_count.gte': MOVIE_TOP_RATED_MIN_VOTES };
     case 'now_playing':
+      // On streaming, "new" means a recent premiere that's already there. Matching any release date would bring in
+      // old movies that just had a theatrical re-release somewhere, and those are on streaming by now.
+      if (streaming) {
+        return {
+          'primary_release_date.gte': toDateParam(addDays(today, -STREAMING_RELEASE_WINDOW_DAYS)),
+          'primary_release_date.lte': toDateParam(today),
+        };
+      }
       return {
         with_release_type: THEATRICAL_RELEASE_TYPES,
         'release_date.gte': toDateParam(addDays(today, -RELEASE_WINDOW_DAYS)),
@@ -52,10 +71,10 @@ const getMovieCategoryParams = (category: MediaCategory, today: Date): DiscoverP
   }
 };
 
-const getTvCategoryParams = (category: MediaCategory, today: Date): DiscoverParams => {
+const getTvCategoryCriteria = (category: MediaCategory, today: Date): DiscoverParams => {
   switch (category) {
     case 'popular':
-      return {};
+      return { 'vote_count.gte': TV_POPULAR_MIN_VOTES };
     case 'top_rated':
       return { sort_by: 'vote_average.desc', 'vote_count.gte': TV_TOP_RATED_MIN_VOTES };
     // Series premieres, in the same windows as the movie releases.
@@ -72,14 +91,18 @@ const getTvCategoryParams = (category: MediaCategory, today: Date): DiscoverPara
   }
 };
 
+const getTvCategoryParams = (category: MediaCategory, { today }: CategoryContext): DiscoverParams => ({
+  ...getTvCategoryCriteria(category, today),
+  without_genres: TV_EXCLUDED_GENRES,
+});
+
 export const MEDIA_CATEGORIES: MediaCategory[] = ['popular', 'top_rated', 'upcoming', 'now_playing'];
 
 export const MEDIA_CONFIG: { [M in MediaType]: MediaConfig<M> } = {
   movie: {
     endpointCategories: ['popular', 'top_rated', 'upcoming', 'now_playing'],
-    // Cinema-based lists barely overlap with what's already on streaming, and TMDB counts regional re-releases
-    // as theatrical, so combining them returns odd results (old blockbusters under "now playing").
-    streamingCategories: ['popular', 'top_rated'],
+    // Nothing upcoming is on streaming yet.
+    streamingCategories: ['popular', 'top_rated', 'now_playing'],
     genres: [
       'action',
       'adventure',
@@ -125,10 +148,35 @@ export const MEDIA_CONFIG: { [M in MediaType]: MediaConfig<M> } = {
     }),
   },
   tv: {
-    endpointCategories: ['popular', 'top_rated'],
-    streamingCategories: [],
-    genres: [],
-    genreIds: {},
+    // Every series list goes through /discover so the talk shows and news can be left out.
+    endpointCategories: [],
+    // Nothing upcoming is on streaming yet.
+    streamingCategories: ['popular', 'top_rated', 'now_playing'],
+    genres: [
+      'action_adventure',
+      'animation',
+      'comedy',
+      'crime',
+      'documentary',
+      'drama',
+      'mystery',
+      'reality',
+      'science_fiction',
+      'war_politics',
+    ],
+    genreIds: {
+      action_adventure: 10759,
+      animation: 16,
+      comedy: 35,
+      crime: 80,
+      documentary: 99,
+      drama: 18,
+      mystery: 9648,
+      reality: 10764,
+      // TMDB's series genre is "Sci-Fi & Fantasy"; it shares the movie slug and label.
+      science_fiction: 10765,
+      war_politics: 10768,
+    },
     getCategoryParams: getTvCategoryParams,
     normalize: (series, genres) => ({
       mediaType: 'tv',

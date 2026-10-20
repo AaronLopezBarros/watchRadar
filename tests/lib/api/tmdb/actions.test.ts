@@ -264,10 +264,19 @@ describe('actions', () => {
       );
     });
 
-    it('lists a series category from its /tv endpoint, named with the series genre list', async () => {
+    it('lists every series category through /discover/tv, named with the series genre list', async () => {
       const result = await fetchMedia('tv', 'top_rated', 2, 'es');
 
-      expect(tmdbClient).toHaveBeenCalledWith('/tv/top_rated', { params: { page: 2, language: 'es-ES' } });
+      expect(tmdbClient).toHaveBeenCalledWith('/discover/tv', {
+        params: {
+          page: 2,
+          language: 'es-ES',
+          sort_by: 'vote_average.desc',
+          'vote_count.gte': 200,
+          without_genres: '10767,10763',
+          include_adult: false,
+        },
+      });
       expect(tmdbClient).toHaveBeenCalledWith(TV_GENRES_ENDPOINT, { params: { language: 'es-ES' }, revalidate: 86400 });
       expect(result).toEqual([
         expect.objectContaining({
@@ -281,19 +290,29 @@ describe('actions', () => {
       ]);
     });
 
-    it('builds a series category without its own endpoint as a /discover/tv query', async () => {
-      vi.useFakeTimers({ now: new Date('2026-10-05T12:00:00Z') });
-
-      await fetchMedia('tv', 'upcoming', 1, 'en');
+    it('filters series by genre and streaming', async () => {
+      await fetchMedia('tv', 'popular', 1, 'en', { genre: 'drama', streaming: true });
 
       expect(tmdbClient).toHaveBeenCalledWith('/discover/tv', {
         params: {
           page: 1,
           language: 'en-US',
-          'first_air_date.gte': '2026-10-06',
-          'first_air_date.lte': '2026-11-16',
+          'vote_count.gte': 100,
+          without_genres: '10767,10763',
+          with_genres: 18,
+          watch_region: 'ES',
+          with_watch_monetization_types: 'flatrate',
           include_adult: false,
         },
+      });
+    });
+
+    it('searches series in /search/tv', async () => {
+      await searchMedia('tv', 'breaking bad', 1, 'es');
+
+      expect(tmdbClient).toHaveBeenCalledWith('/search/tv', {
+        params: { query: 'breaking bad', page: 1, include_adult: false, language: 'es-ES' },
+        revalidate: 60,
       });
     });
 

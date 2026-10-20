@@ -13,9 +13,13 @@ vi.mock('@/src/components/SearchBar/SearchProvider', () => ({
 }));
 
 vi.mock('@/src/components/SearchBar/SearchResultsGrid', () => ({
-  SearchResultsGrid: ({ query }: { query: string }) => {
+  SearchResultsGrid: ({ mediaType, query }: { mediaType: string; query: string }) => {
     useEffect(() => mountCount(), []);
-    return <div data-testid='search-results'>{query}</div>;
+    return (
+      <div data-testid='search-results' data-media-type={mediaType}>
+        {query}
+      </div>
+    );
   },
 }));
 
@@ -28,7 +32,7 @@ describe('SearchGridSwitch', () => {
     useSearchMock.mockReturnValue({ debouncedQuery: '' });
 
     render(
-      <SearchGridSwitch>
+      <SearchGridSwitch mediaType='movie'>
         <div data-testid='children' />
       </SearchGridSwitch>,
     );
@@ -41,7 +45,7 @@ describe('SearchGridSwitch', () => {
     useSearchMock.mockReturnValue({ debouncedQuery: 'batman' });
 
     render(
-      <SearchGridSwitch>
+      <SearchGridSwitch mediaType='movie'>
         <div data-testid='children' />
       </SearchGridSwitch>,
     );
@@ -55,7 +59,7 @@ describe('SearchGridSwitch', () => {
 
     const { rerender } = render(
       <LocaleProvider locale='en'>
-        <SearchGridSwitch>
+        <SearchGridSwitch mediaType='movie'>
           <div data-testid='children' />
         </SearchGridSwitch>
       </LocaleProvider>,
@@ -65,12 +69,30 @@ describe('SearchGridSwitch', () => {
 
     rerender(
       <LocaleProvider locale='es'>
-        <SearchGridSwitch>
+        <SearchGridSwitch mediaType='movie'>
           <div data-testid='children' />
         </SearchGridSwitch>
       </LocaleProvider>,
     );
 
+    expect(mountCount).toHaveBeenCalledTimes(2);
+  });
+
+  it('searches within the active media type, starting over when it changes', () => {
+    useSearchMock.mockReturnValue({ debouncedQuery: 'batman' });
+
+    const { rerender } = render(
+      <SearchGridSwitch mediaType='movie'>
+        <div data-testid='children' />
+      </SearchGridSwitch>,
+    );
+    rerender(
+      <SearchGridSwitch mediaType='tv'>
+        <div data-testid='children' />
+      </SearchGridSwitch>,
+    );
+
+    expect(screen.getByTestId('search-results')).toHaveAttribute('data-media-type', 'tv');
     expect(mountCount).toHaveBeenCalledTimes(2);
   });
 });

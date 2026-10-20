@@ -44,7 +44,7 @@ export default async function Home({ searchParams }: HomeProps) {
   return (
     <SearchProvider>
       <CategoryTabs mediaType={mediaType} active={category} filters={filters} locale={locale} />
-      <SearchGridSwitch>
+      <SearchGridSwitch mediaType={mediaType}>
         <CategoryPosters
           key={`${mediaType}-${category}-${filters.genre}-${filters.streaming}-${locale}`}
           mediaType={mediaType}

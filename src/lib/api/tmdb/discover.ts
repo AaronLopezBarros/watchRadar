@@ -15,7 +15,7 @@ export const getDiscoverParams = <M extends MediaType>(
   const config = MEDIA_CONFIG[mediaType];
 
   return {
-    ...config.getCategoryParams(category, today),
+    ...config.getCategoryParams(category, { today, streaming: Boolean(filters.streaming) }),
     with_genres: filters.genre && config.genreIds[filters.genre],
     ...(filters.streaming && { watch_region: TMDB_WATCH_REGION, with_watch_monetization_types: 'flatrate' }),
   };

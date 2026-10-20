@@ -27,15 +27,15 @@ describe('getDictionary', () => {
     const en = getDictionary('en');
     const es = getDictionary('es');
 
-    expect(en.search.placeholder).not.toBe(es.search.placeholder);
+    expect(en.search.placeholder.movie).not.toBe(es.search.placeholder.movie);
     expect(en.provider.whereToWatch).not.toBe(es.provider.whereToWatch);
   });
 
   it('returns the English strings used elsewhere as defaults', () => {
     const dict = getDictionary('en');
 
-    expect(dict.search.openAriaLabel).toBe('Search movies');
-    expect(dict.search.placeholder).toBe('Search movies…');
+    expect(dict.search.openAriaLabel.movie).toBe('Search movies');
+    expect(dict.search.placeholder.movie).toBe('Search movies…');
     expect(dict.search.closeAriaLabel).toBe('Close search');
   });
 });

@@ -36,9 +36,9 @@ describe('utils: buildHomeHref', () => {
     expect(buildHomeHref({ mediaType: 'tv', category: 'now_playing' })).toBe('/?type=tv&category=now_playing');
   });
 
-  it('drops streaming for cinema categories', () => {
-    expect(buildHomeHref({ category: 'now_playing', genre: 'horror', streaming: true })).toBe(
-      '/?category=now_playing&genre=horror',
+  it('drops streaming for upcoming, which nothing is streaming yet', () => {
+    expect(buildHomeHref({ category: 'upcoming', genre: 'horror', streaming: true })).toBe(
+      '/?category=upcoming&genre=horror',
     );
   });
 });
@@ -70,8 +70,8 @@ describe('utils: parseHomeSearchParams', () => {
     );
   });
 
-  it('ignores streaming on cinema categories', () => {
-    expect(parseHomeSearchParams({ category: 'now_playing', streaming: '1' }).filters.streaming).toBe(false);
+  it('ignores streaming on upcoming', () => {
+    expect(parseHomeSearchParams({ category: 'upcoming', streaming: '1' }).filters.streaming).toBe(false);
   });
 
   it('reads a shared movie id', () => {
@@ -114,11 +114,15 @@ describe('utils: parseHomeSearchParams', () => {
     });
   });
 
-  it('ignores movie genres and streaming on series, which cannot be filtered yet', () => {
-    expect(parseHomeSearchParams({ type: 'tv', genre: 'horror', streaming: '1' }).filters).toEqual({
-      genre: undefined,
-      streaming: false,
+  it('reads a series genre and streaming', () => {
+    expect(parseHomeSearchParams({ type: 'tv', genre: 'science_fiction', streaming: '1' }).filters).toEqual({
+      genre: 'science_fiction',
+      streaming: true,
     });
+  });
+
+  it('drops a movie genre on series', () => {
+    expect(parseHomeSearchParams({ type: 'tv', genre: 'horror' }).filters.genre).toBeUndefined();
   });
 
   it('reads back what buildHomeHref writes for series', () => {

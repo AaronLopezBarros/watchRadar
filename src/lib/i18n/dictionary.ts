@@ -1,4 +1,4 @@
-import type { MediaCategory, MediaType, MovieGenre } from '@/lib/api/tmdb/types';
+import type { MediaCategory, MediaGenre, MediaType } from '@/lib/api/tmdb/types';
 import type { Locale } from '@/lib/i18n/locale';
 
 export type Dictionary = {
@@ -9,7 +9,7 @@ export type Dictionary = {
     groupAriaLabel: string;
   };
   category: Record<MediaCategory, string>;
-  genre: Record<MovieGenre, string>;
+  genre: Record<MediaGenre, string>;
   emptyList: Record<MediaType, string>;
   filters: {
     title: string;
@@ -21,8 +21,8 @@ export type Dictionary = {
     noResults: Record<MediaType, string>;
   };
   search: {
-    openAriaLabel: string;
-    placeholder: string;
+    openAriaLabel: Record<MediaType, string>;
+    placeholder: Record<MediaType, string>;
     closeAriaLabel: string;
     error: string;
     retry: string;
@@ -73,16 +73,21 @@ const translations: Record<Locale, Dictionary> = {
     },
     genre: {
       action: 'Action',
+      action_adventure: 'Action & Adventure',
       adventure: 'Adventure',
       animation: 'Animation',
       comedy: 'Comedy',
       crime: 'Crime',
+      documentary: 'Documentary',
       drama: 'Drama',
       fantasy: 'Fantasy',
       horror: 'Horror',
+      mystery: 'Mystery',
+      reality: 'Reality',
       romance: 'Romance',
       science_fiction: 'Science Fiction',
       thriller: 'Thriller',
+      war_politics: 'War & Politics',
     },
     emptyList: {
       movie: 'No movies to show here.',
@@ -101,8 +106,8 @@ const translations: Record<Locale, Dictionary> = {
       },
     },
     search: {
-      openAriaLabel: 'Search movies',
-      placeholder: 'Search movies…',
+      openAriaLabel: { movie: 'Search movies', tv: 'Search series' },
+      placeholder: { movie: 'Search movies…', tv: 'Search series…' },
       closeAriaLabel: 'Close search',
       error: 'The search could not be completed.',
       retry: 'Retry',
@@ -151,16 +156,21 @@ const translations: Record<Locale, Dictionary> = {
     },
     genre: {
       action: 'Acción',
+      action_adventure: 'Acción y aventura',
       adventure: 'Aventura',
       animation: 'Animación',
       comedy: 'Comedia',
       crime: 'Crimen',
+      documentary: 'Documental',
       drama: 'Drama',
       fantasy: 'Fantasía',
       horror: 'Terror',
+      mystery: 'Misterio',
+      reality: 'Reality',
       romance: 'Romance',
       science_fiction: 'Ciencia ficción',
       thriller: 'Suspense',
+      war_politics: 'Bélica y política',
     },
     emptyList: {
       movie: 'No hay películas que mostrar.',
@@ -179,8 +189,8 @@ const translations: Record<Locale, Dictionary> = {
       },
     },
     search: {
-      openAriaLabel: 'Buscar películas',
-      placeholder: 'Buscar películas…',
+      openAriaLabel: { movie: 'Buscar películas', tv: 'Buscar series' },
+      placeholder: { movie: 'Buscar películas…', tv: 'Buscar series…' },
       closeAriaLabel: 'Cerrar búsqueda',
       error: 'No se pudo completar la búsqueda.',
       retry: 'Reintentar',

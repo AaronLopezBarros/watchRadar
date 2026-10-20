@@ -41,7 +41,7 @@ describe('SearchResultsGrid', () => {
   });
 
   it('shows skeletons before the first page resolves', () => {
-    render(<SearchResultsGrid query='batman' />);
+    render(<SearchResultsGrid mediaType='movie' query='batman' />);
 
     expect(screen.getAllByTestId('skeleton').length).toBeGreaterThan(0);
   });
@@ -53,7 +53,7 @@ describe('SearchResultsGrid', () => {
     vi.mocked(searchMedia).mockResolvedValue([createMediaItem({ id: 1, title: 'Batman' })]);
     render(
       <LocaleProvider locale='es'>
-        <SearchResultsGrid query='batman' />
+        <SearchResultsGrid mediaType='movie' query='batman' />
       </LocaleProvider>,
     );
 
@@ -65,7 +65,7 @@ describe('SearchResultsGrid', () => {
     vi.mocked(searchMedia)
       .mockResolvedValueOnce([createMediaItem({ id: 1, title: 'Batman' })])
       .mockResolvedValueOnce([createMediaItem({ id: 2, title: 'Batman Returns' })]);
-    render(<SearchResultsGrid query='batman' />);
+    render(<SearchResultsGrid mediaType='movie' query='batman' />);
 
     await waitFor(() => expect(screen.getAllByTestId('poster-card')).toHaveLength(1));
 
@@ -77,7 +77,7 @@ describe('SearchResultsGrid', () => {
 
   it('shows an empty state when the search resolves with no results', async () => {
     vi.mocked(searchMedia).mockResolvedValue([]);
-    render(<SearchResultsGrid query='batman' />);
+    render(<SearchResultsGrid mediaType='movie' query='batman' />);
 
     const message = await screen.findByText(/No results found for/);
     expect(message).toHaveTextContent('batman');
@@ -85,7 +85,7 @@ describe('SearchResultsGrid', () => {
 
   it('shows an error state with a retry action, and recovers on retry', async () => {
     vi.mocked(searchMedia).mockRejectedValueOnce(new Error('boom'));
-    render(<SearchResultsGrid query='batman' />);
+    render(<SearchResultsGrid mediaType='movie' query='batman' />);
 
     const retryButton = await screen.findByRole('button', { name: 'Retry' });
     expect(screen.getByText('The search could not be completed.')).toBeInTheDocument();
@@ -94,5 +94,13 @@ describe('SearchResultsGrid', () => {
     await userEvent.click(retryButton);
 
     await waitFor(() => expect(screen.getByTestId('poster-card')).toHaveTextContent('Batman'));
+  });
+
+  it('searches series when the media type is series', async () => {
+    vi.mocked(searchMedia).mockResolvedValue([createMediaItem({ mediaType: 'tv', id: 1396, title: 'Breaking Bad' })]);
+    render(<SearchResultsGrid mediaType='tv' query='breaking' />);
+
+    expect(await screen.findByText('Breaking Bad')).toBeInTheDocument();
+    expect(searchMedia).toHaveBeenCalledWith('tv', 'breaking', 1, 'en');
   });
 });

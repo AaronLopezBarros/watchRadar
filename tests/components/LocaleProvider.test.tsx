@@ -7,7 +7,7 @@ import { LocaleProvider, useLocale, useTranslations } from '@/src/components/Loc
 
 function Probe() {
   const dict = useTranslations();
-  return <p>{dict.search.placeholder}</p>;
+  return <p>{dict.search.placeholder.movie}</p>;
 }
 
 function LocaleProbe() {
@@ -23,13 +23,13 @@ describe('LocaleProvider', () => {
       </LocaleProvider>,
     );
 
-    expect(screen.getByText(getDictionary('es').search.placeholder)).toBeInTheDocument();
+    expect(screen.getByText(getDictionary('es').search.placeholder.movie)).toBeInTheDocument();
   });
 
   it('falls back to the default locale dictionary when used without a provider', () => {
     render(<Probe />);
 
-    expect(screen.getByText(getDictionary(DEFAULT_LOCALE).search.placeholder)).toBeInTheDocument();
+    expect(screen.getByText(getDictionary(DEFAULT_LOCALE).search.placeholder.movie)).toBeInTheDocument();
   });
 
   it('provides the raw locale via useLocale', () => {
