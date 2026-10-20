@@ -1,7 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState, type AnimationEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 
+import { useExitAnimation } from '@/lib/hooks/useExitAnimation';
 import { cn } from '@/lib/utils';
 
 const DRAG_CLOSE_THRESHOLD_PX = 100;
@@ -44,23 +45,9 @@ type BottomSheetProps = {
 export function BottomSheet({ label, onClose, tone, desktop, className, children }: BottomSheetProps) {
   const [dragY, setDragY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
   const dragStartYRef = useRef(0);
   const panelRef = useRef<HTMLDivElement>(null);
-
-  // The sheet stays mounted while its exit animation plays; onClose runs once it ends.
-  const requestClose = useCallback(() => setIsClosing(true), []);
-
-  // Without a running exit animation (reduced motion, or no Web Animations API) no animationend will come.
-  useEffect(() => {
-    if (!isClosing) return;
-    const animations = panelRef.current?.getAnimations?.() ?? [];
-    if (!animations.some(animation => 'animationName' in animation)) onClose();
-  }, [isClosing, onClose]);
-
-  const handleAnimationEnd = (event: AnimationEvent<HTMLDivElement>) => {
-    if (isClosing && event.target === event.currentTarget) onClose();
-  };
+  const { isExiting: isClosing, startExit: requestClose, handleAnimationEnd } = useExitAnimation(panelRef, onClose);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
