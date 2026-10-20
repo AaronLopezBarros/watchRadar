@@ -3,7 +3,7 @@
 import { tmdbClient } from '@/lib/api/tmdb/client';
 import { TMDB_LANGUAGE } from '@/lib/api/tmdb/constants';
 import { getDiscoverParams, hasFilters } from '@/lib/api/tmdb/discover';
-import { MEDIA_CONFIG, isMediaCategory, isMediaType } from '@/lib/api/tmdb/media';
+import { MEDIA_CONFIG, isMediaCategory, isMediaGenre, isMediaType } from '@/lib/api/tmdb/media';
 import type {
   Genre,
   GenresResponse,
@@ -24,8 +24,10 @@ const assertMediaType: (value: unknown) => asserts value is MediaType = value =>
   if (!isMediaType(value)) throw new Error(`Unknown media type: ${String(value)}`);
 };
 
-const assertMediaId = (value: unknown) => {
-  if (!Number.isInteger(value) || (value as number) <= 0) throw new Error(`Invalid media id: ${String(value)}`);
+const assertMediaId: (value: unknown) => asserts value is number = value => {
+  if (typeof value !== 'number' || !Number.isInteger(value) || value <= 0) {
+    throw new Error(`Invalid media id: ${String(value)}`);
+  }
 };
 
 export const fetchWatchProviders = async (mediaType: MediaType, id: number): Promise<WatchProvidersResponse> => {
@@ -75,6 +77,9 @@ export const fetchMedia = async <M extends MediaType>(
 ): Promise<MediaItem[]> => {
   assertMediaType(mediaType);
   if (!isMediaCategory(mediaType, category)) throw new Error(`Unknown ${mediaType} category: ${String(category)}`);
+  if (filters.genre && !isMediaGenre(mediaType, filters.genre)) {
+    throw new Error(`Unknown ${mediaType} genre: ${String(filters.genre)}`);
+  }
 
   const params = { page, language: TMDB_LANGUAGE[locale] };
 

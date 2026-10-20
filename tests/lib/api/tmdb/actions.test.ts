@@ -55,8 +55,12 @@ describe('actions', () => {
       expect(result).toEqual({ mediaType: 'movie', id: 27205, title: 'Origen', genres });
     });
 
-    it('rejects an unknown media type without calling TMDB', async () => {
-      await expect(fetchMediaDetails('person' as 'movie', 27205, 'es')).rejects.toThrow();
+    it.each([
+      ['an unknown media type', 'person', 27205],
+      ['a non-integer id', 'movie', 1.5],
+      ['a non-positive id', 'movie', 0],
+    ])('rejects %s without calling TMDB', async (_case, mediaType, id) => {
+      await expect(fetchMediaDetails(mediaType as 'movie', id, 'es')).rejects.toThrow();
 
       expect(tmdbClient).not.toHaveBeenCalled();
     });
@@ -176,8 +180,14 @@ describe('actions', () => {
       });
     });
 
-    it('rejects a category the media type does not have without calling TMDB', async () => {
-      await expect(fetchMedia('movie', '../search' as 'popular', 1, 'en')).rejects.toThrow();
+    it.each([
+      ['an unknown media type', 'person', 'popular', {}],
+      ['a category the media type does not have', 'movie', '../search', {}],
+      ['an unknown genre', 'movie', 'popular', { genre: 'constructor' }],
+    ])('rejects %s without calling TMDB', async (_case, mediaType, category, filters) => {
+      await expect(
+        fetchMedia(mediaType as 'movie', category as 'popular', 1, 'en', filters as object),
+      ).rejects.toThrow();
 
       expect(tmdbClient).not.toHaveBeenCalled();
     });
@@ -192,6 +202,12 @@ describe('actions', () => {
   });
 
   describe('searchMedia', () => {
+    it('rejects an unknown media type without calling TMDB', async () => {
+      await expect(searchMedia('person' as 'movie', 'batman', 1, 'en')).rejects.toThrow();
+
+      expect(tmdbClient).not.toHaveBeenCalled();
+    });
+
     it('calls tmdbClient with the query, page, language and revalidate window', async () => {
       mockTmdb({ results: [{ id: 1, genre_ids: [] }] });
 
