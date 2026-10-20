@@ -27,6 +27,7 @@ describe('SearchBar', () => {
 
   afterEach(() => {
     vi.useRealTimers();
+    Reflect.deleteProperty(HTMLElement.prototype, 'getAnimations');
   });
 
   it('renders a closed search button initially', () => {
@@ -122,8 +123,6 @@ describe('SearchBar', () => {
     const reopened = screen.getByPlaceholderText('Search movies…');
     fireEvent.animationEnd(reopened.parentElement!);
     expect(reopened).toBeInTheDocument();
-
-    Reflect.deleteProperty(HTMLElement.prototype, 'getAnimations');
   });
 
   it('ignores other key presses while open', async () => {
