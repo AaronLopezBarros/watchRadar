@@ -3,7 +3,7 @@
 import { tmdbClient } from '@/lib/api/tmdb/client';
 import { TMDB_LANGUAGE } from '@/lib/api/tmdb/constants';
 import { getDiscoverParams, hasFilters } from '@/lib/api/tmdb/discover';
-import { MEDIA_CONFIG, isMediaCategory, isMediaGenre, isMediaType } from '@/lib/api/tmdb/media';
+import { MEDIA_CONFIG, hasCategoryEndpoint, isMediaCategory, isMediaGenre, isMediaType } from '@/lib/api/tmdb/media';
 import type {
   Genre,
   GenresResponse,
@@ -70,13 +70,13 @@ const withGenreNames = <M extends MediaType>(mediaType: M, items: TmdbItem<M>[],
 
 export const fetchMedia = async <M extends MediaType>(
   mediaType: M,
-  category: MediaCategory<M>,
+  category: MediaCategory,
   page: number,
   locale: Locale,
   filters: MediaFilters<M> = {},
 ): Promise<MediaItem[]> => {
   assertMediaType(mediaType);
-  if (!isMediaCategory(mediaType, category)) throw new Error(`Unknown ${mediaType} category: ${String(category)}`);
+  if (!isMediaCategory(category)) throw new Error(`Unknown category: ${String(category)}`);
   if (filters.genre && !isMediaGenre(mediaType, filters.genre)) {
     throw new Error(`Unknown ${mediaType} genre: ${String(filters.genre)}`);
   }
@@ -84,7 +84,7 @@ export const fetchMedia = async <M extends MediaType>(
   const params = { page, language: TMDB_LANGUAGE[locale] };
 
   const [data, genres] = await Promise.all([
-    hasFilters(filters)
+    hasFilters(filters) || !hasCategoryEndpoint(mediaType, category)
       ? tmdbClient<TmdbListResponse<TmdbItem<M>>>(`/discover/${mediaType}`, {
           params: { ...params, ...getDiscoverParams(mediaType, category, filters, new Date()), include_adult: false },
         })

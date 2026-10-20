@@ -4,8 +4,8 @@ import { ChevronDownIcon, XIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 
-import { MEDIA_CONFIG } from '@/lib/api/tmdb/media';
-import type { MediaFilters, MovieCategory } from '@/lib/api/tmdb/types';
+import { MEDIA_CONFIG, canFilterStreaming } from '@/lib/api/tmdb/media';
+import type { MediaCategory, MediaFilters } from '@/lib/api/tmdb/types';
 import { buildHomeHref, cn } from '@/lib/utils';
 import { BottomSheet } from '@/src/components/BottomSheet/BottomSheet';
 import { useTranslations } from '@/src/components/LocaleProvider';
@@ -14,8 +14,8 @@ import { useSearch } from '@/src/components/SearchBar/SearchProvider';
 const ALL_GENRES_OPTION = undefined;
 
 type FilterPickerProps = {
-  category: MovieCategory;
-  filters: MediaFilters<'movie'>;
+  category: MediaCategory;
+  filters: MediaFilters;
 };
 
 export function FilterPicker({ category, filters }: FilterPickerProps) {
@@ -24,7 +24,7 @@ export function FilterPicker({ category, filters }: FilterPickerProps) {
   const { isSearchOpen } = useSearch();
   const dict = useTranslations();
   const { genre, streaming } = filters;
-  const canFilterStreaming = MEDIA_CONFIG.movie.streamingCategories.includes(category);
+  const canFilterByStreaming = canFilterStreaming('movie', category);
   const activeLabels = [genre && dict.genre[genre], streaming && dict.filters.streaming].filter(Boolean);
   const hasActiveFilters = activeLabels.length > 0;
 
@@ -42,34 +42,43 @@ export function FilterPicker({ category, filters }: FilterPickerProps) {
   if (isSearchOpen) return null;
 
   return (
-    <div className='relative flex min-w-0 items-center gap-1.5'>
-      <button
-        ref={triggerRef}
-        type='button'
-        onClick={() => setIsOpen(true)}
-        aria-label={hasActiveFilters ? `${dict.filters.title}: ${activeLabels.join(', ')}` : undefined}
-        aria-expanded={isOpen}
-        aria-haspopup='dialog'
+    <div className='relative flex min-w-0 items-center'>
+      {/* With filters on, the clear link sits inside the chip instead of the chevron: on narrow screens the room it
+          saves is what keeps the active filter names readable next to the search and the media type toggle. */}
+      <div
         className={cn(
-          'flex h-11 min-w-0 cursor-pointer items-center gap-1.5 rounded-full px-4 text-xs transition-colors md:text-sm',
+          'flex h-11 min-w-0 items-center rounded-full transition-colors',
           hasActiveFilters
             ? 'bg-white/20 font-medium text-white'
             : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white',
         )}
       >
-        <span className='truncate'>{hasActiveFilters ? activeLabels.join(' · ') : dict.filters.title}</span>
-        <ChevronDownIcon className='h-3.5 w-3.5 shrink-0' />
-      </button>
-      {hasActiveFilters && (
-        <Link
-          href={buildHomeHref({ category })}
-          onClick={handleSelect}
-          aria-label={dict.filters.clearAriaLabel}
-          className='flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/5 text-white/60 transition-colors hover:bg-white/10 hover:text-white'
+        <button
+          ref={triggerRef}
+          type='button'
+          onClick={() => setIsOpen(true)}
+          aria-label={hasActiveFilters ? `${dict.filters.title}: ${activeLabels.join(', ')}` : undefined}
+          aria-expanded={isOpen}
+          aria-haspopup='dialog'
+          className={cn(
+            'flex h-full min-w-0 cursor-pointer items-center gap-1.5 text-xs md:text-sm',
+            hasActiveFilters ? 'pl-4' : 'px-4',
+          )}
         >
-          <XIcon className='h-3.5 w-3.5' />
-        </Link>
-      )}
+          <span className='truncate'>{hasActiveFilters ? activeLabels.join(' · ') : dict.filters.title}</span>
+          {!hasActiveFilters && <ChevronDownIcon className='h-3.5 w-3.5 shrink-0' />}
+        </button>
+        {hasActiveFilters && (
+          <Link
+            href={buildHomeHref({ category })}
+            onClick={handleSelect}
+            aria-label={dict.filters.clearAriaLabel}
+            className='flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/10 hover:text-white'
+          >
+            <XIcon className='h-3.5 w-3.5' />
+          </Link>
+        )}
+      </div>
       {isOpen && (
         <BottomSheet
           label={dict.filters.title}
@@ -79,7 +88,7 @@ export function FilterPicker({ category, filters }: FilterPickerProps) {
           className='px-4 pb-8 sm:left-0 sm:p-3 md:right-0 md:left-auto'
         >
           <h2 className='mb-4 text-base font-semibold text-white sm:sr-only'>{dict.filters.title}</h2>
-          {canFilterStreaming && (
+          {canFilterByStreaming && (
             // Toggling streaming keeps the sheet open so a genre can still be picked in the same visit.
             <Link
               href={buildHomeHref({ category, genre, streaming: !streaming })}

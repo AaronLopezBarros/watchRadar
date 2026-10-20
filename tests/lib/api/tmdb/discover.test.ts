@@ -54,3 +54,30 @@ describe('getDiscoverParams', () => {
     });
   });
 });
+
+describe('getDiscoverParams for series', () => {
+  it('adds nothing for popular, which is the discover default order', () => {
+    expect(getDiscoverParams('tv', 'popular', {}, TODAY)).toEqual({});
+  });
+
+  it('sorts top_rated by rating with a series-sized minimum vote count', () => {
+    expect(getDiscoverParams('tv', 'top_rated', {}, TODAY)).toEqual({
+      sort_by: 'vote_average.desc',
+      'vote_count.gte': 200,
+    });
+  });
+
+  it('limits now_playing to series that premiered in the last six weeks up to today', () => {
+    expect(getDiscoverParams('tv', 'now_playing', {}, TODAY)).toEqual({
+      'first_air_date.gte': '2026-08-24',
+      'first_air_date.lte': '2026-10-05',
+    });
+  });
+
+  it('limits upcoming to series premiering from tomorrow to six weeks ahead', () => {
+    expect(getDiscoverParams('tv', 'upcoming', {}, TODAY)).toEqual({
+      'first_air_date.gte': '2026-10-06',
+      'first_air_date.lte': '2026-11-16',
+    });
+  });
+});

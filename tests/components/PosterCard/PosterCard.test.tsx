@@ -98,6 +98,17 @@ describe('PosterCard', () => {
     expect(window.location.search).toBe('?category=top_rated&genre=horror&movie=27205');
   });
 
+  it('leaves the URL alone for a series, which it cannot link to yet', async () => {
+    window.history.replaceState(null, '', '/?type=tv');
+    render(<PosterCard item={createMediaItem({ mediaType: 'tv', id: 1399, title: 'Juego de tronos' })} />);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Juego de tronos' }));
+    expect(window.location.search).toBe('?type=tv');
+
+    await userEvent.click(screen.getByText('close'));
+    expect(window.location.search).toBe('?type=tv');
+  });
+
   it('removes the movie from the URL when the dialog closes', async () => {
     window.history.replaceState(null, '', '/?category=top_rated');
     render(<PosterCard item={movieMock} />);

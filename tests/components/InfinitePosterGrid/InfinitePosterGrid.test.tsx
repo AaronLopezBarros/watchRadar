@@ -10,9 +10,7 @@ vi.mock('@/lib/api/tmdb/actions', () => ({
 }));
 
 vi.mock('@/src/components/PosterCard/PosterCard', () => ({
-  PosterCard: ({ item }: { item: { id: number; title: string } }) => (
-    <div data-testid='poster-card'>{item.title}</div>
-  ),
+  PosterCard: ({ item }: { item: { id: number; title: string } }) => <div data-testid='poster-card'>{item.title}</div>,
 }));
 
 vi.mock('@/src/components/PosterCard/PosterCardSkeleton', () => ({
@@ -42,13 +40,21 @@ describe('InfinitePosterGrid', () => {
 
   it('renders initial movies', () => {
     const movies = [createMediaItem({ id: 1, title: 'Film A' }), createMediaItem({ id: 2, title: 'Film B' })];
-    render(<InfinitePosterGrid initialPage={1} initialItems={movies} category='popular' locale='en' />);
+    render(
+      <InfinitePosterGrid mediaType='movie' initialPage={1} initialItems={movies} category='popular' locale='en' />,
+    );
     expect(screen.getAllByTestId('poster-card')).toHaveLength(2);
   });
 
   it('does not load more movies when the sentinel is not intersecting', () => {
     render(
-      <InfinitePosterGrid initialPage={1} initialItems={[createMediaItem({ id: 1, title: 'Film A' })]} category='popular' locale='en' />,
+      <InfinitePosterGrid
+        mediaType='movie'
+        initialPage={1}
+        initialItems={[createMediaItem({ id: 1, title: 'Film A' })]}
+        category='popular'
+        locale='en'
+      />,
     );
 
     act(() => triggerIntersection(false));
@@ -61,6 +67,7 @@ describe('InfinitePosterGrid', () => {
 
     render(
       <InfinitePosterGrid
+        mediaType='movie'
         initialPage={1}
         initialItems={[createMediaItem({ id: 1, title: 'Film A' })]}
         category='top_rated'
@@ -73,11 +80,30 @@ describe('InfinitePosterGrid', () => {
     expect(fetchMedia).toHaveBeenCalledWith('movie', 'top_rated', 2, 'en', undefined);
   });
 
+  it('loads more series for a series category', async () => {
+    vi.mocked(fetchMedia).mockResolvedValue([createMediaItem({ mediaType: 'tv', id: 2, title: 'Show B' })]);
+
+    render(
+      <InfinitePosterGrid
+        mediaType='tv'
+        initialPage={1}
+        initialItems={[createMediaItem({ mediaType: 'tv', id: 1, title: 'Show A' })]}
+        category='now_playing'
+        locale='en'
+      />,
+    );
+    act(() => triggerIntersection(true));
+
+    await waitFor(() => expect(screen.getAllByTestId('poster-card')).toHaveLength(2));
+    expect(fetchMedia).toHaveBeenCalledWith('tv', 'now_playing', 2, 'en', undefined);
+  });
+
   it('keeps the filters when loading more movies', async () => {
     vi.mocked(fetchMedia).mockResolvedValue([createMediaItem({ id: 2, title: 'Film B' })]);
 
     render(
       <InfinitePosterGrid
+        mediaType='movie'
         initialPage={1}
         initialItems={[createMediaItem({ id: 1, title: 'Film A' })]}
         category='upcoming'
@@ -102,7 +128,13 @@ describe('InfinitePosterGrid', () => {
     );
 
     render(
-      <InfinitePosterGrid initialPage={1} initialItems={[createMediaItem({ id: 1, title: 'Film A' })]} category='popular' locale='en' />,
+      <InfinitePosterGrid
+        mediaType='movie'
+        initialPage={1}
+        initialItems={[createMediaItem({ id: 1, title: 'Film A' })]}
+        category='popular'
+        locale='en'
+      />,
     );
 
     act(() => {

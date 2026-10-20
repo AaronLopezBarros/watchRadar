@@ -38,15 +38,16 @@ export async function generateMetadata({ searchParams }: HomeProps): Promise<Met
 }
 
 export default async function Home({ searchParams }: HomeProps) {
-  const { category, filters, movieId } = parseHomeSearchParams(await searchParams);
+  const { mediaType, category, filters, movieId } = parseHomeSearchParams(await searchParams);
   const locale = await getLocale();
 
   return (
     <SearchProvider>
-      <CategoryTabs active={category} filters={filters} locale={locale} />
+      <CategoryTabs mediaType={mediaType} active={category} filters={filters} locale={locale} />
       <SearchGridSwitch>
         <CategoryPosters
-          key={`${category}-${filters.genre}-${filters.streaming}-${locale}`}
+          key={`${mediaType}-${category}-${filters.genre}-${filters.streaming}-${locale}`}
+          mediaType={mediaType}
           category={category}
           filters={filters}
           locale={locale}

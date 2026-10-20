@@ -1,21 +1,22 @@
 import Link from 'next/link';
 
-import { MEDIA_CONFIG } from '@/lib/api/tmdb/media';
-import type { MediaFilters, MovieCategory } from '@/lib/api/tmdb/types';
+import { MEDIA_CATEGORIES } from '@/lib/api/tmdb/media';
+import type { MediaCategory, MediaFilters, MediaType } from '@/lib/api/tmdb/types';
 import { getDictionary } from '@/lib/i18n/dictionary';
 import type { Locale } from '@/lib/i18n/locale';
 import { buildHomeHref, cn } from '@/lib/utils';
 import { FilterPicker } from '@/src/components/FilterPicker/FilterPicker';
-import { LanguageSelector } from '@/src/components/LanguageSelector/LanguageSelector';
+import { MediaTypeToggle } from '@/src/components/MediaTypeToggle/MediaTypeToggle';
 import { SearchBar } from '@/src/components/SearchBar/SearchBar';
 
 type CategoryTabsProps = {
-  active: MovieCategory;
-  filters?: MediaFilters<'movie'>;
+  mediaType: MediaType;
+  active: MediaCategory;
+  filters?: MediaFilters;
   locale: Locale;
 };
 
-export function CategoryTabs({ active, filters = {}, locale }: CategoryTabsProps) {
+export function CategoryTabs({ mediaType, active, filters = {}, locale }: CategoryTabsProps) {
   const dict = getDictionary(locale);
 
   return (
@@ -24,10 +25,10 @@ export function CategoryTabs({ active, filters = {}, locale }: CategoryTabsProps
           block for `fixed` descendants and trap the filter sheet inside the nav. */}
       <div aria-hidden='true' className='absolute inset-0 -z-10 backdrop-blur-md' />
       <div className='flex min-w-0 flex-1 gap-1.5 md:justify-center'>
-        {MEDIA_CONFIG.movie.categories.map(value => (
+        {MEDIA_CATEGORIES.map(value => (
           <Link
             key={value}
-            href={buildHomeHref({ category: value, ...filters })}
+            href={buildHomeHref({ mediaType, category: value, ...filters })}
             aria-current={value === active ? 'true' : undefined}
             className={cn(
               'flex min-h-11 min-w-0 flex-1 items-center justify-center truncate rounded-full px-1.5 text-center text-xs transition-colors md:flex-none md:px-4 md:text-sm',
@@ -41,11 +42,12 @@ export function CategoryTabs({ active, filters = {}, locale }: CategoryTabsProps
         ))}
       </div>
       <div className='flex items-center justify-end gap-2'>
+        {/* Series can't be filtered or searched yet. */}
         <div className='mr-auto min-w-0'>
-          <FilterPicker category={active} filters={filters} />
+          {mediaType === 'movie' && <FilterPicker category={active} filters={filters} />}
         </div>
-        <SearchBar />
-        <LanguageSelector locale={locale} />
+        {mediaType === 'movie' && <SearchBar />}
+        <MediaTypeToggle active={mediaType} category={active} streaming={filters.streaming} />
       </div>
     </nav>
   );

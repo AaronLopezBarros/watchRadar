@@ -19,16 +19,19 @@ export function PosterCard({ item, priority = false }: PosterCardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { providers, isLoading: isLoadingProviders, fetchProviders } = useWatchProviders(item.mediaType, item.id);
 
+  // The URL can only point at a movie for now: a series id there would open the movie with that id.
+  const isLinkable = item.mediaType === 'movie';
+
   // Native history keeps the open item in the URL without a server round trip that would refetch the grid.
   const handleOpen = () => {
     fetchProviders();
     setIsOpen(true);
-    window.history.replaceState(null, '', withMovieParam(window.location.search, item.id));
+    if (isLinkable) window.history.replaceState(null, '', withMovieParam(window.location.search, item.id));
   };
 
   const handleClose = () => {
     setIsOpen(false);
-    window.history.replaceState(null, '', withMovieParam(window.location.search));
+    if (isLinkable) window.history.replaceState(null, '', withMovieParam(window.location.search));
     triggerRef.current?.focus();
   };
 

@@ -1,6 +1,7 @@
-export type MediaType = 'movie';
+export type MediaType = 'movie' | 'tv';
 
-export type MovieCategory = 'popular' | 'top_rated' | 'upcoming' | 'now_playing';
+// Shared by every media type, so switching type keeps the tab; each type builds them from its own TMDB params.
+export type MediaCategory = 'popular' | 'top_rated' | 'upcoming' | 'now_playing';
 
 export type MovieGenre =
   | 'action'
@@ -15,15 +16,11 @@ export type MovieGenre =
   | 'science_fiction'
   | 'thriller';
 
-type CategoryByMedia = {
-  movie: MovieCategory;
-};
-
 type GenreByMedia = {
   movie: MovieGenre;
+  // Series can't be filtered by genre yet.
+  tv: never;
 };
-
-export type MediaCategory<M extends MediaType = MediaType> = CategoryByMedia[M];
 
 export type MediaGenre<M extends MediaType = MediaType> = GenreByMedia[M];
 
@@ -49,8 +46,26 @@ export type TmdbMovie = {
   vote_count: number;
 };
 
+// Shape of a series in TMDB list endpoints: same as a movie's, with TV names for the title and date fields.
+export type TmdbTv = {
+  adult: boolean;
+  backdrop_path: string | null;
+  first_air_date: string;
+  genre_ids: number[];
+  id: number;
+  name: string;
+  original_language: string;
+  original_name: string;
+  overview: string;
+  popularity: number;
+  poster_path: string | null;
+  vote_average: number;
+  vote_count: number;
+};
+
 type TmdbItemByMedia = {
   movie: TmdbMovie;
+  tv: TmdbTv;
 };
 
 export type TmdbItem<M extends MediaType = MediaType> = TmdbItemByMedia[M];
