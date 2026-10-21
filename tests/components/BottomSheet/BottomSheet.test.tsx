@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { BottomSheet } from '@/src/components/BottomSheet/BottomSheet';
 
@@ -21,15 +21,25 @@ const scrollGenreListDown = () => {
   Object.defineProperty(screen.getByRole('list', { name: 'Genre list' }), 'scrollTop', { value: 50 });
 };
 
-// userEvent can't produce touch events. Returns whether the move was left to the browser, i.e. not prevented.
-const swipe = (target: Element, fromY: number, toY: number) => {
+// userEvent can't produce touch events. Returns whether the last move was left to the browser, i.e. not prevented.
+const swipe = (target: Element, fromY: number, ...toYs: number[]) => {
   fireEvent.touchStart(target, { touches: [{ clientY: fromY }] });
-  const isMoveAllowed = fireEvent.touchMove(target, { touches: [{ clientY: toY }] });
+  const movesAllowed = toYs.map(toY => fireEvent.touchMove(target, { touches: [{ clientY: toY }] }));
   fireEvent.touchEnd(target, { touches: [] });
-  return isMoveAllowed;
+  return movesAllowed.at(-1);
 };
 
+const stubScreenWidth = (isDesktop: boolean) => vi.stubGlobal('matchMedia', () => ({ matches: isDesktop }));
+
 describe('BottomSheet', () => {
+  beforeEach(() => {
+    stubScreenWidth(false);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it('renders its content inside a dialog named by the label', () => {
     renderSheet();
 
@@ -68,11 +78,10 @@ describe('BottomSheet', () => {
     expect(onClose).not.toHaveBeenCalled();
   });
 
-  it('closes when swiped down past the threshold from anywhere in the sheet', () => {
+  it('closes when swiped down past the threshold from anywhere in the sheet, without scrolling the page', () => {
     const onClose = renderSheet();
 
-    swipe(screen.getByText('Sheet content'), 0, 150);
-
+    expect(swipe(screen.getByText('Sheet content'), 0, 150)).toBe(false);
     expect(onClose).toHaveBeenCalledOnce();
   });
 
@@ -92,18 +101,51 @@ describe('BottomSheet', () => {
     expect(onClose).not.toHaveBeenCalled();
   });
 
-  it('closes when swiped down from content at its top', () => {
+  it('closes when swiped down from content at its top, without scrolling the content', () => {
     const onClose = renderSheet();
 
-    swipe(screen.getByText('Drama'), 0, 150);
-
+    expect(swipe(screen.getByText('Drama'), 0, 150)).toBe(false);
     expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it('snaps back instead of closing when dragged back up before letting go', () => {
+    const onClose = renderSheet();
+
+    swipe(screen.getByText('Sheet content'), 0, 150, 20);
+
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it('snaps back instead of closing when the system cancels the drag', () => {
+    const onClose = renderSheet();
+    const content = screen.getByText('Sheet content');
+
+    fireEvent.touchStart(content, { touches: [{ clientY: 0 }] });
+    fireEvent.touchMove(content, { touches: [{ clientY: 150 }] });
+    fireEvent.touchCancel(content, { touches: [] });
+
+    expect(onClose).not.toHaveBeenCalled();
   });
 
   it('lets its content scroll on a swipe up', () => {
     const onClose = renderSheet();
 
     expect(swipe(screen.getByText('Drama'), 150, 0)).toBe(true);
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it('lets its content scroll on a swipe up that starts with a jitter down', () => {
+    const onClose = renderSheet();
+
+    expect(swipe(screen.getByText('Drama'), 150, 152, 0)).toBe(true);
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it('does not drag on screens wide enough for the modal or popover layout', () => {
+    stubScreenWidth(true);
+    const onClose = renderSheet();
+
+    expect(swipe(screen.getByText('Sheet content'), 0, 150)).toBe(true);
     expect(onClose).not.toHaveBeenCalled();
   });
 

@@ -47,7 +47,10 @@ type BottomSheetProps = {
 export function BottomSheet({ label, onClose, tone, desktop, className, children }: BottomSheetProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const { isExiting: isClosing, startExit: requestClose, handleAnimationEnd } = useExitAnimation(panelRef, onClose);
-  const { dragY, isDragging, handleTouchStart, handleTouchEnd } = useDragToClose(panelRef, requestClose);
+  const { dragY, isDragging, handleTouchStart, handleTouchEnd, handleTouchCancel } = useDragToClose(
+    panelRef,
+    requestClose,
+  );
 
   useEscapeKey(requestClose);
 
@@ -94,7 +97,7 @@ export function BottomSheet({ label, onClose, tone, desktop, className, children
         onClick={event => event.stopPropagation()}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        onTouchCancel={handleTouchEnd}
+        onTouchCancel={handleTouchCancel}
         onAnimationEnd={handleAnimationEnd}
       >
         <div className='flex justify-center pt-3 pb-4 sm:hidden'>
