@@ -1,4 +1,4 @@
-import { cn } from '@/src/lib/utils';
+import { cn } from '@/lib/utils';
 
 const HIGH_RATING_THRESHOLD = 7;
 const MID_RATING_THRESHOLD = 5;

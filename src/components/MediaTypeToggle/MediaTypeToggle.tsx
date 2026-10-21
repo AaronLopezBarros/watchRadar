@@ -2,12 +2,12 @@
 
 import Link from 'next/link';
 
+import { useTranslations } from '@/components/LocaleProvider';
+import { useSearch } from '@/components/SearchBar/SearchProvider';
 import { MEDIA_TYPES } from '@/lib/api/tmdb/media';
 import type { MediaCategory, MediaType } from '@/lib/api/tmdb/types';
 import { useOptimisticNavigation } from '@/lib/hooks/useOptimisticNavigation';
 import { buildHomeHref, cn } from '@/lib/utils';
-import { useTranslations } from '@/src/components/LocaleProvider';
-import { useSearch } from '@/src/components/SearchBar/SearchProvider';
 
 type MediaTypeToggleProps = {
   active: MediaType;

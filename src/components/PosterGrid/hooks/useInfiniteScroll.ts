@@ -10,10 +10,10 @@ type UseInfiniteScrollOptions = {
   resetKey?: unknown;
 };
 
-export const useInfiniteScroll = (
+export function useInfiniteScroll(
   sentinelRef: RefObject<HTMLDivElement | null>,
   { onIntersect, rootMargin, resetKey }: UseInfiniteScrollOptions,
-) => {
+) {
   useEffect(() => {
     const sentinel = sentinelRef.current;
 
@@ -30,4 +30,4 @@ export const useInfiniteScroll = (
 
     return () => observer.disconnect();
   }, [onIntersect, rootMargin, sentinelRef, resetKey]);
-};
+}

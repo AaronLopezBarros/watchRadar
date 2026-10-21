@@ -1,14 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
-import { SharedMediaDialog } from '@/src/components/SharedMedia/SharedMediaDialog';
+import { SharedMediaDialog } from '@/components/SharedMedia/SharedMediaDialog';
 import { createMediaItem, createProvider } from '@/tests/factories/media.factory';
-
-vi.mock('next/image', () => ({
-  // eslint-disable-next-line @next/next/no-img-element
-  default: ({ alt, src }: { alt: string; src: string }) => <img alt={alt} src={src} />,
-}));
 
 const movie = createMediaItem({ id: 27205, title: 'Inception' });
 

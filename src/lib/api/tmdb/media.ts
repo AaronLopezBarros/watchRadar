@@ -103,11 +103,13 @@ const getTvCategoryParams = (category: MediaCategory, { today }: CategoryContext
 
 export const MEDIA_CATEGORIES: MediaCategory[] = ['popular', 'top_rated', 'upcoming', 'now_playing'];
 
+// Nothing upcoming is on streaming yet.
+const STREAMING_CATEGORIES: MediaCategory[] = ['popular', 'top_rated', 'now_playing'];
+
 export const MEDIA_CONFIG: { [M in MediaType]: MediaConfig<M> } = {
   movie: {
-    endpointCategories: ['popular', 'top_rated', 'upcoming', 'now_playing'],
-    // Nothing upcoming is on streaming yet.
-    streamingCategories: ['popular', 'top_rated', 'now_playing'],
+    endpointCategories: MEDIA_CATEGORIES,
+    streamingCategories: STREAMING_CATEGORIES,
     genres: [
       'action',
       'adventure',
@@ -155,8 +157,7 @@ export const MEDIA_CONFIG: { [M in MediaType]: MediaConfig<M> } = {
   tv: {
     // Every series list goes through /discover so the talk shows and news can be left out.
     endpointCategories: [],
-    // Nothing upcoming is on streaming yet.
-    streamingCategories: ['popular', 'top_rated', 'now_playing'],
+    streamingCategories: STREAMING_CATEGORIES,
     genres: [
       'action_adventure',
       'animation',

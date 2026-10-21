@@ -2,11 +2,11 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { SearchBar } from '@/src/components/SearchBar/SearchBar';
+import { DEBOUNCE_DELAY_MS, MIN_QUERY_LENGTH, SearchBar } from '@/components/SearchBar/SearchBar';
 
 const setDebouncedQuery = vi.fn();
 
-vi.mock('@/src/components/SearchBar/SearchProvider', async () => {
+vi.mock('@/components/SearchBar/SearchProvider', async () => {
   const { useState } = await import('react');
 
   return {
@@ -49,8 +49,8 @@ describe('SearchBar', () => {
     render(<SearchBar mediaType='movie' />);
     await user.click(screen.getByRole('button', { name: 'Search movies' }));
 
-    await user.type(screen.getByPlaceholderText('Search movies…'), 'b');
-    act(() => vi.advanceTimersByTime(350));
+    await user.type(screen.getByPlaceholderText('Search movies…'), 'b'.repeat(MIN_QUERY_LENGTH - 1));
+    act(() => vi.advanceTimersByTime(DEBOUNCE_DELAY_MS));
 
     expect(setDebouncedQuery).toHaveBeenCalledWith('');
   });
@@ -60,7 +60,7 @@ describe('SearchBar', () => {
     await user.click(screen.getByRole('button', { name: 'Search movies' }));
 
     await user.type(screen.getByPlaceholderText('Search movies…'), '  batman  ');
-    act(() => vi.advanceTimersByTime(350));
+    act(() => vi.advanceTimersByTime(DEBOUNCE_DELAY_MS));
 
     expect(setDebouncedQuery).toHaveBeenCalledWith('batman');
   });
@@ -70,14 +70,16 @@ describe('SearchBar', () => {
     await user.click(screen.getByRole('button', { name: 'Search movies' }));
     const input = screen.getByPlaceholderText('Search movies…');
 
+    // Between the two waits the first keystrokes' timer would have fired, so only a reset keeps the query uncommitted.
+    const mostOfTheDelay = DEBOUNCE_DELAY_MS * 0.6;
     await user.type(input, 'bat');
-    act(() => vi.advanceTimersByTime(200));
+    act(() => vi.advanceTimersByTime(mostOfTheDelay));
     await user.type(input, 'man');
-    act(() => vi.advanceTimersByTime(200));
+    act(() => vi.advanceTimersByTime(mostOfTheDelay));
 
     expect(setDebouncedQuery).not.toHaveBeenCalled();
 
-    act(() => vi.advanceTimersByTime(150));
+    act(() => vi.advanceTimersByTime(mostOfTheDelay));
 
     expect(setDebouncedQuery).toHaveBeenCalledWith('batman');
   });

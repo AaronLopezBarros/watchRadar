@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
-import { SearchProvider, useSearch } from '@/src/components/SearchBar/SearchProvider';
+import { SearchProvider, useSearch } from '@/components/SearchBar/SearchProvider';
 
 function Consumer() {
   const { debouncedQuery, setDebouncedQuery } = useSearch();

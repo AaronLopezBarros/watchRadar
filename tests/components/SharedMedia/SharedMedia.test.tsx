@@ -1,18 +1,13 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
+import { SharedMedia } from '@/components/SharedMedia/SharedMedia';
 import { fetchMediaDetails, fetchWatchProviders } from '@/lib/api/tmdb/actions';
-import { SharedMedia } from '@/src/components/SharedMedia/SharedMedia';
 import { createMediaItem, createProvider } from '@/tests/factories/media.factory';
 
 vi.mock('@/lib/api/tmdb/actions', () => ({
   fetchMediaDetails: vi.fn(),
   fetchWatchProviders: vi.fn(),
-}));
-
-vi.mock('next/image', () => ({
-  // eslint-disable-next-line @next/next/no-img-element
-  default: ({ alt, src }: { alt: string; src: string }) => <img alt={alt} src={src} />,
 }));
 
 describe('SharedMedia', () => {

@@ -1,11 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { Header } from '@/src/components/Header';
+import { Header } from '@/components/Header';
 
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({ refresh: vi.fn() }),
-}));
+vi.mock('next/navigation', () => import('@/tests/mocks/nextNavigation'));
 
 describe('Header', () => {
   it('renders the app name as a heading', () => {

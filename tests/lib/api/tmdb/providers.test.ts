@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { getStreamingProviders } from '@/lib/api/tmdb/providers';
+import { MAX_PROVIDERS, getStreamingProviders } from '@/lib/api/tmdb/providers';
 import { createProvider } from '@/tests/factories/media.factory';
 
 describe('getStreamingProviders', () => {
@@ -12,10 +12,10 @@ describe('getStreamingProviders', () => {
     ).toEqual([netflix]);
   });
 
-  it('caps the list at six providers', () => {
-    const flatrate = Array.from({ length: 8 }, (_, index) => createProvider({ provider_id: index }));
+  it('caps the list of providers', () => {
+    const flatrate = Array.from({ length: MAX_PROVIDERS + 2 }, (_, index) => createProvider({ provider_id: index }));
 
-    expect(getStreamingProviders({ id: 1, results: { ES: { link: '', flatrate } } })).toHaveLength(6);
+    expect(getStreamingProviders({ id: 1, results: { ES: { link: '', flatrate } } })).toHaveLength(MAX_PROVIDERS);
   });
 
   it('returns an empty list when Spain has no subscription providers', () => {

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { GenreBadge } from '@/src/components/PosterCard/GenreBadge';
+import { GenreBadge } from '@/components/PosterCard/GenreBadge';
 
 describe('GenreBadge', () => {
   it('renders the genre name', () => {

@@ -2,8 +2,8 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { BottomSheet } from '@/src/components/BottomSheet/BottomSheet';
-import { DIRECTION_SLOP_PX, DRAG_CLOSE_THRESHOLD_PX } from '@/src/components/BottomSheet/hooks/useDragToClose';
+import { BottomSheet } from '@/components/BottomSheet/BottomSheet';
+import { DIRECTION_SLOP_PX, DRAG_CLOSE_THRESHOLD_PX } from '@/components/BottomSheet/hooks/useDragToClose';
 
 const PAST_CLOSE_THRESHOLD = DRAG_CLOSE_THRESHOLD_PX * 1.5;
 const SHORT_OF_CLOSE_THRESHOLD = DRAG_CLOSE_THRESHOLD_PX / 2;

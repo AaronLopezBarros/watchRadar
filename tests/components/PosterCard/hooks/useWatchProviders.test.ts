@@ -1,8 +1,8 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { useWatchProviders } from '@/components/PosterCard/hooks/useWatchProviders';
 import { fetchWatchProviders } from '@/lib/api/tmdb/actions';
-import { useWatchProviders } from '@/src/components/PosterCard/hooks/useWatchProviders';
 import { createProvider } from '@/tests/factories/media.factory';
 
 vi.mock('@/lib/api/tmdb/actions', () => ({
@@ -29,7 +29,9 @@ describe('useWatchProviders', () => {
 
     const { result } = renderHook(() => useWatchProviders('movie', 1));
 
-    act(() => { result.current.fetchProviders(); });
+    act(() => {
+      result.current.fetchProviders();
+    });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(fetchWatchProviders).toHaveBeenCalledWith('movie', 1);
@@ -44,7 +46,9 @@ describe('useWatchProviders', () => {
 
     const { result } = renderHook(() => useWatchProviders('movie', 1));
 
-    act(() => { result.current.fetchProviders(); });
+    act(() => {
+      result.current.fetchProviders();
+    });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(result.current.providers).toEqual([]);
@@ -55,7 +59,9 @@ describe('useWatchProviders', () => {
 
     const { result } = renderHook(() => useWatchProviders('movie', 1));
 
-    act(() => { result.current.fetchProviders(); });
+    act(() => {
+      result.current.fetchProviders();
+    });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(result.current.providers).toEqual([]);

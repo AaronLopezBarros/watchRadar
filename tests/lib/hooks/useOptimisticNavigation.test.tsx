@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import Link from 'next/link';
 import { describe, expect, it, vi } from 'vitest';
 
-import { TAP_SLOP_PX, useOptimisticNavigation } from '@/src/lib/hooks/useOptimisticNavigation';
+import { TAP_SLOP_PX, useOptimisticNavigation } from '@/lib/hooks/useOptimisticNavigation';
 import { routerPush } from '@/tests/mocks/nextNavigation';
 
 vi.mock('next/navigation', () => import('@/tests/mocks/nextNavigation'));

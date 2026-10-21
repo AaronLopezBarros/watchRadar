@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
+import { LocaleProvider, useLocale, useTranslations } from '@/components/LocaleProvider';
 import { getDictionary } from '@/lib/i18n/dictionary';
 import { DEFAULT_LOCALE } from '@/lib/i18n/locale';
-import { LocaleProvider, useLocale, useTranslations } from '@/src/components/LocaleProvider';
 
 function Probe() {
   const dict = useTranslations();

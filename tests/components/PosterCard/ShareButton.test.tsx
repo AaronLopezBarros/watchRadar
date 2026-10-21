@@ -2,9 +2,9 @@ import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { LocaleProvider } from '@/src/components/LocaleProvider';
-import { ShareButton } from '@/src/components/PosterCard/ShareButton';
-import type { MediaItem, MediaRef } from '@/src/lib/api/tmdb/types';
+import { LocaleProvider } from '@/components/LocaleProvider';
+import { FEEDBACK_DURATION_MS, ShareButton } from '@/components/PosterCard/ShareButton';
+import type { MediaItem, MediaRef } from '@/lib/api/tmdb/types';
 
 const movie = { mediaType: 'movie', id: 27205, title: 'Origen' } as const;
 
@@ -90,7 +90,7 @@ describe('ShareButton', () => {
     await user.click(screen.getByRole('button', { name: 'Compartir' }));
     // The confirmation shows once the clipboard promise settles, which a busy run can delay past the click.
     expect(await screen.findByText('Enlace copiado')).toBeInTheDocument();
-    act(() => vi.advanceTimersByTime(2000));
+    act(() => vi.advanceTimersByTime(FEEDBACK_DURATION_MS));
 
     expect(screen.getByRole('status')).toBeEmptyDOMElement();
   });

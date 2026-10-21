@@ -2,14 +2,14 @@
 
 import Link from 'next/link';
 
+import { FilterPicker } from '@/components/FilterPicker/FilterPicker';
+import { useTranslations } from '@/components/LocaleProvider';
+import { MediaTypeToggle } from '@/components/MediaTypeToggle/MediaTypeToggle';
+import { SearchBar } from '@/components/SearchBar/SearchBar';
 import { MEDIA_CATEGORIES } from '@/lib/api/tmdb/media';
 import type { MediaCategory, MediaFilters, MediaType } from '@/lib/api/tmdb/types';
 import { useOptimisticNavigation } from '@/lib/hooks/useOptimisticNavigation';
 import { buildHomeHref, cn } from '@/lib/utils';
-import { FilterPicker } from '@/src/components/FilterPicker/FilterPicker';
-import { useTranslations } from '@/src/components/LocaleProvider';
-import { MediaTypeToggle } from '@/src/components/MediaTypeToggle/MediaTypeToggle';
-import { SearchBar } from '@/src/components/SearchBar/SearchBar';
 
 type CategoryTabsProps = {
   mediaType: MediaType;

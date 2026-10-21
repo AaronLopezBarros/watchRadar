@@ -1,8 +1,8 @@
 import Image from 'next/image';
 
-import { POSTER_W } from '@/src/components/PosterCard/constants';
-import type { MediaItem } from '@/src/lib/api/tmdb/types';
-import { getPosterUrl } from '@/src/lib/utils';
+import { POSTER_W } from '@/components/PosterCard/constants';
+import type { MediaItem } from '@/lib/api/tmdb/types';
+import { getPosterUrl } from '@/lib/utils';
 
 type ImageCardProps = {
   item: MediaItem;
@@ -11,7 +11,7 @@ type ImageCardProps = {
 
 export function ImageCard({ item, priority = false }: ImageCardProps) {
   return (
-    <div data-testid='image-card-container' className='relative h-full w-full'>
+    <div className='relative h-full w-full'>
       <Image
         src={getPosterUrl(item.poster_path)}
         alt={item.title}

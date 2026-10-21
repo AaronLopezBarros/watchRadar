@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, type ReactNode } from 'react';
 
+import { useDragToClose } from '@/components/BottomSheet/hooks/useDragToClose';
 import { useEscapeKey } from '@/lib/hooks/useEscapeKey';
 import { useExitAnimation } from '@/lib/hooks/useExitAnimation';
 import { cn } from '@/lib/utils';
-import { useDragToClose } from '@/src/components/BottomSheet/hooks/useDragToClose';
 
 const SCROLL_LOCK_CLASS_NAME = 'max-sm:overflow-hidden';
 

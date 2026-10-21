@@ -32,13 +32,14 @@ export type Dictionary = {
     whereToWatch: string;
     notAvailable: string;
   };
-  movie: {
-    share: string;
+  share: {
+    button: string;
     linkCopied: string;
     copyFailed: string;
   };
   language: {
     changeAriaLabel: string;
+    switchToAriaLabel: string;
     groupAriaLabel: string;
   };
   error: {
@@ -117,13 +118,14 @@ const translations: Record<Locale, Dictionary> = {
       whereToWatch: 'Where to watch',
       notAvailable: 'Not available for streaming',
     },
-    movie: {
-      share: 'Share',
+    share: {
+      button: 'Share',
       linkCopied: 'Link copied',
       copyFailed: "Couldn't copy the link",
     },
     language: {
       changeAriaLabel: 'Change language',
+      switchToAriaLabel: 'Switch to',
       groupAriaLabel: 'Language',
     },
     error: {
@@ -200,13 +202,14 @@ const translations: Record<Locale, Dictionary> = {
       whereToWatch: 'Dónde ver',
       notAvailable: 'No disponible en streaming',
     },
-    movie: {
-      share: 'Compartir',
+    share: {
+      button: 'Compartir',
       linkCopied: 'Enlace copiado',
       copyFailed: 'No se pudo copiar el enlace',
     },
     language: {
       changeAriaLabel: 'Cambiar idioma',
+      switchToAriaLabel: 'Cambiar a',
       groupAriaLabel: 'Idioma',
     },
     error: {

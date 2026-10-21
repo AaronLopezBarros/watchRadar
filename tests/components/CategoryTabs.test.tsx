@@ -2,8 +2,8 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { CategoryTabs } from '@/src/components/CategoryTabs';
-import { LocaleProvider } from '@/src/components/LocaleProvider';
+import { CategoryTabs } from '@/components/CategoryTabs';
+import { LocaleProvider } from '@/components/LocaleProvider';
 
 vi.mock('next/navigation', () => import('@/tests/mocks/nextNavigation'));
 

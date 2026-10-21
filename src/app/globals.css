@@ -1,5 +1,12 @@
 @import 'tailwindcss';
 
+@theme {
+  --color-radar-cyan: #05d9e8;
+  --color-radar-pink: #ff2d95;
+  --color-radar-ice: #e8f6ff;
+  --color-radar-steel: #8fb6d9;
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;

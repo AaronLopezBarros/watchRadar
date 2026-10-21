@@ -2,14 +2,14 @@
 
 import Image from 'next/image';
 
-import { BottomSheet } from '@/src/components/BottomSheet/BottomSheet';
-import { POSTER_H, POSTER_W } from '@/src/components/PosterCard/constants';
-import { GenreBadge } from '@/src/components/PosterCard/GenreBadge';
-import { ProviderSection } from '@/src/components/PosterCard/ProviderSection';
-import { RatingBadge } from '@/src/components/PosterCard/RatingBadge';
-import { ShareButton } from '@/src/components/PosterCard/ShareButton';
-import type { MediaItem, WatchProvider } from '@/src/lib/api/tmdb/types';
-import { getPosterUrl } from '@/src/lib/utils';
+import { BottomSheet } from '@/components/BottomSheet/BottomSheet';
+import { POSTER_H, POSTER_W } from '@/components/PosterCard/constants';
+import { GenreBadge } from '@/components/PosterCard/GenreBadge';
+import { ProviderSection } from '@/components/PosterCard/ProviderSection';
+import { RatingBadge } from '@/components/PosterCard/RatingBadge';
+import { ShareButton } from '@/components/PosterCard/ShareButton';
+import type { MediaItem, WatchProvider } from '@/lib/api/tmdb/types';
+import { getPosterUrl } from '@/lib/utils';
 
 type PosterDialogProps = {
   item: Pick<

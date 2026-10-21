@@ -1,3 +1,5 @@
+import { DEFAULT_REVALIDATE_SECONDS } from '@/lib/api/tmdb/constants';
+
 const BASE_URL = 'https://api.themoviedb.org/3';
 
 type QueryParams = Record<string, string | number | boolean | undefined | null>;
@@ -8,7 +10,7 @@ type TmdbClientOptions = RequestInit & {
 };
 
 export const tmdbClient = async <T>(endpoint: string, options?: TmdbClientOptions): Promise<T> => {
-  const { params, revalidate = 3600, headers = {}, ...restOptions } = options || {};
+  const { params, revalidate = DEFAULT_REVALIDATE_SECONDS, headers = {}, ...restOptions } = options || {};
 
   const token = process.env.TMDB_TOKEN || process.env.TMDB_API_KEY;
 

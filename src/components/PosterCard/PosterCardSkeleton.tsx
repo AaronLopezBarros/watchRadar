@@ -1,4 +1,4 @@
-import { POSTER_H, POSTER_W } from '@/src/components/PosterCard/constants';
+import { POSTER_H, POSTER_W } from '@/components/PosterCard/constants';
 
 export function PosterCardSkeleton() {
   return (

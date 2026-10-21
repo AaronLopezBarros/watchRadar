@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { useInfiniteScroll } from '@/src/components/PosterGrid/hooks/useInfiniteScroll';
+import { useInfiniteScroll } from '@/components/PosterGrid/hooks/useInfiniteScroll';
 
 describe('useInfiniteScroll', () => {
   let observerCallback: IntersectionObserverCallback | undefined;

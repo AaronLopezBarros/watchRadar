@@ -1,21 +1,17 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { InfinitePosterGrid } from '@/components/InfinitePosterGrid/InfinitePosterGrid';
 import { fetchMedia } from '@/lib/api/tmdb/actions';
-import { InfinitePosterGrid } from '@/src/components/InfinitePosterGrid/InfinitePosterGrid';
 import { createMediaItem } from '@/tests/factories/media.factory';
 
 vi.mock('@/lib/api/tmdb/actions', () => ({
   fetchMedia: vi.fn(),
 }));
 
-vi.mock('@/src/components/PosterCard/PosterCard', () => ({
-  PosterCard: ({ item }: { item: { id: number; title: string } }) => <div data-testid='poster-card'>{item.title}</div>,
-}));
+vi.mock('@/components/PosterCard/PosterCard', () => import('@/tests/mocks/posterCard'));
 
-vi.mock('@/src/components/PosterCard/PosterCardSkeleton', () => ({
-  PosterCardSkeleton: () => <div data-testid='skeleton' />,
-}));
+vi.mock('@/components/PosterCard/PosterCardSkeleton', () => import('@/tests/mocks/posterCardSkeleton'));
 
 describe('InfinitePosterGrid', () => {
   let observerCallback: IntersectionObserverCallback | undefined;

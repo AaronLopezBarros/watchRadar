@@ -2,11 +2,11 @@
 
 import { useCallback } from 'react';
 
+import { useLocale, useTranslations } from '@/components/LocaleProvider';
+import { PosterGrid } from '@/components/PosterGrid/PosterGrid';
 import { searchMedia } from '@/lib/api/tmdb/actions';
 import type { MediaType } from '@/lib/api/tmdb/types';
-import { useLocale, useTranslations } from '@/src/components/LocaleProvider';
-import { PosterGrid } from '@/src/components/PosterGrid/PosterGrid';
-import { usePaginatedMedia } from '@/src/lib/hooks/usePaginatedMedia';
+import { usePaginatedMedia } from '@/lib/hooks/usePaginatedMedia';
 
 type SearchResultsGridProps = {
   mediaType: MediaType;

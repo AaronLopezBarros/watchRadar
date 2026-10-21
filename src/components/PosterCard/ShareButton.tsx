@@ -3,11 +3,11 @@
 import { CheckIcon, ShareIcon, XIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-import { useLocale, useTranslations } from '@/src/components/LocaleProvider';
-import type { MediaItem, MediaRef } from '@/src/lib/api/tmdb/types';
-import { buildShareHref, cn } from '@/src/lib/utils';
+import { useLocale, useTranslations } from '@/components/LocaleProvider';
+import type { MediaItem, MediaRef } from '@/lib/api/tmdb/types';
+import { buildShareHref, cn } from '@/lib/utils';
 
-const FEEDBACK_DURATION_MS = 2000;
+export const FEEDBACK_DURATION_MS = 2000;
 
 // Desktop browsers expose `navigator.share` too, but there people expect the link copied to paste it in a chat;
 // the OS share sheet (WhatsApp, Telegram…) only makes sense on touch devices.
@@ -62,7 +62,7 @@ export function ShareButton({ item }: ShareButtonProps) {
         className='flex min-h-8 cursor-pointer items-center gap-1.5 rounded-full bg-zinc-100 px-3 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900'
       >
         <ShareIcon className='h-3.5 w-3.5' />
-        {dict.movie.share}
+        {dict.share.button}
       </button>
       <p
         role='status'
@@ -71,7 +71,7 @@ export function ShareButton({ item }: ShareButtonProps) {
         {feedback && (
           <>
             {FEEDBACK_STYLE[feedback].icon}
-            {dict.movie[feedback]}
+            {dict.share[feedback]}
           </>
         )}
       </p>

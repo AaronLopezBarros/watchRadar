@@ -2,14 +2,12 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { LanguageSelector } from '@/src/components/LanguageSelector/LanguageSelector';
+import { LanguageSelector } from '@/components/LanguageSelector/LanguageSelector';
+import { routerRefresh } from '@/tests/mocks/nextNavigation';
 
-const refreshMock = vi.fn();
 const setLocaleMock = vi.fn();
 
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({ refresh: refreshMock }),
-}));
+vi.mock('next/navigation', () => import('@/tests/mocks/nextNavigation'));
 
 vi.mock('@/lib/i18n/actions', () => ({
   setLocale: (locale: string) => setLocaleMock(locale),
@@ -40,7 +38,7 @@ describe('LanguageSelector', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Change language: EN' }));
     await userEvent.click(screen.getByRole('button', { name: 'Switch to Español: ES' }));
 
-    await waitFor(() => expect(refreshMock).toHaveBeenCalled());
+    await waitFor(() => expect(routerRefresh).toHaveBeenCalled());
     expect(setLocaleMock).toHaveBeenCalledWith('es');
     expect(screen.queryByRole('button', { name: 'Switch to Español: ES' })).not.toBeInTheDocument();
   });
@@ -52,7 +50,7 @@ describe('LanguageSelector', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Switch to English: EN' }));
 
     expect(setLocaleMock).not.toHaveBeenCalled();
-    expect(refreshMock).not.toHaveBeenCalled();
+    expect(routerRefresh).not.toHaveBeenCalled();
     expect(screen.queryByRole('button', { name: 'Switch to English: EN' })).not.toBeInTheDocument();
   });
 
@@ -76,5 +74,13 @@ describe('LanguageSelector', () => {
     await userEvent.keyboard('a');
 
     expect(screen.getByRole('button', { name: 'Switch to Español: ES' })).toBeInTheDocument();
+  });
+
+  it('names the options in the current language', async () => {
+    render(<LanguageSelector locale='es' />);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Cambiar idioma: ES' }));
+
+    expect(screen.getByRole('button', { name: 'Cambiar a English: EN' })).toBeInTheDocument();
   });
 });

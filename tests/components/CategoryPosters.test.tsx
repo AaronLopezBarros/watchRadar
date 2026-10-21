@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
+import { CategoryPosters } from '@/components/CategoryPosters';
 import { fetchMedia } from '@/lib/api/tmdb/actions';
-import { CategoryPosters } from '@/src/components/CategoryPosters';
 import { createMediaItem } from '@/tests/factories/media.factory';
 
 vi.mock('@/lib/api/tmdb/actions', () => ({
@@ -10,7 +10,7 @@ vi.mock('@/lib/api/tmdb/actions', () => ({
   fetchWatchProviders: vi.fn(),
 }));
 
-vi.mock('@/src/components/InfinitePosterGrid/InfinitePosterGrid', () => ({
+vi.mock('@/components/InfinitePosterGrid/InfinitePosterGrid', () => ({
   InfinitePosterGrid: ({
     initialItems,
     initialPage,

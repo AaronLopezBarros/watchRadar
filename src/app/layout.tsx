@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 
+import { Header } from '@/components/Header';
+import { LocaleProvider } from '@/components/LocaleProvider';
 import { getDictionary } from '@/lib/i18n/dictionary';
 import { getLocale } from '@/lib/i18n/getLocale';
-import { Header } from '@/src/components/Header';
-import { LocaleProvider } from '@/src/components/LocaleProvider';
 import './globals.css';
 
 const plusJakartaSans = Plus_Jakarta_Sans({ subsets: ['latin'], display: 'swap' });

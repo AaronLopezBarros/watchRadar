@@ -4,13 +4,13 @@ import { ChevronDownIcon, XIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 
+import { BottomSheet } from '@/components/BottomSheet/BottomSheet';
+import { useTranslations } from '@/components/LocaleProvider';
+import { useSearch } from '@/components/SearchBar/SearchProvider';
 import { MEDIA_CONFIG, canFilterStreaming } from '@/lib/api/tmdb/media';
 import type { MediaCategory, MediaFilters, MediaType } from '@/lib/api/tmdb/types';
 import { useOptimisticNavigation } from '@/lib/hooks/useOptimisticNavigation';
 import { buildHomeHref, cn } from '@/lib/utils';
-import { BottomSheet } from '@/src/components/BottomSheet/BottomSheet';
-import { useTranslations } from '@/src/components/LocaleProvider';
-import { useSearch } from '@/src/components/SearchBar/SearchProvider';
 
 const ALL_GENRES_OPTION = undefined;
 
@@ -106,7 +106,7 @@ export function FilterPicker({ mediaType, category, filters }: FilterPickerProps
                 aria-hidden='true'
                 className={cn(
                   'flex h-6 w-10 items-center rounded-full p-0.5 transition-colors',
-                  streaming ? 'justify-end bg-[#05d9e8]' : 'justify-start bg-white/20',
+                  streaming ? 'justify-end bg-radar-cyan' : 'justify-start bg-white/20',
                 )}
               >
                 <span className='h-5 w-5 rounded-full bg-white' />
