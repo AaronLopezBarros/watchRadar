@@ -1,7 +1,7 @@
 import { act, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { PosterGrid, PosterGridSkeleton } from '@/src/components/PosterGrid/PosterGrid';
+import { PosterGrid, PosterGridSkeleton, STAGGER_COUNT, STAGGER_STEP_MS } from '@/src/components/PosterGrid/PosterGrid';
 import { createMediaItem } from '@/tests/factories/media.factory';
 
 vi.mock('@/src/components/PosterCard/PosterCard', () => ({
@@ -61,14 +61,14 @@ describe('PosterGrid', () => {
     expect(cards[1]).toHaveAttribute('data-priority', 'false');
   });
 
-  it('staggers the entrance of the first twelve cards only', () => {
-    const movies = Array.from({ length: 14 }, (_, index) => createMediaItem({ id: index + 1 }));
+  it('staggers the entrance of the first cards only', () => {
+    const movies = Array.from({ length: STAGGER_COUNT + 2 }, (_, index) => createMediaItem({ id: index + 1 }));
     render(<PosterGrid items={movies} isLoading={false} onIntersect={vi.fn()} />);
 
     const delays = screen.getAllByTestId('poster-card').map(card => card.getAttribute('data-enter-delay'));
-    expect(delays.slice(0, 3)).toEqual(['0', '30', '60']);
-    expect(delays[11]).toBe('330');
-    expect(delays.slice(12)).toEqual([null, null]);
+    expect(delays.slice(0, 2)).toEqual(['0', String(STAGGER_STEP_MS)]);
+    expect(delays[STAGGER_COUNT - 1]).toBe(String((STAGGER_COUNT - 1) * STAGGER_STEP_MS));
+    expect(delays.slice(STAGGER_COUNT)).toEqual([null, null]);
   });
 
   it('renders skeletons while loading', () => {

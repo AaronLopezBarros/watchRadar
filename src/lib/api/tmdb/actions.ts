@@ -1,7 +1,7 @@
 'use server';
 
 import { tmdbClient } from '@/lib/api/tmdb/client';
-import { TMDB_LANGUAGE } from '@/lib/api/tmdb/constants';
+import { GENRES_REVALIDATE_SECONDS, SEARCH_REVALIDATE_SECONDS, TMDB_LANGUAGE } from '@/lib/api/tmdb/constants';
 import { getDiscoverParams, hasFilters } from '@/lib/api/tmdb/discover';
 import { MEDIA_CONFIG, hasCategoryEndpoint, isMediaCategory, isMediaGenre, isMediaType } from '@/lib/api/tmdb/media';
 import type {
@@ -55,7 +55,7 @@ export const fetchMediaDetails = async <M extends MediaType>(
 const fetchGenres = async (mediaType: MediaType, locale: Locale): Promise<Genre[]> => {
   const data = await tmdbClient<GenresResponse>(`/genre/${mediaType}/list`, {
     params: { language: TMDB_LANGUAGE[locale] },
-    revalidate: 86400,
+    revalidate: GENRES_REVALIDATE_SECONDS,
   }).catch(() => ({ genres: [] }));
   return data.genres;
 };
@@ -105,7 +105,7 @@ export const searchMedia = async (
   const [data, genres] = await Promise.all([
     tmdbClient<TmdbListResponse<TmdbItem>>(`/search/${mediaType}`, {
       params: { query, page, include_adult: false, language: TMDB_LANGUAGE[locale] },
-      revalidate: 60,
+      revalidate: SEARCH_REVALIDATE_SECONDS,
     }),
     fetchGenres(mediaType, locale),
   ]);

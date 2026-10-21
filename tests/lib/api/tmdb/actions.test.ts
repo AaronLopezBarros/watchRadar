@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { fetchMediaDetails, fetchWatchProviders, fetchMedia, searchMedia } from '@/lib/api/tmdb/actions';
 import { tmdbClient } from '@/lib/api/tmdb/client';
+import { GENRES_REVALIDATE_SECONDS, SEARCH_REVALIDATE_SECONDS } from '@/lib/api/tmdb/constants';
 import type { Genre } from '@/lib/api/tmdb/types';
 
 vi.mock('@/lib/api/tmdb/client');
@@ -112,7 +113,10 @@ describe('actions', () => {
 
       const result = await fetchMedia('movie', 'popular', 1, 'es');
 
-      expect(tmdbClient).toHaveBeenCalledWith(GENRES_ENDPOINT, { params: { language: 'es-ES' }, revalidate: 86400 });
+      expect(tmdbClient).toHaveBeenCalledWith(GENRES_ENDPOINT, {
+        params: { language: 'es-ES' },
+        revalidate: GENRES_REVALIDATE_SECONDS,
+      });
       expect(result).toEqual([
         {
           mediaType: 'movie',
@@ -215,7 +219,7 @@ describe('actions', () => {
 
       expect(tmdbClient).toHaveBeenCalledWith('/search/movie', {
         params: { query: 'batman', page: 2, include_adult: false, language: 'en-US' },
-        revalidate: 60,
+        revalidate: SEARCH_REVALIDATE_SECONDS,
       });
       expect(result).toEqual([{ mediaType: 'movie', id: 1, genres: [] }]);
     });
@@ -227,7 +231,7 @@ describe('actions', () => {
 
       expect(tmdbClient).toHaveBeenCalledWith('/search/movie', {
         params: { query: 'batman', page: 1, include_adult: false, language: 'es-ES' },
-        revalidate: 60,
+        revalidate: SEARCH_REVALIDATE_SECONDS,
       });
     });
 
@@ -277,7 +281,10 @@ describe('actions', () => {
           include_adult: false,
         },
       });
-      expect(tmdbClient).toHaveBeenCalledWith(TV_GENRES_ENDPOINT, { params: { language: 'es-ES' }, revalidate: 86400 });
+      expect(tmdbClient).toHaveBeenCalledWith(TV_GENRES_ENDPOINT, {
+        params: { language: 'es-ES' },
+        revalidate: GENRES_REVALIDATE_SECONDS,
+      });
       expect(result).toEqual([
         expect.objectContaining({
           mediaType: 'tv',
@@ -312,7 +319,7 @@ describe('actions', () => {
 
       expect(tmdbClient).toHaveBeenCalledWith('/search/tv', {
         params: { query: 'breaking bad', page: 1, include_adult: false, language: 'es-ES' },
-        revalidate: 60,
+        revalidate: SEARCH_REVALIDATE_SECONDS,
       });
     });
 

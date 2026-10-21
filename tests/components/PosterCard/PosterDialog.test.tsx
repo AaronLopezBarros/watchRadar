@@ -2,6 +2,7 @@ import { cleanup, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { PosterDialog } from '@/src/components/PosterCard/PosterDialog';
+import { SKELETON_COUNT } from '@/src/components/PosterCard/ProviderSection';
 import { createGenre, createMediaItem, createProvider } from '@/tests/factories/media.factory';
 
 vi.mock('next/image', () => ({
@@ -65,7 +66,7 @@ describe('PosterDialog', () => {
   it('shows provider skeletons while loading', () => {
     render(<PosterDialog item={createMediaItem()} providers={[]} isLoadingProviders={true} onClose={() => {}} />);
 
-    expect(screen.getAllByTestId('provider-skeleton')).toHaveLength(3);
+    expect(screen.getAllByTestId('provider-skeleton')).toHaveLength(SKELETON_COUNT);
   });
 
   it('labels the dialog with the movie title', () => {

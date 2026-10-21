@@ -7,7 +7,7 @@ import { useLocale, useTranslations } from '@/src/components/LocaleProvider';
 import type { MediaItem, MediaRef } from '@/src/lib/api/tmdb/types';
 import { buildShareHref, cn } from '@/src/lib/utils';
 
-const FEEDBACK_DURATION_MS = 2000;
+export const FEEDBACK_DURATION_MS = 2000;
 
 // Desktop browsers expose `navigator.share` too, but there people expect the link copied to paste it in a chat;
 // the OS share sheet (WhatsApp, Telegram…) only makes sense on touch devices.

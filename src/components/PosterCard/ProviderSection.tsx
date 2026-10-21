@@ -6,7 +6,7 @@ import { useTranslations } from '@/src/components/LocaleProvider';
 import type { WatchProvider } from '@/src/lib/api/tmdb/types';
 import { getLogoUrl } from '@/src/lib/utils';
 
-const SKELETON_COUNT = 3;
+export const SKELETON_COUNT = 3;
 const LOGO_SIZE = 32;
 
 type ProviderSectionProps = {
@@ -22,7 +22,9 @@ export function ProviderSection({ providers, isLoading, maxVisible }: ProviderSe
 
   return (
     <div className='border-t border-zinc-100 pt-2'>
-      <p className='mb-1.5 text-[10px] font-medium uppercase tracking-wide text-zinc-400'>{dict.provider.whereToWatch}</p>
+      <p className='mb-1.5 text-[10px] font-medium tracking-wide text-zinc-400 uppercase'>
+        {dict.provider.whereToWatch}
+      </p>
       {isLoading && (
         <div className='flex gap-1.5'>
           {Array.from({ length: SKELETON_COUNT }, (_, index) => (

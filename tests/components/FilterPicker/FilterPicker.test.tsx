@@ -2,6 +2,7 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { MEDIA_CONFIG } from '@/lib/api/tmdb/media';
 import type { MediaCategory, MediaFilters, MediaType } from '@/lib/api/tmdb/types';
 import { FilterPicker } from '@/src/components/FilterPicker/FilterPicker';
 import { LocaleProvider } from '@/src/components/LocaleProvider';
@@ -9,6 +10,9 @@ import { SearchBar } from '@/src/components/SearchBar/SearchBar';
 import { SearchProvider } from '@/src/components/SearchBar/SearchProvider';
 
 vi.mock('next/navigation', () => import('@/tests/mocks/nextNavigation'));
+
+// The "All" option listed before the genres.
+const ALL_GENRES = 1;
 
 type HarnessProps = {
   mediaType?: MediaType;
@@ -39,7 +43,7 @@ describe('FilterPicker', () => {
     await user.click(screen.getByRole('button', { name: 'Filtros' }));
 
     const sheet = screen.getByRole('dialog', { name: 'Filtros' });
-    expect(within(sheet).getAllByRole('listitem')).toHaveLength(12);
+    expect(within(sheet).getAllByRole('listitem')).toHaveLength(MEDIA_CONFIG.movie.genres.length + ALL_GENRES);
     expect(within(sheet).getByRole('link', { name: 'Todos', current: true })).toHaveAttribute(
       'href',
       '/?category=top_rated',
@@ -149,7 +153,7 @@ describe('FilterPicker', () => {
     await user.click(screen.getByRole('button', { name: 'Filtros' }));
 
     const sheet = screen.getByRole('dialog', { name: 'Filtros' });
-    expect(within(sheet).getAllByRole('listitem')).toHaveLength(11);
+    expect(within(sheet).getAllByRole('listitem')).toHaveLength(MEDIA_CONFIG.tv.genres.length + ALL_GENRES);
     expect(within(sheet).getByRole('link', { name: 'Ciencia ficción' })).toHaveAttribute(
       'href',
       '/?type=tv&category=now_playing&genre=science_fiction',

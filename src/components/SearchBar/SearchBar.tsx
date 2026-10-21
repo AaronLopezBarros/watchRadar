@@ -10,8 +10,8 @@ import { cn } from '@/lib/utils';
 import { useTranslations } from '@/src/components/LocaleProvider';
 import { useSearch } from '@/src/components/SearchBar/SearchProvider';
 
-const MIN_QUERY_LENGTH = 2;
-const DEBOUNCE_DELAY_MS = 350;
+export const MIN_QUERY_LENGTH = 2;
+export const DEBOUNCE_DELAY_MS = 350;
 
 type SearchBarProps = {
   mediaType: MediaType;

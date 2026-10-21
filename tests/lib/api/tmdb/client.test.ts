@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { tmdbClient } from '@/src/lib/api/tmdb/client';
+import { DEFAULT_REVALIDATE_SECONDS } from '@/src/lib/api/tmdb/constants';
 
 const fetchMock = vi.spyOn(global, 'fetch').mockResolvedValue({
   ok: true,
@@ -22,7 +23,7 @@ describe('tmdbClient', () => {
           accept: 'application/json',
           Authorization: 'Bearer test-token',
         }),
-        next: { revalidate: 3600 },
+        next: { revalidate: DEFAULT_REVALIDATE_SECONDS },
       }),
     );
   });
@@ -41,7 +42,7 @@ describe('tmdbClient', () => {
           accept: 'application/json',
           Authorization: 'Bearer test-token',
         }),
-        next: { revalidate: 3600 },
+        next: { revalidate: DEFAULT_REVALIDATE_SECONDS },
       }),
     );
   });
@@ -60,7 +61,7 @@ describe('tmdbClient', () => {
           accept: 'application/json',
           Authorization: 'Bearer test-token',
         }),
-        next: { revalidate: 3600 },
+        next: { revalidate: DEFAULT_REVALIDATE_SECONDS },
       }),
     );
   });
