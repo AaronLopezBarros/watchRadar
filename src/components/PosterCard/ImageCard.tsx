@@ -11,7 +11,7 @@ type ImageCardProps = {
 
 export function ImageCard({ item, priority = false }: ImageCardProps) {
   return (
-    <div data-testid='image-card-container' className='relative h-full w-full'>
+    <div className='relative h-full w-full'>
       <Image
         src={getPosterUrl(item.poster_path)}
         alt={item.title}
