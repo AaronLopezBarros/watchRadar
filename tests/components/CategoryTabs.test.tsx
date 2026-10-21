@@ -1,15 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { startTransition } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { CategoryTabs } from '@/src/components/CategoryTabs';
 import { LocaleProvider } from '@/src/components/LocaleProvider';
 
-vi.mock('next/navigation', () => ({
-  // A navigation that never finishes, like one still waiting for the server.
-  useRouter: () => ({ push: () => startTransition(() => new Promise(() => {})) }),
-}));
+vi.mock('next/navigation', () => import('@/tests/mocks/nextNavigation'));
 
 describe('CategoryTabs', () => {
   it('renders a tab for every category', () => {

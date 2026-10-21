@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState, type RefObject, type TouchEvent as ReactTouchEvent } from 'react';
 
-const DRAG_CLOSE_THRESHOLD_PX = 100;
+export const DRAG_CLOSE_THRESHOLD_PX = 100;
 // iOS sends moves of a few pixels, in either direction, at the start of any swipe.
-const DIRECTION_SLOP_PX = 8;
+export const DIRECTION_SLOP_PX = 8;
 // From here up the sheet is a centered modal or a popover anchored to its trigger: neither should move.
 const DESKTOP_MEDIA_QUERY = '(min-width: 40rem)';
 

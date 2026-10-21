@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import { startTransition, useOptimistic, useRef, type ComponentProps } from 'react';
 
 const TAP_CLICK_WINDOW_MS = 1000;
-const TAP_SLOP_PX = 6;
+// Below the filter sheet's drag slop, so a short pull on the sheet that starts over a genre doesn't pick it.
+export const TAP_SLOP_PX = 6;
 
 type OptimisticLinkProps = Pick<ComponentProps<typeof Link>, 'href' | 'onNavigate' | 'onPointerDown' | 'onPointerUp'>;
 

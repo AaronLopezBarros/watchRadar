@@ -1,6 +1,5 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { startTransition } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { MediaCategory, MediaFilters, MediaType } from '@/lib/api/tmdb/types';
@@ -9,10 +8,7 @@ import { LocaleProvider } from '@/src/components/LocaleProvider';
 import { SearchBar } from '@/src/components/SearchBar/SearchBar';
 import { SearchProvider } from '@/src/components/SearchBar/SearchProvider';
 
-vi.mock('next/navigation', () => ({
-  // A navigation that never finishes, like one still waiting for the server.
-  useRouter: () => ({ push: () => startTransition(() => new Promise(() => {})) }),
-}));
+vi.mock('next/navigation', () => import('@/tests/mocks/nextNavigation'));
 
 type HarnessProps = {
   mediaType?: MediaType;
