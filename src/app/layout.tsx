@@ -27,7 +27,11 @@ export default async function RootLayout({
   const locale = await getLocale();
 
   return (
-    <html lang={locale} className='overflow-x-hidden'>
+    <html
+      lang={locale}
+      // Without it iOS can take a tap that quickly follows another as a double-tap zoom and drop the click.
+      className='touch-manipulation overflow-x-hidden'
+    >
       <body className={`${plusJakartaSans.className} min-h-screen bg-slate-950 antialiased`}>
         <div className='fixed inset-0 -z-10 bg-linear-to-b from-indigo-950 via-blue-950 to-slate-950' />
         <Header locale={locale} />
