@@ -6,7 +6,6 @@ import { createMediaItem } from '@/tests/factories/media.factory';
 
 const movieMock = createMediaItem();
 
-
 describe('ImageCard', () => {
   afterEach(() => {
     cleanup();

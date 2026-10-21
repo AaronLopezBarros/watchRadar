@@ -1,7 +1,6 @@
 {
     "printWidth": 120,
     "tabWidth": 2,
-    "userTabs": true,
     "singleQuote": true,
     "jsxSingleQuote": true,
     "arrowParens": "avoid",

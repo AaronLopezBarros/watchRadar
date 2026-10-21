@@ -13,7 +13,7 @@ type UsePaginatedMediaOptions = {
   startLoading?: boolean;
 };
 
-export const usePaginatedMedia = ({ initialItems, initialPage, fetchPage, startLoading }: UsePaginatedMediaOptions) => {
+export function usePaginatedMedia({ initialItems, initialPage, fetchPage, startLoading }: UsePaginatedMediaOptions) {
   const [items, setItems] = useState(initialItems);
   const [isLoading, setIsLoading] = useState(startLoading ?? false);
   const [error, setError] = useState(false);
@@ -62,4 +62,4 @@ export const usePaginatedMedia = ({ initialItems, initialPage, fetchPage, startL
   }, [startLoading, loadNextPage]);
 
   return { items, isLoading, error, loadNextPage };
-};
+}
