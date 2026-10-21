@@ -8,9 +8,12 @@ import { routerPush } from '@/tests/mocks/nextNavigation';
 
 vi.mock('next/navigation', () => import('@/tests/mocks/nextNavigation'));
 
-// userEvent always follows a touch release with a click, so it can't show the click iOS drops, nor the click browsers
-// skip after a drag.
-const touch = { pointerType: 'touch', isPrimary: true };
+// userEvent has no touch events, which taps are handled on.
+const tap = (target: Element, { endsAt = 0 } = {}) => {
+  fireEvent.touchStart(target, { touches: [{ clientX: 0, clientY: 0 }] });
+  // Whether the browser may still click: false once the tap's own click is cancelled.
+  return fireEvent.touchEnd(target, { touches: [], changedTouches: [{ clientX: 0, clientY: endsAt }] });
+};
 
 function Tabs() {
   const [active, tabLinkProps] = useOptimisticNavigation('first');
@@ -32,33 +35,25 @@ describe('useOptimisticNavigation', () => {
     expect(routerPush).toHaveBeenCalledExactlyOnceWith('/second');
   });
 
-  it('navigates on a tap whose click iOS drops', () => {
+  it('navigates on a tap without waiting for its click, which iOS may drop', () => {
     render(<Tabs />);
-    const link = screen.getByRole('link', { name: 'second' });
 
-    fireEvent.pointerDown(link, { ...touch, clientX: 0, clientY: 0 });
-    fireEvent.pointerUp(link, { ...touch, clientX: TAP_SLOP_PX / 2, clientY: TAP_SLOP_PX / 2 });
+    tap(screen.getByRole('link', { name: 'second' }), { endsAt: TAP_SLOP_PX / 2 });
 
     expect(screen.getByRole('link', { name: 'second', current: true })).toBeInTheDocument();
     expect(routerPush).toHaveBeenCalledExactlyOnceWith('/second');
   });
 
-  it('navigates only once on a tap whose click does follow', async () => {
+  it("cancels a tap's own click so it can't land on what is left under the finger", () => {
     render(<Tabs />);
 
-    await userEvent.pointer({ keys: '[TouchA]', target: screen.getByRole('link', { name: 'second' }) });
-
-    expect(screen.getByRole('link', { name: 'second', current: true })).toBeInTheDocument();
-    expect(routerPush).toHaveBeenCalledExactlyOnceWith('/second');
+    expect(tap(screen.getByRole('link', { name: 'second' }))).toBe(false);
   });
 
-  it('ignores a touch release that ends a drag', () => {
+  it('ignores a touch that ends a drag', () => {
     render(<Tabs />);
-    const link = screen.getByRole('link', { name: 'second' });
 
-    fireEvent.pointerDown(link, { ...touch, clientX: 0, clientY: 0 });
-    fireEvent.pointerUp(link, { ...touch, clientX: 0, clientY: TAP_SLOP_PX * 2 });
-
+    expect(tap(screen.getByRole('link', { name: 'second' }), { endsAt: TAP_SLOP_PX * 2 })).toBe(true);
     expect(screen.getByRole('link', { name: 'first', current: true })).toBeInTheDocument();
     expect(routerPush).not.toHaveBeenCalled();
   });
