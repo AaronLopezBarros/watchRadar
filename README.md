@@ -50,7 +50,7 @@ pnpm vitest run tests/lib/utils/getPosterUrl.test.ts
 
 ## Architecture
 
-**Data flow:** App Router RSC pages fetch TMDB data on the server through server actions, and pass it down to client components for interactivity (infinite scroll, search, the movie detail dialog, locale switching).
+**Data flow:** App Router RSC pages fetch TMDB data on the server through server actions, and pass it down to client components for interactivity (infinite scroll, search, the detail dialog, locale switching).
 
 | Folder | Contains |
 | --- | --- |
