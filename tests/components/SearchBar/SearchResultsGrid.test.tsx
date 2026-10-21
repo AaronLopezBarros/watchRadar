@@ -11,13 +11,9 @@ vi.mock('@/lib/api/tmdb/actions', () => ({
   searchMedia: vi.fn(),
 }));
 
-vi.mock('@/src/components/PosterCard/PosterCard', () => ({
-  PosterCard: ({ item }: { item: { id: number; title: string } }) => <div data-testid='poster-card'>{item.title}</div>,
-}));
+vi.mock('@/src/components/PosterCard/PosterCard', () => import('@/tests/mocks/posterCard'));
 
-vi.mock('@/src/components/PosterCard/PosterCardSkeleton', () => ({
-  PosterCardSkeleton: () => <div data-testid='skeleton' />,
-}));
+vi.mock('@/src/components/PosterCard/PosterCardSkeleton', () => import('@/tests/mocks/posterCardSkeleton'));
 
 describe('SearchResultsGrid', () => {
   let observerCallback: IntersectionObserverCallback | undefined;

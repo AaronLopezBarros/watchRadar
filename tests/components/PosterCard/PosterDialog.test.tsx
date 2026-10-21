@@ -1,14 +1,9 @@
 import { cleanup, render, screen, within } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import { PosterDialog } from '@/src/components/PosterCard/PosterDialog';
 import { SKELETON_COUNT } from '@/src/components/PosterCard/ProviderSection';
 import { createGenre, createMediaItem, createProvider } from '@/tests/factories/media.factory';
-
-vi.mock('next/image', () => ({
-  // eslint-disable-next-line @next/next/no-img-element
-  default: ({ alt, src }: { alt: string; src: string }) => <img alt={alt} src={src} />,
-}));
 
 describe('PosterDialog', () => {
   afterEach(() => {

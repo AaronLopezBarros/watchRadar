@@ -11,6 +11,7 @@ vi.mock('next/font/google', () => ({
 
 // Outside Next's bundler `next/link` is the Pages Router Link, which ignores onNavigate; this follows the App Router one.
 vi.mock('next/link', () => import('./tests/mocks/nextLink'));
+vi.mock('next/image', () => import('./tests/mocks/nextImage'));
 
 afterEach(() => {
   cleanup();

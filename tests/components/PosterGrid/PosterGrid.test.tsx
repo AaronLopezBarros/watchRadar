@@ -4,25 +4,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PosterGrid, PosterGridSkeleton, STAGGER_COUNT, STAGGER_STEP_MS } from '@/src/components/PosterGrid/PosterGrid';
 import { createMediaItem } from '@/tests/factories/media.factory';
 
-vi.mock('@/src/components/PosterCard/PosterCard', () => ({
-  PosterCard: ({
-    item,
-    priority,
-    enterDelayMs,
-  }: {
-    item: { id: number; title: string };
-    priority: boolean;
-    enterDelayMs?: number;
-  }) => (
-    <div data-testid='poster-card' data-priority={priority} data-enter-delay={enterDelayMs}>
-      {item.title}
-    </div>
-  ),
-}));
+vi.mock('@/src/components/PosterCard/PosterCard', () => import('@/tests/mocks/posterCard'));
 
-vi.mock('@/src/components/PosterCard/PosterCardSkeleton', () => ({
-  PosterCardSkeleton: () => <div data-testid='skeleton' />,
-}));
+vi.mock('@/src/components/PosterCard/PosterCardSkeleton', () => import('@/tests/mocks/posterCardSkeleton'));
 
 describe('PosterGrid', () => {
   let observerCallback: IntersectionObserverCallback | undefined;

@@ -10,11 +10,6 @@ vi.mock('@/lib/api/tmdb/actions', () => ({
   fetchWatchProviders: vi.fn(),
 }));
 
-vi.mock('next/image', () => ({
-  // eslint-disable-next-line @next/next/no-img-element
-  default: ({ alt, src }: { alt: string; src: string }) => <img alt={alt} src={src} />,
-}));
-
 describe('SharedMedia', () => {
   it('opens the movie in the given locale with its streaming providers', async () => {
     vi.mocked(fetchMediaDetails).mockResolvedValue(createMediaItem({ id: 27205, title: 'Origen' }));

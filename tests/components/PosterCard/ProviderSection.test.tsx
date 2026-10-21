@@ -1,13 +1,8 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { ProviderSection } from '@/src/components/PosterCard/ProviderSection';
 import { createProvider } from '@/tests/factories/media.factory';
-
-vi.mock('next/image', () => ({
-  // eslint-disable-next-line @next/next/no-img-element
-  default: ({ alt, src }: { alt: string; src: string }) => <img alt={alt} src={src} />,
-}));
 
 describe('ProviderSection', () => {
   it('shows every provider', () => {
