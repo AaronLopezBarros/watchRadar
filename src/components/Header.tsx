@@ -25,11 +25,11 @@ export function Header({ locale }: HeaderProps) {
           style={{ aspectRatio: '1200 / 320' }}
         >
           <div className='relative aspect-square w-[15.833cqw] flex-none'>
-            <div className='absolute inset-0 rounded-full border-[0.25cqw] border-[#05d9e8] shadow-[0_0_18px_#05d9e8,inset_0_0_22px_rgba(5,217,232,0.35)]' />
-            <div className='absolute inset-[2.833cqw] rounded-full border-[0.167cqw] border-[rgba(5,217,232,0.55)]' />
-            <div className='absolute inset-[5.833cqw] rounded-full border-[0.167cqw] border-[rgba(5,217,232,0.4)]' />
-            <div className='absolute inset-y-[0.5cqw] left-1/2 w-[0.125cqw] -translate-x-1/2 bg-[rgba(5,217,232,0.35)]' />
-            <div className='absolute inset-x-[0.5cqw] top-1/2 h-[0.125cqw] -translate-y-1/2 bg-[rgba(5,217,232,0.35)]' />
+            <div className='absolute inset-0 rounded-full border-[0.25cqw] border-radar-cyan shadow-[0_0_18px_var(--color-radar-cyan),inset_0_0_22px_rgba(5,217,232,0.35)]' />
+            <div className='absolute inset-[2.833cqw] rounded-full border-[0.167cqw] border-radar-cyan/55' />
+            <div className='absolute inset-[5.833cqw] rounded-full border-[0.167cqw] border-radar-cyan/40' />
+            <div className='absolute inset-y-[0.5cqw] left-1/2 w-[0.125cqw] -translate-x-1/2 bg-radar-cyan/35' />
+            <div className='absolute inset-x-[0.5cqw] top-1/2 h-[0.125cqw] -translate-y-1/2 bg-radar-cyan/35' />
             <div
               className='absolute inset-[0.25cqw] animate-[wr-sweep_3.4s_linear_infinite] rounded-full motion-reduce:animate-none'
               style={{
@@ -39,8 +39,8 @@ export function Header({ locale }: HeaderProps) {
                 mask: 'radial-gradient(circle, transparent 0, #000 0.333cqw)',
               }}
             />
-            <div className='absolute top-[34%] left-[70%] h-[1.333cqw] w-[1.333cqw] animate-[wr-blip_3.4s_ease-in-out_infinite] rounded-full bg-[#ff2d95] shadow-[0_0_14px_#ff2d95,0_0_26px_#ff2d95] motion-reduce:animate-none' />
-            <div className='absolute top-1/2 left-1/2 h-[1cqw] w-[1cqw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#05d9e8] shadow-[0_0_12px_#05d9e8]' />
+            <div className='absolute top-[34%] left-[70%] h-[1.333cqw] w-[1.333cqw] animate-[wr-blip_3.4s_ease-in-out_infinite] rounded-full bg-radar-pink shadow-[0_0_14px_var(--color-radar-pink),0_0_26px_var(--color-radar-pink)] motion-reduce:animate-none' />
+            <div className='absolute top-1/2 left-1/2 h-[1cqw] w-[1cqw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-radar-cyan shadow-[0_0_12px_var(--color-radar-cyan)]' />
           </div>
 
           <div className='flex animate-[wr-flicker_6s_infinite] flex-col leading-[0.9] motion-reduce:animate-none'>
@@ -50,19 +50,19 @@ export function Header({ locale }: HeaderProps) {
             >
               <span
                 aria-hidden='true'
-                className='text-[#e8f6ff] [text-shadow:0_0_10px_rgba(5,217,232,0.7),0_0_28px_rgba(5,217,232,0.45)]'
+                className='text-radar-ice [text-shadow:0_0_10px_rgba(5,217,232,0.7),0_0_28px_rgba(5,217,232,0.45)]'
               >
                 watch
               </span>
               <span
                 aria-hidden='true'
-                className='text-[#ff2d95] [text-shadow:0_0_12px_rgba(255,45,149,0.9),0_0_34px_rgba(255,45,149,0.6)]'
+                className='text-radar-pink [text-shadow:0_0_12px_rgba(255,45,149,0.9),0_0_34px_rgba(255,45,149,0.6)]'
               >
                 Radar
               </span>
             </h1>
             <p
-              className={`${audiowide.className} mt-[0.667cqw] pl-[0.5cqw] text-[clamp(0.4375rem,1.417cqw,0.4375rem)] tracking-[0.625cqw] text-[#8fb6d9] uppercase`}
+              className={`${audiowide.className} mt-[0.667cqw] pl-[0.5cqw] text-[clamp(0.4375rem,1.417cqw,0.4375rem)] tracking-[0.625cqw] text-radar-steel uppercase`}
             >
               {dict.header.tagline}
             </p>

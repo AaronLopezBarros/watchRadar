@@ -106,7 +106,7 @@ export function FilterPicker({ mediaType, category, filters }: FilterPickerProps
                 aria-hidden='true'
                 className={cn(
                   'flex h-6 w-10 items-center rounded-full p-0.5 transition-colors',
-                  streaming ? 'justify-end bg-[#05d9e8]' : 'justify-start bg-white/20',
+                  streaming ? 'justify-end bg-radar-cyan' : 'justify-start bg-white/20',
                 )}
               >
                 <span className='h-5 w-5 rounded-full bg-white' />
