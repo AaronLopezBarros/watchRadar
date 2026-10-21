@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 
 import { useExitAnimation } from '@/lib/hooks/useExitAnimation';
 import { cn } from '@/lib/utils';
+import { useDragToClose } from '@/src/components/BottomSheet/hooks/useDragToClose';
 
-const DRAG_CLOSE_THRESHOLD_PX = 100;
 const SCROLL_LOCK_CLASS_NAME = 'max-sm:overflow-hidden';
 
 const TONE_CLASS_NAME = {
@@ -44,11 +44,9 @@ type BottomSheetProps = {
 };
 
 export function BottomSheet({ label, onClose, tone, desktop, className, children }: BottomSheetProps) {
-  const [dragY, setDragY] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const dragStartYRef = useRef(0);
   const panelRef = useRef<HTMLDivElement>(null);
   const { isExiting: isClosing, startExit: requestClose, handleAnimationEnd } = useExitAnimation(panelRef, onClose);
+  const { dragY, isDragging, handleTouchStart, handleTouchEnd } = useDragToClose(panelRef, requestClose);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -63,26 +61,6 @@ export function BottomSheet({ label, onClose, tone, desktop, className, children
     };
   }, [requestClose]);
 
-  const handleDragStart = (event: React.PointerEvent<HTMLDivElement>) => {
-    setIsDragging(true);
-    dragStartYRef.current = event.clientY;
-    event.currentTarget.setPointerCapture?.(event.pointerId);
-  };
-
-  const handleDragMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDragging) return;
-    setDragY(Math.max(0, event.clientY - dragStartYRef.current));
-  };
-
-  const handleDragEnd = () => {
-    setIsDragging(false);
-    if (dragY > DRAG_CLOSE_THRESHOLD_PX) {
-      requestClose();
-    } else {
-      setDragY(0);
-    }
-  };
-
   return (
     <div
       className={cn(
@@ -94,7 +72,7 @@ export function BottomSheet({ label, onClose, tone, desktop, className, children
       <div
         data-testid='bottom-sheet-backdrop'
         className={cn(
-          'fixed inset-0 animate-[fade-in_300ms_ease-out] bg-black/50',
+          'fixed inset-0 animate-[fade-in_300ms_ease-out] bg-black/50 max-sm:touch-none',
           DESKTOP_CLASS_NAME[desktop].backdrop,
           isClosing && CLOSING_CLASS_NAME.backdrop,
           'motion-reduce:animate-none sm:motion-reduce:animate-none',
@@ -110,7 +88,7 @@ export function BottomSheet({ label, onClose, tone, desktop, className, children
         aria-modal='true'
         aria-label={label}
         className={cn(
-          'relative z-10 w-full animate-[slide-up_300ms_ease-out] rounded-t-2xl',
+          'relative z-10 w-full animate-[slide-up_300ms_ease-out] rounded-t-2xl max-sm:touch-none',
           TONE_CLASS_NAME[tone].panel,
           DESKTOP_CLASS_NAME[desktop].panel,
           isClosing && CLOSING_CLASS_NAME.panel,
@@ -119,16 +97,12 @@ export function BottomSheet({ label, onClose, tone, desktop, className, children
         )}
         style={{ transform: `translateY(${dragY}px)`, transition: isDragging ? 'none' : 'transform 200ms ease-out' }}
         onClick={event => event.stopPropagation()}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
         onAnimationEnd={handleAnimationEnd}
       >
-        <div
-          data-testid='bottom-sheet-drag-handle'
-          className='flex touch-none justify-center pt-3 pb-4 sm:hidden'
-          onPointerDown={handleDragStart}
-          onPointerMove={handleDragMove}
-          onPointerUp={handleDragEnd}
-          onPointerCancel={handleDragEnd}
-        >
+        <div className='flex justify-center pt-3 pb-4 sm:hidden'>
           <div className={cn('h-1 w-10 rounded-full', TONE_CLASS_NAME[tone].handle)} />
         </div>
         {children}

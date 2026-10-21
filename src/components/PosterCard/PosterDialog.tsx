@@ -26,7 +26,7 @@ export function PosterDialog({ item, providers, isLoadingProviders, onClose }: P
 
   return (
     <BottomSheet label={item.title} onClose={onClose} tone='light' desktop='modal'>
-      <div className='max-h-[70vh] overflow-y-auto px-4 pb-8 sm:pt-4'>
+      <div className='max-h-[70vh] overflow-y-auto overscroll-contain px-4 pb-8 sm:pt-4'>
         <div className='mb-4 flex gap-4'>
           <div className='relative shrink-0 overflow-hidden rounded-md' style={{ width: POSTER_W, height: POSTER_H }}>
             <Image

@@ -8,18 +8,25 @@ const renderSheet = (onClose = vi.fn()) => {
   render(
     <BottomSheet label='Genres' onClose={onClose} tone='dark' desktop='modal'>
       <p>Sheet content</p>
+      <ul aria-label='Genre list'>
+        <li>Drama</li>
+      </ul>
     </BottomSheet>,
   );
   return onClose;
 };
 
-const drag = async (fromY: number, toY: number) => {
-  const handle = screen.getByTestId('bottom-sheet-drag-handle');
-  await userEvent.pointer([
-    { target: handle, keys: '[TouchA>]', coords: { clientY: fromY } },
-    { target: handle, coords: { clientY: toY } },
-    { target: handle, keys: '[/TouchA]' },
-  ]);
+// jsdom lays nothing out, so nothing scrolls unless told to.
+const scrollGenreListDown = () => {
+  Object.defineProperty(screen.getByRole('list', { name: 'Genre list' }), 'scrollTop', { value: 50 });
+};
+
+// userEvent can't produce touch events. Returns whether the move was left to the browser, i.e. not prevented.
+const swipe = (target: Element, fromY: number, toY: number) => {
+  fireEvent.touchStart(target, { touches: [{ clientY: fromY }] });
+  const isMoveAllowed = fireEvent.touchMove(target, { touches: [{ clientY: toY }] });
+  fireEvent.touchEnd(target, { touches: [] });
+  return isMoveAllowed;
 };
 
 describe('BottomSheet', () => {
@@ -61,30 +68,50 @@ describe('BottomSheet', () => {
     expect(onClose).not.toHaveBeenCalled();
   });
 
-  it('closes when the drag handle is swiped down past the threshold', async () => {
+  it('closes when swiped down past the threshold from anywhere in the sheet', () => {
     const onClose = renderSheet();
 
-    await drag(0, 150);
+    swipe(screen.getByText('Sheet content'), 0, 150);
 
     expect(onClose).toHaveBeenCalledOnce();
   });
 
-  it('does not close when the drag does not pass the threshold', async () => {
+  it('does not close when the drag does not pass the threshold', () => {
     const onClose = renderSheet();
 
-    await drag(0, 40);
+    swipe(screen.getByText('Sheet content'), 0, 40);
 
     expect(onClose).not.toHaveBeenCalled();
   });
 
-  it('ignores pointer move and release when no drag is in progress', async () => {
+  it('scrolls its content back up instead of closing when the content is scrolled down', () => {
+    const onClose = renderSheet();
+    scrollGenreListDown();
+
+    expect(swipe(screen.getByText('Drama'), 0, 150)).toBe(true);
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it('closes when swiped down from content at its top', () => {
     const onClose = renderSheet();
 
-    const handle = screen.getByTestId('bottom-sheet-drag-handle');
-    await userEvent.pointer([
-      { target: handle, coords: { clientY: 200 } },
-      { target: handle, keys: '[TouchA>][/TouchA]', coords: { clientY: 200 } },
-    ]);
+    swipe(screen.getByText('Drama'), 0, 150);
+
+    expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it('lets its content scroll on a swipe up', () => {
+    const onClose = renderSheet();
+
+    expect(swipe(screen.getByText('Drama'), 150, 0)).toBe(true);
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it('ignores a tap that does not move', () => {
+    const onClose = renderSheet();
+
+    fireEvent.touchStart(screen.getByText('Sheet content'), { touches: [{ clientY: 200 }] });
+    fireEvent.touchEnd(screen.getByText('Sheet content'), { touches: [] });
 
     expect(onClose).not.toHaveBeenCalled();
   });
@@ -102,7 +129,7 @@ describe('BottomSheet', () => {
     it.each([
       ['the backdrop is clicked', () => userEvent.click(screen.getByTestId('bottom-sheet-backdrop'))],
       ['Escape is pressed', () => userEvent.keyboard('{Escape}')],
-      ['the handle is swiped down', () => drag(0, 150)],
+      ['the sheet is swiped down', () => swipe(screen.getByText('Sheet content'), 0, 150)],
     ])('closes once the animation ends when %s', async (_case, close) => {
       runExitAnimation();
       const onClose = renderSheet();
