@@ -8,7 +8,7 @@ const renderSheet = (onClose = vi.fn()) => {
   render(
     <BottomSheet label='Genres' onClose={onClose} tone='dark' desktop='modal'>
       <p>Sheet content</p>
-      <ul aria-label='Genre list'>
+      <ul aria-label='Genre list' style={{ overflowY: 'auto' }}>
         <li>Drama</li>
       </ul>
     </BottomSheet>,
@@ -16,9 +16,13 @@ const renderSheet = (onClose = vi.fn()) => {
   return onClose;
 };
 
-// jsdom lays nothing out, so nothing scrolls unless told to.
-const scrollGenreListDown = () => {
-  Object.defineProperty(screen.getByRole('list', { name: 'Genre list' }), 'scrollTop', { value: 50 });
+// jsdom lays nothing out, so the list overflows only when told to.
+const makeGenreListOverflow = ({ scrollTop = 0 } = {}) => {
+  Object.defineProperties(screen.getByRole('list', { name: 'Genre list' }), {
+    scrollHeight: { value: 500 },
+    clientHeight: { value: 100 },
+    scrollTop: { value: scrollTop },
+  });
 };
 
 // userEvent can't produce touch events. Returns whether the last move was left to the browser, i.e. not prevented.
@@ -95,7 +99,7 @@ describe('BottomSheet', () => {
 
   it('scrolls its content back up instead of closing when the content is scrolled down', () => {
     const onClose = renderSheet();
-    scrollGenreListDown();
+    makeGenreListOverflow({ scrollTop: 50 });
 
     expect(swipe(screen.getByText('Drama'), 0, 150)).toBe(true);
     expect(onClose).not.toHaveBeenCalled();
@@ -103,6 +107,7 @@ describe('BottomSheet', () => {
 
   it('closes when swiped down from content at its top, without scrolling the content', () => {
     const onClose = renderSheet();
+    makeGenreListOverflow();
 
     expect(swipe(screen.getByText('Drama'), 0, 150)).toBe(false);
     expect(onClose).toHaveBeenCalledOnce();
@@ -129,6 +134,7 @@ describe('BottomSheet', () => {
 
   it('lets its content scroll on a swipe up', () => {
     const onClose = renderSheet();
+    makeGenreListOverflow();
 
     expect(swipe(screen.getByText('Drama'), 150, 0)).toBe(true);
     expect(onClose).not.toHaveBeenCalled();
@@ -136,9 +142,30 @@ describe('BottomSheet', () => {
 
   it('lets its content scroll on a swipe up that starts with a jitter down', () => {
     const onClose = renderSheet();
+    makeGenreListOverflow();
 
     expect(swipe(screen.getByText('Drama'), 150, 152, 0)).toBe(true);
     expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it('keeps even the first small move outside scrollable content from scrolling the page', () => {
+    renderSheet();
+
+    expect(swipe(screen.getByText('Sheet content'), 0, 2)).toBe(false);
+  });
+
+  it('keeps a swipe up outside scrollable content from scrolling the page', () => {
+    const onClose = renderSheet();
+
+    expect(swipe(screen.getByText('Sheet content'), 150, 0)).toBe(false);
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it('drags from content that does not overflow, as it cannot scroll', () => {
+    const onClose = renderSheet();
+
+    expect(swipe(screen.getByText('Drama'), 0, 2, 150)).toBe(false);
+    expect(onClose).toHaveBeenCalledOnce();
   });
 
   it('does not drag on screens wide enough for the modal or popover layout', () => {
