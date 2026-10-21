@@ -95,7 +95,8 @@ export function SearchBar({ mediaType }: SearchBarProps) {
         onChange={event => handleChange(event.target.value)}
         placeholder={dict.search.placeholder[mediaType]}
         autoFocus
-        className='min-w-0 flex-1 bg-transparent py-1.5 text-sm text-white placeholder:text-white/40 focus:outline-none'
+        // iOS zooms into any input under 16px when it gets focus.
+        className='min-w-0 flex-1 bg-transparent py-1.5 text-base text-white placeholder:text-white/40 focus:outline-none'
       />
       <button
         type='button'

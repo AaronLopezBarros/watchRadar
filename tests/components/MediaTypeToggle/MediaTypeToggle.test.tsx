@@ -1,12 +1,14 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import type { MediaCategory, MediaType } from '@/lib/api/tmdb/types';
 import { LocaleProvider } from '@/src/components/LocaleProvider';
 import { MediaTypeToggle } from '@/src/components/MediaTypeToggle/MediaTypeToggle';
 import { SearchBar } from '@/src/components/SearchBar/SearchBar';
 import { SearchProvider } from '@/src/components/SearchBar/SearchProvider';
+
+vi.mock('next/navigation', () => import('@/tests/mocks/nextNavigation'));
 
 type HarnessProps = {
   active: MediaType;
@@ -58,5 +60,14 @@ describe('MediaTypeToggle', () => {
     await user.click(screen.getByRole('button', { name: 'Buscar películas' }));
 
     expect(screen.queryByRole('group', { name: 'Tipo de contenido' })).not.toBeInTheDocument();
+  });
+
+  it('marks the tapped media type as current at once, before the page updates', async () => {
+    render(<Harness active='movie' />);
+
+    await userEvent.click(screen.getByRole('link', { name: 'Series' }));
+
+    expect(screen.getByRole('link', { name: 'Series', current: true })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Películas', current: false })).toBeInTheDocument();
   });
 });

@@ -6,6 +6,7 @@ import { useRef, useState } from 'react';
 
 import { MEDIA_CONFIG, canFilterStreaming } from '@/lib/api/tmdb/media';
 import type { MediaCategory, MediaFilters, MediaType } from '@/lib/api/tmdb/types';
+import { useOptimisticNavigation } from '@/lib/hooks/useOptimisticNavigation';
 import { buildHomeHref, cn } from '@/lib/utils';
 import { BottomSheet } from '@/src/components/BottomSheet/BottomSheet';
 import { useTranslations } from '@/src/components/LocaleProvider';
@@ -24,7 +25,8 @@ export function FilterPicker({ mediaType, category, filters }: FilterPickerProps
   const triggerRef = useRef<HTMLButtonElement>(null);
   const { isSearchOpen } = useSearch();
   const dict = useTranslations();
-  const { genre, streaming } = filters;
+  const [activeFilters, linkProps] = useOptimisticNavigation(filters);
+  const { genre, streaming } = activeFilters;
   const canFilterByStreaming = canFilterStreaming(mediaType, category);
   const activeLabels = [genre && dict.genre[genre], streaming && dict.filters.streaming].filter(Boolean);
   const hasActiveFilters = activeLabels.length > 0;
@@ -38,6 +40,9 @@ export function FilterPicker({ mediaType, category, filters }: FilterPickerProps
     setIsOpen(false);
     window.scrollTo({ top: 0 });
   };
+
+  const filterLinkProps = (nextFilters: MediaFilters, onSelect?: () => void) =>
+    linkProps(nextFilters, buildHomeHref({ mediaType, category, ...nextFilters }), onSelect);
 
   // TMDB search supports none of these filters, so the picker steps aside while a search is open.
   if (isSearchOpen) return null;
@@ -71,8 +76,7 @@ export function FilterPicker({ mediaType, category, filters }: FilterPickerProps
         </button>
         {hasActiveFilters && (
           <Link
-            href={buildHomeHref({ mediaType, category })}
-            onClick={handleSelect}
+            {...filterLinkProps({}, handleSelect)}
             aria-label={dict.filters.clearAriaLabel}
             className='flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/10 hover:text-white'
           >
@@ -92,7 +96,7 @@ export function FilterPicker({ mediaType, category, filters }: FilterPickerProps
           {canFilterByStreaming && (
             // Toggling streaming keeps the sheet open so a genre can still be picked in the same visit.
             <Link
-              href={buildHomeHref({ mediaType, category, genre, streaming: !streaming })}
+              {...filterLinkProps({ genre, streaming: !streaming })}
               role='switch'
               aria-checked={Boolean(streaming)}
               className='mb-4 flex min-h-11 items-center justify-between rounded-xl bg-white/5 px-4 text-sm text-white transition-colors hover:bg-white/10'
@@ -114,8 +118,7 @@ export function FilterPicker({ mediaType, category, filters }: FilterPickerProps
             {[ALL_GENRES_OPTION, ...MEDIA_CONFIG[mediaType].genres].map(value => (
               <li key={value ?? 'all'}>
                 <Link
-                  href={buildHomeHref({ mediaType, category, genre: value, streaming })}
-                  onClick={handleSelect}
+                  {...filterLinkProps({ genre: value, streaming }, handleSelect)}
                   aria-current={value === genre ? 'true' : undefined}
                   className={cn(
                     'flex min-h-11 items-center rounded-xl px-4 text-sm transition-colors',

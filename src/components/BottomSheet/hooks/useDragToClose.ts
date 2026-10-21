@@ -2,23 +2,24 @@
 
 import { useCallback, useEffect, useRef, useState, type RefObject, type TouchEvent as ReactTouchEvent } from 'react';
 
-const DRAG_CLOSE_THRESHOLD_PX = 100;
+export const DRAG_CLOSE_THRESHOLD_PX = 100;
 // iOS sends moves of a few pixels, in either direction, at the start of any swipe.
-const DIRECTION_SLOP_PX = 8;
+export const DIRECTION_SLOP_PX = 8;
 // From here up the sheet is a centered modal or a popover anchored to its trigger: neither should move.
 const DESKTOP_MEDIA_QUERY = '(min-width: 40rem)';
 
-type DragGesture = { startY: number; isDragging: boolean; distance: number };
+type DragGesture = { startY: number; scrollable: Element | null; isDragging: boolean; distance: number };
 
-const isInsideScrolledContent = (target: EventTarget | null, container: HTMLElement) => {
+const findScrollableAncestor = (target: EventTarget | null, container: HTMLElement) => {
   for (
     let element = target instanceof Element ? target : null;
     element && element !== container;
     element = element.parentElement
   ) {
-    if (element.scrollTop > 0) return true;
+    const { overflowY } = getComputedStyle(element);
+    if ((overflowY === 'auto' || overflowY === 'scroll') && element.scrollHeight > element.clientHeight) return element;
   }
-  return false;
+  return null;
 };
 
 export function useDragToClose(ref: RefObject<HTMLElement | null>, onClose: () => void) {
@@ -27,19 +28,25 @@ export function useDragToClose(ref: RefObject<HTMLElement | null>, onClose: () =
   const gestureRef = useRef<DragGesture | null>(null);
 
   const handleTouchStart = (event: ReactTouchEvent<HTMLElement>) => {
-    const canDrag =
-      !window.matchMedia(DESKTOP_MEDIA_QUERY).matches && !isInsideScrolledContent(event.target, event.currentTarget);
-    gestureRef.current = canDrag ? { startY: event.touches[0].clientY, isDragging: false, distance: 0 } : null;
+    const scrollable = findScrollableAncestor(event.target, event.currentTarget);
+    const canDrag = !window.matchMedia(DESKTOP_MEDIA_QUERY).matches && !(scrollable && scrollable.scrollTop > 0);
+    gestureRef.current = canDrag
+      ? { startY: event.touches[0].clientY, scrollable, isDragging: false, distance: 0 }
+      : null;
   };
 
   const handleTouchMove = useCallback((event: TouchEvent) => {
     const gesture = gestureRef.current;
     if (!gesture) return;
+    // iOS scrolls the page behind the sheet, despite touch-none and the body lock, unless the very first move is
+    // cancelled. Only content that can scroll itself needs its moves left to the browser.
+    if (!gesture.scrollable) event.preventDefault();
+
     const deltaY = event.touches[0].clientY - gesture.startY;
     if (!gesture.isDragging) {
       if (Math.abs(deltaY) < DIRECTION_SLOP_PX) return;
       if (deltaY < 0) {
-        gestureRef.current = null;
+        if (gesture.scrollable) gestureRef.current = null;
         return;
       }
       gesture.isDragging = true;

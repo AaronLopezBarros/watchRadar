@@ -3,12 +3,17 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { BottomSheet } from '@/src/components/BottomSheet/BottomSheet';
+import { DIRECTION_SLOP_PX, DRAG_CLOSE_THRESHOLD_PX } from '@/src/components/BottomSheet/hooks/useDragToClose';
+
+const PAST_CLOSE_THRESHOLD = DRAG_CLOSE_THRESHOLD_PX * 1.5;
+const SHORT_OF_CLOSE_THRESHOLD = DRAG_CLOSE_THRESHOLD_PX / 2;
+const JITTER = DIRECTION_SLOP_PX / 4;
 
 const renderSheet = (onClose = vi.fn()) => {
   render(
     <BottomSheet label='Genres' onClose={onClose} tone='dark' desktop='modal'>
       <p>Sheet content</p>
-      <ul aria-label='Genre list'>
+      <ul aria-label='Genre list' style={{ overflowY: 'auto' }}>
         <li>Drama</li>
       </ul>
     </BottomSheet>,
@@ -16,15 +21,20 @@ const renderSheet = (onClose = vi.fn()) => {
   return onClose;
 };
 
-// jsdom lays nothing out, so nothing scrolls unless told to.
-const scrollGenreListDown = () => {
-  Object.defineProperty(screen.getByRole('list', { name: 'Genre list' }), 'scrollTop', { value: 50 });
+// jsdom lays nothing out, so the list overflows only when told to.
+const makeGenreListOverflow = ({ scrollTop = 0 } = {}) => {
+  Object.defineProperties(screen.getByRole('list', { name: 'Genre list' }), {
+    scrollHeight: { value: 500 },
+    clientHeight: { value: 100 },
+    scrollTop: { value: scrollTop },
+  });
 };
 
-// userEvent can't produce touch events. Returns whether the last move was left to the browser, i.e. not prevented.
-const swipe = (target: Element, fromY: number, ...toYs: number[]) => {
-  fireEvent.touchStart(target, { touches: [{ clientY: fromY }] });
-  const movesAllowed = toYs.map(toY => fireEvent.touchMove(target, { touches: [{ clientY: toY }] }));
+// userEvent can't produce touch events. Each offset is how far the finger is from where it started, positive downwards.
+// Returns whether the last move was left to the browser, i.e. not prevented.
+const swipe = (target: Element, ...offsets: number[]) => {
+  fireEvent.touchStart(target, { touches: [{ clientY: 0 }] });
+  const movesAllowed = offsets.map(offset => fireEvent.touchMove(target, { touches: [{ clientY: offset }] }));
   fireEvent.touchEnd(target, { touches: [] });
   return movesAllowed.at(-1);
 };
@@ -81,37 +91,38 @@ describe('BottomSheet', () => {
   it('closes when swiped down past the threshold from anywhere in the sheet, without scrolling the page', () => {
     const onClose = renderSheet();
 
-    expect(swipe(screen.getByText('Sheet content'), 0, 150)).toBe(false);
+    expect(swipe(screen.getByText('Sheet content'), PAST_CLOSE_THRESHOLD)).toBe(false);
     expect(onClose).toHaveBeenCalledOnce();
   });
 
   it('does not close when the drag does not pass the threshold', () => {
     const onClose = renderSheet();
 
-    swipe(screen.getByText('Sheet content'), 0, 40);
+    swipe(screen.getByText('Sheet content'), SHORT_OF_CLOSE_THRESHOLD);
 
     expect(onClose).not.toHaveBeenCalled();
   });
 
   it('scrolls its content back up instead of closing when the content is scrolled down', () => {
     const onClose = renderSheet();
-    scrollGenreListDown();
+    makeGenreListOverflow({ scrollTop: 50 });
 
-    expect(swipe(screen.getByText('Drama'), 0, 150)).toBe(true);
+    expect(swipe(screen.getByText('Drama'), PAST_CLOSE_THRESHOLD)).toBe(true);
     expect(onClose).not.toHaveBeenCalled();
   });
 
   it('closes when swiped down from content at its top, without scrolling the content', () => {
     const onClose = renderSheet();
+    makeGenreListOverflow();
 
-    expect(swipe(screen.getByText('Drama'), 0, 150)).toBe(false);
+    expect(swipe(screen.getByText('Drama'), PAST_CLOSE_THRESHOLD)).toBe(false);
     expect(onClose).toHaveBeenCalledOnce();
   });
 
   it('snaps back instead of closing when dragged back up before letting go', () => {
     const onClose = renderSheet();
 
-    swipe(screen.getByText('Sheet content'), 0, 150, 20);
+    swipe(screen.getByText('Sheet content'), PAST_CLOSE_THRESHOLD, SHORT_OF_CLOSE_THRESHOLD);
 
     expect(onClose).not.toHaveBeenCalled();
   });
@@ -121,7 +132,7 @@ describe('BottomSheet', () => {
     const content = screen.getByText('Sheet content');
 
     fireEvent.touchStart(content, { touches: [{ clientY: 0 }] });
-    fireEvent.touchMove(content, { touches: [{ clientY: 150 }] });
+    fireEvent.touchMove(content, { touches: [{ clientY: PAST_CLOSE_THRESHOLD }] });
     fireEvent.touchCancel(content, { touches: [] });
 
     expect(onClose).not.toHaveBeenCalled();
@@ -129,31 +140,52 @@ describe('BottomSheet', () => {
 
   it('lets its content scroll on a swipe up', () => {
     const onClose = renderSheet();
+    makeGenreListOverflow();
 
-    expect(swipe(screen.getByText('Drama'), 150, 0)).toBe(true);
+    expect(swipe(screen.getByText('Drama'), -PAST_CLOSE_THRESHOLD)).toBe(true);
     expect(onClose).not.toHaveBeenCalled();
   });
 
   it('lets its content scroll on a swipe up that starts with a jitter down', () => {
     const onClose = renderSheet();
+    makeGenreListOverflow();
 
-    expect(swipe(screen.getByText('Drama'), 150, 152, 0)).toBe(true);
+    expect(swipe(screen.getByText('Drama'), JITTER, -PAST_CLOSE_THRESHOLD)).toBe(true);
     expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it('keeps even the first small move outside scrollable content from scrolling the page', () => {
+    renderSheet();
+
+    expect(swipe(screen.getByText('Sheet content'), JITTER)).toBe(false);
+  });
+
+  it('keeps a swipe up outside scrollable content from scrolling the page', () => {
+    const onClose = renderSheet();
+
+    expect(swipe(screen.getByText('Sheet content'), -PAST_CLOSE_THRESHOLD)).toBe(false);
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it('drags from content that does not overflow, as it cannot scroll', () => {
+    const onClose = renderSheet();
+
+    expect(swipe(screen.getByText('Drama'), JITTER, PAST_CLOSE_THRESHOLD)).toBe(false);
+    expect(onClose).toHaveBeenCalledOnce();
   });
 
   it('does not drag on screens wide enough for the modal or popover layout', () => {
     stubScreenWidth(true);
     const onClose = renderSheet();
 
-    expect(swipe(screen.getByText('Sheet content'), 0, 150)).toBe(true);
+    expect(swipe(screen.getByText('Sheet content'), PAST_CLOSE_THRESHOLD)).toBe(true);
     expect(onClose).not.toHaveBeenCalled();
   });
 
   it('ignores a tap that does not move', () => {
     const onClose = renderSheet();
 
-    fireEvent.touchStart(screen.getByText('Sheet content'), { touches: [{ clientY: 200 }] });
-    fireEvent.touchEnd(screen.getByText('Sheet content'), { touches: [] });
+    swipe(screen.getByText('Sheet content'));
 
     expect(onClose).not.toHaveBeenCalled();
   });
@@ -171,7 +203,7 @@ describe('BottomSheet', () => {
     it.each([
       ['the backdrop is clicked', () => userEvent.click(screen.getByTestId('bottom-sheet-backdrop'))],
       ['Escape is pressed', () => userEvent.keyboard('{Escape}')],
-      ['the sheet is swiped down', () => swipe(screen.getByText('Sheet content'), 0, 150)],
+      ['the sheet is swiped down', () => swipe(screen.getByText('Sheet content'), PAST_CLOSE_THRESHOLD)],
     ])('closes once the animation ends when %s', async (_case, close) => {
       runExitAnimation();
       const onClose = renderSheet();

@@ -1,11 +1,13 @@
+'use client';
+
 import Link from 'next/link';
 
 import { MEDIA_CATEGORIES } from '@/lib/api/tmdb/media';
 import type { MediaCategory, MediaFilters, MediaType } from '@/lib/api/tmdb/types';
-import { getDictionary } from '@/lib/i18n/dictionary';
-import type { Locale } from '@/lib/i18n/locale';
+import { useOptimisticNavigation } from '@/lib/hooks/useOptimisticNavigation';
 import { buildHomeHref, cn } from '@/lib/utils';
 import { FilterPicker } from '@/src/components/FilterPicker/FilterPicker';
+import { useTranslations } from '@/src/components/LocaleProvider';
 import { MediaTypeToggle } from '@/src/components/MediaTypeToggle/MediaTypeToggle';
 import { SearchBar } from '@/src/components/SearchBar/SearchBar';
 
@@ -13,11 +15,11 @@ type CategoryTabsProps = {
   mediaType: MediaType;
   active: MediaCategory;
   filters?: MediaFilters;
-  locale: Locale;
 };
 
-export function CategoryTabs({ mediaType, active, filters = {}, locale }: CategoryTabsProps) {
-  const dict = getDictionary(locale);
+export function CategoryTabs({ mediaType, active, filters = {} }: CategoryTabsProps) {
+  const dict = useTranslations();
+  const [activeCategory, categoryLinkProps] = useOptimisticNavigation(active);
 
   return (
     <nav className='sticky top-0 z-30 flex flex-col gap-2 px-5 pt-4 pb-3 md:flex-row md:items-center'>
@@ -28,11 +30,11 @@ export function CategoryTabs({ mediaType, active, filters = {}, locale }: Catego
         {MEDIA_CATEGORIES.map(value => (
           <Link
             key={value}
-            href={buildHomeHref({ mediaType, category: value, ...filters })}
-            aria-current={value === active ? 'true' : undefined}
+            {...categoryLinkProps(value, buildHomeHref({ mediaType, category: value, ...filters }))}
+            aria-current={value === activeCategory ? 'true' : undefined}
             className={cn(
               'flex min-h-11 min-w-0 flex-1 items-center justify-center truncate rounded-full px-1.5 text-center text-xs transition-colors md:flex-none md:px-4 md:text-sm',
-              value === active
+              value === activeCategory
                 ? 'bg-white/20 font-medium text-white'
                 : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white',
             )}
