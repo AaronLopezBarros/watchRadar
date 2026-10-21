@@ -9,6 +9,9 @@ vi.mock('next/font/google', () => ({
   Plus_Jakarta_Sans: () => ({ className: 'mocked-font-plus-jakarta-sans', style: {}, variable: '' }),
 }));
 
+// Outside Next's bundler `next/link` is the Pages Router Link, which ignores onNavigate; this follows the App Router one.
+vi.mock('next/link', () => import('./tests/mocks/nextLink'));
+
 afterEach(() => {
   cleanup();
   vi.clearAllMocks();

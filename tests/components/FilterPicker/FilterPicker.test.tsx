@@ -1,5 +1,6 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { startTransition } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { MediaCategory, MediaFilters, MediaType } from '@/lib/api/tmdb/types';
@@ -7,6 +8,11 @@ import { FilterPicker } from '@/src/components/FilterPicker/FilterPicker';
 import { LocaleProvider } from '@/src/components/LocaleProvider';
 import { SearchBar } from '@/src/components/SearchBar/SearchBar';
 import { SearchProvider } from '@/src/components/SearchBar/SearchProvider';
+
+vi.mock('next/navigation', () => ({
+  // A navigation that never finishes, like one still waiting for the server.
+  useRouter: () => ({ push: () => startTransition(() => new Promise(() => {})) }),
+}));
 
 type HarnessProps = {
   mediaType?: MediaType;
@@ -87,6 +93,38 @@ describe('FilterPicker', () => {
     await user.click(toggle);
 
     expect(screen.getByRole('dialog', { name: 'Filtros' })).toBeInTheDocument();
+  });
+
+  it('shows the picked genre on the chip at once, before the page updates', async () => {
+    const user = userEvent.setup();
+    render(<Harness />);
+
+    await user.click(screen.getByRole('button', { name: 'Filtros' }));
+    await user.click(screen.getByRole('link', { name: 'Terror' }));
+
+    expect(screen.getByRole('button', { name: 'Filtros: Terror' })).toBeInTheDocument();
+  });
+
+  it('flips the streaming switch at once, before the page updates', async () => {
+    const user = userEvent.setup();
+    render(<Harness filters={{ genre: 'horror' }} />);
+
+    await user.click(screen.getByRole('button', { name: 'Filtros: Terror' }));
+    await user.click(screen.getByRole('switch', { name: 'Solo en streaming' }));
+
+    expect(screen.getByRole('switch', { name: 'Solo en streaming', checked: true })).toHaveAttribute(
+      'href',
+      '/?genre=horror',
+    );
+  });
+
+  it('empties the chip at once when the filters are cleared', async () => {
+    const user = userEvent.setup();
+    render(<Harness filters={{ genre: 'horror' }} />);
+
+    await user.click(screen.getByRole('link', { name: 'Quitar filtros' }));
+
+    expect(screen.getByRole('button', { name: 'Filtros' })).toBeInTheDocument();
   });
 
   it('keeps streaming in the genre links when it is on', async () => {

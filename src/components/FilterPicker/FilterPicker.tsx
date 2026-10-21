@@ -2,10 +2,11 @@
 
 import { ChevronDownIcon, XIcon } from 'lucide-react';
 import Link from 'next/link';
-import { useRef, useState } from 'react';
+import { useRef, useState, type ComponentProps } from 'react';
 
 import { MEDIA_CONFIG, canFilterStreaming } from '@/lib/api/tmdb/media';
 import type { MediaCategory, MediaFilters, MediaType } from '@/lib/api/tmdb/types';
+import { useOptimisticNavigation } from '@/lib/hooks/useOptimisticNavigation';
 import { buildHomeHref, cn } from '@/lib/utils';
 import { BottomSheet } from '@/src/components/BottomSheet/BottomSheet';
 import { useTranslations } from '@/src/components/LocaleProvider';
@@ -24,7 +25,8 @@ export function FilterPicker({ mediaType, category, filters }: FilterPickerProps
   const triggerRef = useRef<HTMLButtonElement>(null);
   const { isSearchOpen } = useSearch();
   const dict = useTranslations();
-  const { genre, streaming } = filters;
+  const [activeFilters, navigateToFilters] = useOptimisticNavigation(filters);
+  const { genre, streaming } = activeFilters;
   const canFilterByStreaming = canFilterStreaming(mediaType, category);
   const activeLabels = [genre && dict.genre[genre], streaming && dict.filters.streaming].filter(Boolean);
   const hasActiveFilters = activeLabels.length > 0;
@@ -32,6 +34,11 @@ export function FilterPicker({ mediaType, category, filters }: FilterPickerProps
   const handleClose = () => {
     setIsOpen(false);
     triggerRef.current?.focus();
+  };
+
+  const filterLinkProps = (nextFilters: MediaFilters): ComponentProps<typeof Link> => {
+    const href = buildHomeHref({ mediaType, category, ...nextFilters });
+    return { href, onNavigate: event => navigateToFilters(event, nextFilters, href) };
   };
 
   const handleSelect = () => {
@@ -71,7 +78,7 @@ export function FilterPicker({ mediaType, category, filters }: FilterPickerProps
         </button>
         {hasActiveFilters && (
           <Link
-            href={buildHomeHref({ mediaType, category })}
+            {...filterLinkProps({})}
             onClick={handleSelect}
             aria-label={dict.filters.clearAriaLabel}
             className='flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/10 hover:text-white'
@@ -92,7 +99,7 @@ export function FilterPicker({ mediaType, category, filters }: FilterPickerProps
           {canFilterByStreaming && (
             // Toggling streaming keeps the sheet open so a genre can still be picked in the same visit.
             <Link
-              href={buildHomeHref({ mediaType, category, genre, streaming: !streaming })}
+              {...filterLinkProps({ genre, streaming: !streaming })}
               role='switch'
               aria-checked={Boolean(streaming)}
               className='mb-4 flex min-h-11 items-center justify-between rounded-xl bg-white/5 px-4 text-sm text-white transition-colors hover:bg-white/10'
@@ -114,7 +121,7 @@ export function FilterPicker({ mediaType, category, filters }: FilterPickerProps
             {[ALL_GENRES_OPTION, ...MEDIA_CONFIG[mediaType].genres].map(value => (
               <li key={value ?? 'all'}>
                 <Link
-                  href={buildHomeHref({ mediaType, category, genre: value, streaming })}
+                  {...filterLinkProps({ genre: value, streaming })}
                   onClick={handleSelect}
                   aria-current={value === genre ? 'true' : undefined}
                   className={cn(

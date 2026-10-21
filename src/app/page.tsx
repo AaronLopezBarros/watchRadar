@@ -44,7 +44,7 @@ export default async function Home({ searchParams }: HomeProps) {
 
   return (
     <SearchProvider>
-      <CategoryTabs mediaType={mediaType} active={category} filters={filters} locale={locale} />
+      <CategoryTabs mediaType={mediaType} active={category} filters={filters} />
       <SearchGridSwitch mediaType={mediaType}>
         {/* Keyed so each tab or filter change shows the skeleton instead of the old posters. */}
         <Suspense
