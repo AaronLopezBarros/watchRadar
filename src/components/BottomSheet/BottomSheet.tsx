@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from 'react';
 
+import { useEscapeKey } from '@/lib/hooks/useEscapeKey';
 import { useExitAnimation } from '@/lib/hooks/useExitAnimation';
 import { cn } from '@/lib/utils';
 import { useDragToClose } from '@/src/components/BottomSheet/hooks/useDragToClose';
@@ -48,18 +49,12 @@ export function BottomSheet({ label, onClose, tone, desktop, className, children
   const { isExiting: isClosing, startExit: requestClose, handleAnimationEnd } = useExitAnimation(panelRef, onClose);
   const { dragY, isDragging, handleTouchStart, handleTouchEnd } = useDragToClose(panelRef, requestClose);
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') requestClose();
-    };
+  useEscapeKey(requestClose);
 
+  useEffect(() => {
     document.body.classList.add(SCROLL_LOCK_CLASS_NAME);
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.body.classList.remove(SCROLL_LOCK_CLASS_NAME);
-    };
-  }, [requestClose]);
+    return () => document.body.classList.remove(SCROLL_LOCK_CLASS_NAME);
+  }, []);
 
   return (
     <div

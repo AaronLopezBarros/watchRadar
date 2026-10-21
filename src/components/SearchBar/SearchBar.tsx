@@ -4,6 +4,7 @@ import { SearchIcon, XIcon } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import type { MediaType } from '@/lib/api/tmdb/types';
+import { useEscapeKey } from '@/lib/hooks/useEscapeKey';
 import { useExitAnimation } from '@/lib/hooks/useExitAnimation';
 import { cn } from '@/lib/utils';
 import { useTranslations } from '@/src/components/LocaleProvider';
@@ -50,18 +51,12 @@ export function SearchBar({ mediaType }: SearchBarProps) {
 
   const { isExiting: isClosing, startExit: handleClose, handleAnimationEnd } = useExitAnimation(fieldRef, close);
 
-  useEffect(() => {
-    if (!isOpen) return;
+  const closeAndRefocus = useCallback(() => {
+    refocusTriggerRef.current = true;
+    handleClose();
+  }, [handleClose]);
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape') return;
-      refocusTriggerRef.current = true;
-      handleClose();
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, handleClose]);
+  useEscapeKey(closeAndRefocus, isOpen);
 
   useEffect(() => {
     if (isOpen || !refocusTriggerRef.current) return;
