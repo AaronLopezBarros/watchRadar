@@ -89,7 +89,6 @@ export const parseHomeSearchParams = (
     mediaType,
     category,
     filters: {
-      // Genres only exist within their media type: a movie genre on series is dropped.
       genre: isMediaGenre(mediaType, params.genre) ? params.genre : undefined,
       streaming: params.streaming === STREAMING_ON && canFilterStreaming(mediaType, category),
     },

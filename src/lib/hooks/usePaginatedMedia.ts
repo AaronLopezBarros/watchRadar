@@ -21,9 +21,8 @@ export const usePaginatedMedia = ({ initialItems, initialPage, fetchPage, startL
   const pageRef = useRef(initialPage);
   const seenKeysRef = useRef(new Set(initialItems.map(mediaKey)));
   const hasStartedRef = useRef(false);
-  // Once a page comes back with nothing new, the sentinel keeps re-triggering onIntersect
-  // (see useInfiniteScroll's resetKey) every time it's still in view, which would otherwise
-  // hammer fetchPage forever instead of stopping once the results are exhausted.
+  // The sentinel keeps re-triggering onIntersect while it's in view, so without this an exhausted list would call
+  // fetchPage forever.
   const hasMoreRef = useRef(true);
 
   const loadNextPage = useCallback(async () => {
@@ -53,9 +52,8 @@ export const usePaginatedMedia = ({ initialItems, initialPage, fetchPage, startL
     }
   }, [fetchPage]);
 
-  // Search starts with no items and relies on this effect to fetch page 1 itself,
-  // instead of waiting for the sentinel to intersect: on narrow viewports the initial
-  // skeletons push the sentinel out of view, so it never intersects and loadNextPage never runs.
+  // Search fetches page 1 here instead of waiting for the sentinel: on narrow viewports the initial skeletons push it
+  // out of view, so it would never intersect.
   useEffect(() => {
     if (!startLoading || hasStartedRef.current) return;
 

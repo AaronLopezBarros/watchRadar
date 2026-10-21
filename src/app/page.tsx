@@ -14,8 +14,7 @@ type HomeProps = {
   searchParams: Promise<HomeSearchParams>;
 };
 
-// Gives shared links a proper preview in chat apps, in the sharer's language. For people the locale matches
-// the page's, so Next dedupes this TMDB fetch with SharedMedia's.
+// Previews use the sharer's locale; for people it matches the page's, so Next dedupes this fetch with SharedMedia's.
 export async function generateMetadata({ searchParams }: HomeProps): Promise<Metadata> {
   const { sharedMedia, sharedLocale } = parseHomeSearchParams(await searchParams);
   if (!sharedMedia) return {};

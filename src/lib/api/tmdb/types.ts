@@ -40,7 +40,6 @@ export type MediaFilters<M extends MediaType = MediaType> = {
   streaming?: boolean;
 };
 
-// Shape of a movie in TMDB list endpoints, which only carry genre ids.
 export type TmdbMovie = {
   adult: boolean;
   backdrop_path: string | null;
@@ -57,7 +56,6 @@ export type TmdbMovie = {
   vote_count: number;
 };
 
-// Shape of a series in TMDB list endpoints: same as a movie's, with TV names for the title and date fields.
 export type TmdbTv = {
   adult: boolean;
   backdrop_path: string | null;
@@ -81,7 +79,6 @@ type TmdbItemByMedia = {
 
 export type TmdbItem<M extends MediaType = MediaType> = TmdbItemByMedia[M];
 
-// What list and details endpoints have in common: lists carry genre ids, details (`/movie/{id}`) the genres themselves.
 export type TmdbItemBase<M extends MediaType = MediaType> = Omit<TmdbItem<M>, 'genre_ids'>;
 
 export type TmdbItemDetails<M extends MediaType = MediaType> = TmdbItemBase<M> & {
@@ -97,7 +94,6 @@ export type GenresResponse = {
   genres: Genre[];
 };
 
-// What the app shows of any media type, normalized on the server from each type's TMDB shape.
 export type MediaItem = {
   mediaType: MediaType;
   adult: boolean;

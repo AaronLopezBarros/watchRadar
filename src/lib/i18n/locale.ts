@@ -21,7 +21,6 @@ const parseLanguagePreference = (entry: string): LanguagePreference => {
   return { language: tag.split('-')[0].toLowerCase(), weight: Number.isNaN(weight) ? 0 : weight };
 };
 
-// Picks the supported locale the browser ranks highest in its Accept-Language header (`es-ES,es;q=0.9,en;q=0.8`).
 export const matchAcceptLanguage = (header: string | null | undefined): Locale | undefined =>
   header
     ?.split(',')
