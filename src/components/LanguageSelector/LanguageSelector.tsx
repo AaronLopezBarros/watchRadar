@@ -1,8 +1,9 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState, useTransition } from 'react';
+import { useCallback, useRef, useState, useTransition } from 'react';
 
+import { useEscapeKey } from '@/lib/hooks/useEscapeKey';
 import { setLocale } from '@/lib/i18n/actions';
 import { getDictionary } from '@/lib/i18n/dictionary';
 import { SUPPORTED_LOCALES, type Locale } from '@/lib/i18n/locale';
@@ -33,18 +34,12 @@ export function LanguageSelector({ locale }: LanguageSelectorProps) {
     });
   };
 
-  useEffect(() => {
-    if (!isOpen) return;
+  const closeAndRefocus = useCallback(() => {
+    setIsOpen(false);
+    triggerRef.current?.focus();
+  }, []);
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape') return;
-      setIsOpen(false);
-      triggerRef.current?.focus();
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen]);
+  useEscapeKey(closeAndRefocus, isOpen);
 
   return (
     <div className='relative shrink-0'>
