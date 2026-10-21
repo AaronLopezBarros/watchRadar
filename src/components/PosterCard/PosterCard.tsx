@@ -35,8 +35,8 @@ export function PosterCard({ item, priority = false, enterDelayMs }: PosterCardP
 
   return (
     <article
-      // The delay only applies on phones, where the staggered cards fill the first screen; on wider screens the
-      // first rows would enter one by one while the rest are already in.
+      // The delay only applies on phones, where the staggered cards fill the first screen; on wider screens the first
+      // rows would enter one by one while the rest are already in. `backwards` keeps a card hidden during its delay.
       className='relative w-full shrink-0 animate-[card-in_300ms_ease-out_backwards] motion-reduce:animate-none max-sm:[animation-delay:var(--enter-delay)] sm:w-27.5'
       style={
         {

@@ -22,7 +22,6 @@ type MediaConfig<M extends MediaType> = {
   // In the order the filter picker lists them.
   genres: readonly MediaGenre<M>[];
   genreIds: Record<MediaGenre<M>, number>;
-  // The category as a /discover query: what filtered lists, and categories without an endpoint, are built from.
   // eslint-disable-next-line no-unused-vars -- the parameters name what each function takes, TS function types require a name
   getCategoryParams: (category: MediaCategory, context: CategoryContext) => DiscoverParams;
   // eslint-disable-next-line no-unused-vars -- the parameters name what each function takes, TS function types require a name

@@ -47,7 +47,6 @@ describe('SearchResultsGrid', () => {
   });
 
   it('fetches and renders results for the given query and locale without needing the sentinel to intersect', async () => {
-    // On narrow viewports the initial skeletons push the sentinel out of view, so the first page must load without it.
     vi.mocked(searchMedia).mockResolvedValue([createMediaItem({ id: 1, title: 'Batman' })]);
     render(
       <LocaleProvider locale='es'>

@@ -14,7 +14,7 @@ type HomeProps = {
   searchParams: Promise<HomeSearchParams>;
 };
 
-// Previews use the sharer's locale; for people it matches the page's, so Next dedupes this fetch with SharedMedia's.
+// Link-preview bots get the sharer's locale; people get the page's, so Next dedupes this fetch with SharedMedia's.
 export async function generateMetadata({ searchParams }: HomeProps): Promise<Metadata> {
   const { sharedMedia, sharedLocale } = parseHomeSearchParams(await searchParams);
   if (!sharedMedia) return {};
