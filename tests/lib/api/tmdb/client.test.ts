@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { tmdbClient } from '@/src/lib/api/tmdb/client';
-import { DEFAULT_REVALIDATE_SECONDS } from '@/src/lib/api/tmdb/constants';
+import { tmdbClient } from '@/lib/api/tmdb/client';
+import { DEFAULT_REVALIDATE_SECONDS } from '@/lib/api/tmdb/constants';
 
 const fetchMock = vi.spyOn(global, 'fetch').mockResolvedValue({
   ok: true,

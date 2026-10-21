@@ -67,7 +67,6 @@ Defined in both `tsconfig.json` and `vitest.config.ts`:
 
 | Alias | Points to |
 | --- | --- |
-| `@/src/*` | `src/*` |
 | `@/app/*` | `src/app/*` |
 | `@/lib/*` | `src/lib/*` |
 | `@/components/*` | `src/components/*` |

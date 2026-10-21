@@ -2,23 +2,23 @@ import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { PosterCard } from '@/src/components/PosterCard/PosterCard';
-import type { MediaItem } from '@/src/lib/api/tmdb/types';
+import { PosterCard } from '@/components/PosterCard/PosterCard';
+import type { MediaItem } from '@/lib/api/tmdb/types';
 import { createMediaItem } from '@/tests/factories/media.factory';
 
 const movieMock = createMediaItem({ id: 27205, title: 'Inception' });
 
-vi.mock('@/src/components/PosterCard/ImageCard', () => ({
+vi.mock('@/components/PosterCard/ImageCard', () => ({
   ImageCard: ({ item }: { item: MediaItem }) => <div>{item.backdrop_path}</div>,
 }));
 
 const fetchProviders = vi.fn();
 
-vi.mock('@/src/components/PosterCard/hooks/useWatchProviders', () => ({
+vi.mock('@/components/PosterCard/hooks/useWatchProviders', () => ({
   useWatchProviders: () => ({ providers: [], isLoading: false, fetchProviders }),
 }));
 
-vi.mock('@/src/components/PosterCard/PosterDialog', () => ({
+vi.mock('@/components/PosterCard/PosterDialog', () => ({
   PosterDialog: ({ onClose }: { onClose: () => void }) => (
     <div data-testid='poster-dialog-mock'>
       <button type='button' onClick={onClose}>

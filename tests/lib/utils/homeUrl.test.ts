@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildHomeHref, buildShareHref, parseHomeSearchParams, withMediaParam } from '@/src/lib/utils';
+import { buildHomeHref, buildShareHref, parseHomeSearchParams, withMediaParam } from '@/lib/utils';
 
 describe('utils: buildHomeHref', () => {
   it('returns the root for popular without filters', () => {

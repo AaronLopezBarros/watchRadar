@@ -2,18 +2,18 @@ import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { LocaleProvider } from '@/components/LocaleProvider';
+import { SearchResultsGrid } from '@/components/SearchBar/SearchResultsGrid';
 import { searchMedia } from '@/lib/api/tmdb/actions';
-import { LocaleProvider } from '@/src/components/LocaleProvider';
-import { SearchResultsGrid } from '@/src/components/SearchBar/SearchResultsGrid';
 import { createMediaItem } from '@/tests/factories/media.factory';
 
 vi.mock('@/lib/api/tmdb/actions', () => ({
   searchMedia: vi.fn(),
 }));
 
-vi.mock('@/src/components/PosterCard/PosterCard', () => import('@/tests/mocks/posterCard'));
+vi.mock('@/components/PosterCard/PosterCard', () => import('@/tests/mocks/posterCard'));
 
-vi.mock('@/src/components/PosterCard/PosterCardSkeleton', () => import('@/tests/mocks/posterCardSkeleton'));
+vi.mock('@/components/PosterCard/PosterCardSkeleton', () => import('@/tests/mocks/posterCardSkeleton'));
 
 describe('SearchResultsGrid', () => {
   let observerCallback: IntersectionObserverCallback | undefined;

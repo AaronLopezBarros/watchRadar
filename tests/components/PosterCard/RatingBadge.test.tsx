@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { RatingBadge } from '@/src/components/PosterCard/RatingBadge';
+import { RatingBadge } from '@/components/PosterCard/RatingBadge';
 
 describe('RatingBadge', () => {
   it('renders the rating rounded to one decimal', () => {

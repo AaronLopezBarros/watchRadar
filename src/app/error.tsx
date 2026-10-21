@@ -1,7 +1,7 @@
 'use client';
 
+import { useTranslations } from '@/components/LocaleProvider';
 import type { Dictionary } from '@/lib/i18n/dictionary';
-import { useTranslations } from '@/src/components/LocaleProvider';
 
 type ErrorProps = {
   error: Error & { digest?: string; status?: number };

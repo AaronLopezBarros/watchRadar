@@ -1,8 +1,8 @@
 import { cleanup, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { PosterDialog } from '@/src/components/PosterCard/PosterDialog';
-import { SKELETON_COUNT } from '@/src/components/PosterCard/ProviderSection';
+import { PosterDialog } from '@/components/PosterCard/PosterDialog';
+import { SKELETON_COUNT } from '@/components/PosterCard/ProviderSection';
 import { createGenre, createMediaItem, createProvider } from '@/tests/factories/media.factory';
 
 describe('PosterDialog', () => {

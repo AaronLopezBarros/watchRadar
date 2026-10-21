@@ -3,9 +3,9 @@
 import { CheckIcon, ShareIcon, XIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-import { useLocale, useTranslations } from '@/src/components/LocaleProvider';
-import type { MediaItem, MediaRef } from '@/src/lib/api/tmdb/types';
-import { buildShareHref, cn } from '@/src/lib/utils';
+import { useLocale, useTranslations } from '@/components/LocaleProvider';
+import type { MediaItem, MediaRef } from '@/lib/api/tmdb/types';
+import { buildShareHref, cn } from '@/lib/utils';
 
 export const FEEDBACK_DURATION_MS = 2000;
 

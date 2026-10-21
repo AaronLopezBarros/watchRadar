@@ -3,12 +3,12 @@
 import { SearchIcon, XIcon } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { useTranslations } from '@/components/LocaleProvider';
+import { useSearch } from '@/components/SearchBar/SearchProvider';
 import type { MediaType } from '@/lib/api/tmdb/types';
 import { useEscapeKey } from '@/lib/hooks/useEscapeKey';
 import { useExitAnimation } from '@/lib/hooks/useExitAnimation';
 import { cn } from '@/lib/utils';
-import { useTranslations } from '@/src/components/LocaleProvider';
-import { useSearch } from '@/src/components/SearchBar/SearchProvider';
 
 export const MIN_QUERY_LENGTH = 2;
 export const DEBOUNCE_DELAY_MS = 350;

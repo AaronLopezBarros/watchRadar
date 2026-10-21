@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { ImageCard } from '@/src/components/PosterCard/ImageCard';
+import { ImageCard } from '@/components/PosterCard/ImageCard';
 import { createMediaItem } from '@/tests/factories/media.factory';
 
 const movieMock = createMediaItem();

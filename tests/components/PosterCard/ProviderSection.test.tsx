@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { ProviderSection } from '@/src/components/PosterCard/ProviderSection';
+import { ProviderSection } from '@/components/PosterCard/ProviderSection';
 import { createProvider } from '@/tests/factories/media.factory';
 
 describe('ProviderSection', () => {

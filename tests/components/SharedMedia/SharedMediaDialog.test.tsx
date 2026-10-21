@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { SharedMediaDialog } from '@/src/components/SharedMedia/SharedMediaDialog';
+import { SharedMediaDialog } from '@/components/SharedMedia/SharedMediaDialog';
 import { createMediaItem, createProvider } from '@/tests/factories/media.factory';
 
 const movie = createMediaItem({ id: 27205, title: 'Inception' });

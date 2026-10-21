@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { mediaKey } from '@/src/lib/api/tmdb/media';
-import type { MediaItem } from '@/src/lib/api/tmdb/types';
+import { mediaKey } from '@/lib/api/tmdb/media';
+import type { MediaItem } from '@/lib/api/tmdb/types';
 
 type UsePaginatedMediaOptions = {
   initialItems: MediaItem[];

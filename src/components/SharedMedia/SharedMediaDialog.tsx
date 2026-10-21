@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 
-import { PosterDialog } from '@/src/components/PosterCard/PosterDialog';
-import type { MediaItem, WatchProvider } from '@/src/lib/api/tmdb/types';
-import { withMediaParam } from '@/src/lib/utils';
+import { PosterDialog } from '@/components/PosterCard/PosterDialog';
+import type { MediaItem, WatchProvider } from '@/lib/api/tmdb/types';
+import { withMediaParam } from '@/lib/utils';
 
 type SharedMediaDialogProps = {
   item: MediaItem;

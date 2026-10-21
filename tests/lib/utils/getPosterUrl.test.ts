@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { getPosterUrl } from '@/src/lib/utils';
+import { getPosterUrl } from '@/lib/utils';
 
 describe('utils: getPosterUrl', () => {
   it('should return the url when path and size are provided', () => {

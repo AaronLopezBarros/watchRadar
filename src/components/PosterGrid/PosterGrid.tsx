@@ -2,11 +2,11 @@
 
 import { useRef } from 'react';
 
-import { PosterCard } from '@/src/components/PosterCard/PosterCard';
-import { PosterCardSkeleton } from '@/src/components/PosterCard/PosterCardSkeleton';
-import { useInfiniteScroll } from '@/src/components/PosterGrid/hooks/useInfiniteScroll';
-import { mediaKey } from '@/src/lib/api/tmdb/media';
-import type { MediaItem } from '@/src/lib/api/tmdb/types';
+import { PosterCard } from '@/components/PosterCard/PosterCard';
+import { PosterCardSkeleton } from '@/components/PosterCard/PosterCardSkeleton';
+import { useInfiniteScroll } from '@/components/PosterGrid/hooks/useInfiniteScroll';
+import { mediaKey } from '@/lib/api/tmdb/media';
+import type { MediaItem } from '@/lib/api/tmdb/types';
 
 const SKELETON_COUNT = 20;
 const LOAD_MARGIN = 300;

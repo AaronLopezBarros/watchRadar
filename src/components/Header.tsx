@@ -1,8 +1,8 @@
 import { Anton, Audiowide } from 'next/font/google';
 
+import { LanguageSelector } from '@/components/LanguageSelector/LanguageSelector';
 import { getDictionary } from '@/lib/i18n/dictionary';
 import type { Locale } from '@/lib/i18n/locale';
-import { LanguageSelector } from '@/src/components/LanguageSelector/LanguageSelector';
 
 const anton = Anton({ subsets: ['latin'], weight: '400' });
 const audiowide = Audiowide({ subsets: ['latin'], weight: '400' });

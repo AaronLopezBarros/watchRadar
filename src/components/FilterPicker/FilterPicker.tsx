@@ -4,13 +4,13 @@ import { ChevronDownIcon, XIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 
+import { BottomSheet } from '@/components/BottomSheet/BottomSheet';
+import { useTranslations } from '@/components/LocaleProvider';
+import { useSearch } from '@/components/SearchBar/SearchProvider';
 import { MEDIA_CONFIG, canFilterStreaming } from '@/lib/api/tmdb/media';
 import type { MediaCategory, MediaFilters, MediaType } from '@/lib/api/tmdb/types';
 import { useOptimisticNavigation } from '@/lib/hooks/useOptimisticNavigation';
 import { buildHomeHref, cn } from '@/lib/utils';
-import { BottomSheet } from '@/src/components/BottomSheet/BottomSheet';
-import { useTranslations } from '@/src/components/LocaleProvider';
-import { useSearch } from '@/src/components/SearchBar/SearchProvider';
 
 const ALL_GENRES_OPTION = undefined;
 

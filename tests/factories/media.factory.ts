@@ -1,4 +1,4 @@
-import type { Genre, MediaItem, WatchProvider } from '@/src/lib/api/tmdb/types';
+import type { Genre, MediaItem, WatchProvider } from '@/lib/api/tmdb/types';
 
 const defaultMediaItem: MediaItem = {
   mediaType: 'movie',

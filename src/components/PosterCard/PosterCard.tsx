@@ -2,12 +2,12 @@
 
 import { useRef, useState, type CSSProperties } from 'react';
 
-import { POSTER_H, POSTER_W } from '@/src/components/PosterCard/constants';
-import { useWatchProviders } from '@/src/components/PosterCard/hooks/useWatchProviders';
-import { ImageCard } from '@/src/components/PosterCard/ImageCard';
-import { PosterDialog } from '@/src/components/PosterCard/PosterDialog';
-import type { MediaItem } from '@/src/lib/api/tmdb/types';
-import { withMediaParam } from '@/src/lib/utils';
+import { POSTER_H, POSTER_W } from '@/components/PosterCard/constants';
+import { useWatchProviders } from '@/components/PosterCard/hooks/useWatchProviders';
+import { ImageCard } from '@/components/PosterCard/ImageCard';
+import { PosterDialog } from '@/components/PosterCard/PosterDialog';
+import type { MediaItem } from '@/lib/api/tmdb/types';
+import { withMediaParam } from '@/lib/utils';
 
 type PosterCardProps = {
   item: MediaItem;

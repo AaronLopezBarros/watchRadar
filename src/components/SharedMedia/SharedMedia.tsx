@@ -1,8 +1,8 @@
+import { SharedMediaDialog } from '@/components/SharedMedia/SharedMediaDialog';
 import { fetchMediaDetails, fetchWatchProviders } from '@/lib/api/tmdb/actions';
 import { getStreamingProviders } from '@/lib/api/tmdb/providers';
 import type { MediaRef } from '@/lib/api/tmdb/types';
 import type { Locale } from '@/lib/i18n/locale';
-import { SharedMediaDialog } from '@/src/components/SharedMedia/SharedMediaDialog';
 
 type SharedMediaProps = {
   sharedMedia: MediaRef;

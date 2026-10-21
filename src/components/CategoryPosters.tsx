@@ -1,10 +1,10 @@
+import { InfinitePosterGrid } from '@/components/InfinitePosterGrid/InfinitePosterGrid';
 import { fetchMedia } from '@/lib/api/tmdb/actions';
 import { hasFilters } from '@/lib/api/tmdb/discover';
 import { mediaKey } from '@/lib/api/tmdb/media';
 import type { MediaCategory, MediaFilters, MediaType } from '@/lib/api/tmdb/types';
 import { getDictionary } from '@/lib/i18n/dictionary';
 import type { Locale } from '@/lib/i18n/locale';
-import { InfinitePosterGrid } from '@/src/components/InfinitePosterGrid/InfinitePosterGrid';
 
 const INITIAL_PAGE_COUNT = 3;
 

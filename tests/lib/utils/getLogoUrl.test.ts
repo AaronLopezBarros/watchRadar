@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { getLogoUrl } from '@/src/lib/utils';
+import { getLogoUrl } from '@/lib/utils';
 
 describe('utils: getLogoUrl', () => {
   it('returns the correct TMDB logo URL with w92 size', () => {

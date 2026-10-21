@@ -1,12 +1,12 @@
 import { act, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { PosterGrid, PosterGridSkeleton, STAGGER_COUNT, STAGGER_STEP_MS } from '@/src/components/PosterGrid/PosterGrid';
+import { PosterGrid, PosterGridSkeleton, STAGGER_COUNT, STAGGER_STEP_MS } from '@/components/PosterGrid/PosterGrid';
 import { createMediaItem } from '@/tests/factories/media.factory';
 
-vi.mock('@/src/components/PosterCard/PosterCard', () => import('@/tests/mocks/posterCard'));
+vi.mock('@/components/PosterCard/PosterCard', () => import('@/tests/mocks/posterCard'));
 
-vi.mock('@/src/components/PosterCard/PosterCardSkeleton', () => import('@/tests/mocks/posterCardSkeleton'));
+vi.mock('@/components/PosterCard/PosterCardSkeleton', () => import('@/tests/mocks/posterCardSkeleton'));
 
 describe('PosterGrid', () => {
   let observerCallback: IntersectionObserverCallback | undefined;

@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { LanguageSelector } from '@/src/components/LanguageSelector/LanguageSelector';
+import { LanguageSelector } from '@/components/LanguageSelector/LanguageSelector';
 import { routerRefresh } from '@/tests/mocks/nextNavigation';
 
 const setLocaleMock = vi.fn();

@@ -2,9 +2,9 @@
 
 import Image from 'next/image';
 
-import { useTranslations } from '@/src/components/LocaleProvider';
-import type { WatchProvider } from '@/src/lib/api/tmdb/types';
-import { getLogoUrl } from '@/src/lib/utils';
+import { useTranslations } from '@/components/LocaleProvider';
+import type { WatchProvider } from '@/lib/api/tmdb/types';
+import { getLogoUrl } from '@/lib/utils';
 
 export const SKELETON_COUNT = 3;
 const LOGO_SIZE = 32;

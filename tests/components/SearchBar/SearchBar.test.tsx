@@ -2,11 +2,11 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { DEBOUNCE_DELAY_MS, MIN_QUERY_LENGTH, SearchBar } from '@/src/components/SearchBar/SearchBar';
+import { DEBOUNCE_DELAY_MS, MIN_QUERY_LENGTH, SearchBar } from '@/components/SearchBar/SearchBar';
 
 const setDebouncedQuery = vi.fn();
 
-vi.mock('@/src/components/SearchBar/SearchProvider', async () => {
+vi.mock('@/components/SearchBar/SearchProvider', async () => {
   const { useState } = await import('react');
 
   return {

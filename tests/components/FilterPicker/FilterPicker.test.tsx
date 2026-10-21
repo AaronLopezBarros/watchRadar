@@ -2,12 +2,12 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { FilterPicker } from '@/components/FilterPicker/FilterPicker';
+import { LocaleProvider } from '@/components/LocaleProvider';
+import { SearchBar } from '@/components/SearchBar/SearchBar';
+import { SearchProvider } from '@/components/SearchBar/SearchProvider';
 import { MEDIA_CONFIG } from '@/lib/api/tmdb/media';
 import type { MediaCategory, MediaFilters, MediaType } from '@/lib/api/tmdb/types';
-import { FilterPicker } from '@/src/components/FilterPicker/FilterPicker';
-import { LocaleProvider } from '@/src/components/LocaleProvider';
-import { SearchBar } from '@/src/components/SearchBar/SearchBar';
-import { SearchProvider } from '@/src/components/SearchBar/SearchProvider';
 
 vi.mock('next/navigation', () => import('@/tests/mocks/nextNavigation'));
 

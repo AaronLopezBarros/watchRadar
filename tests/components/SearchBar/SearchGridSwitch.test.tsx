@@ -2,17 +2,17 @@ import { render, screen } from '@testing-library/react';
 import { useEffect } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { LocaleProvider } from '@/src/components/LocaleProvider';
-import { SearchGridSwitch } from '@/src/components/SearchBar/SearchGridSwitch';
+import { LocaleProvider } from '@/components/LocaleProvider';
+import { SearchGridSwitch } from '@/components/SearchBar/SearchGridSwitch';
 
 const useSearchMock = vi.fn();
 const mountCount = vi.fn();
 
-vi.mock('@/src/components/SearchBar/SearchProvider', () => ({
+vi.mock('@/components/SearchBar/SearchProvider', () => ({
   useSearch: () => useSearchMock(),
 }));
 
-vi.mock('@/src/components/SearchBar/SearchResultsGrid', () => ({
+vi.mock('@/components/SearchBar/SearchResultsGrid', () => ({
   SearchResultsGrid: ({ mediaType, query }: { mediaType: string; query: string }) => {
     useEffect(() => mountCount(), []);
     return (

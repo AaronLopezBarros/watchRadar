@@ -2,11 +2,11 @@
 
 import { useCallback } from 'react';
 
+import { PosterGrid } from '@/components/PosterGrid/PosterGrid';
 import { fetchMedia } from '@/lib/api/tmdb/actions';
 import type { MediaCategory, MediaFilters, MediaItem, MediaType } from '@/lib/api/tmdb/types';
+import { usePaginatedMedia } from '@/lib/hooks/usePaginatedMedia';
 import type { Locale } from '@/lib/i18n/locale';
-import { PosterGrid } from '@/src/components/PosterGrid/PosterGrid';
-import { usePaginatedMedia } from '@/src/lib/hooks/usePaginatedMedia';
 
 type InfinitePosterGridProps = {
   initialItems: MediaItem[];
