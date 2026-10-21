@@ -31,7 +31,7 @@
   }
 }
 
-/* The search field opens out of, and closes back into, a 2.75rem circle at its right end, where the button was. */
+/* 2.75rem is the search button's size: the field opens out of it and closes back into it. */
 @keyframes search-in {
   from {
     clip-path: inset(0 0 0 calc(100% - 2.75rem) round 9999px);

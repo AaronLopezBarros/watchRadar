@@ -18,12 +18,10 @@ type CategoryContext = {
 type MediaConfig<M extends MediaType> = {
   // Categories TMDB serves as `/{mediaType}/{category}`; the rest are always built as a /discover query.
   endpointCategories: readonly MediaCategory[];
-  // Categories where the streaming filter makes sense.
   streamingCategories: readonly MediaCategory[];
   // In the order the filter picker lists them.
   genres: readonly MediaGenre<M>[];
   genreIds: Record<MediaGenre<M>, number>;
-  // The category as a /discover query: what filtered lists, and categories without an endpoint, are built from.
   // eslint-disable-next-line no-unused-vars -- the parameters name what each function takes, TS function types require a name
   getCategoryParams: (category: MediaCategory, context: CategoryContext) => DiscoverParams;
   // eslint-disable-next-line no-unused-vars -- the parameters name what each function takes, TS function types require a name
@@ -85,7 +83,6 @@ const getTvCategoryCriteria = (category: MediaCategory, today: Date): DiscoverPa
       return { 'vote_count.gte': TV_POPULAR_MIN_VOTES };
     case 'top_rated':
       return { sort_by: 'vote_average.desc', 'vote_count.gte': TV_TOP_RATED_MIN_VOTES };
-    // Series premieres, in the same windows as the movie releases.
     case 'now_playing':
       return {
         'first_air_date.gte': toDateParam(addDays(today, -RELEASE_WINDOW_DAYS)),

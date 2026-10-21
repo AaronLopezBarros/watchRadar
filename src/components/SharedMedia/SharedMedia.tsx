@@ -18,7 +18,6 @@ export async function SharedMedia({ sharedMedia: { mediaType, id }, locale }: Sh
       .catch(() => []),
   ]);
 
-  // An unknown id (stale or hand-edited link) just lands on the home page.
   if (!item) return null;
 
   return <SharedMediaDialog item={item} providers={providers} />;

@@ -60,7 +60,7 @@ export const withMediaParam = (search: string, item?: MediaRef): string => {
 };
 
 // The sender's category and filters stay out: the recipient only cares about the item. Its type goes in so the
-// item opens over its own grid, and the sender's language for the link preview (see getMetadataLocale).
+// item opens over its own grid, and the sender's language for the link preview.
 export const buildShareHref = ({ mediaType, id }: MediaRef, locale: Locale): string => {
   const searchParams = new URLSearchParams();
 
@@ -89,7 +89,6 @@ export const parseHomeSearchParams = (
     mediaType,
     category,
     filters: {
-      // Genres only exist within their media type: a movie genre on series is dropped.
       genre: isMediaGenre(mediaType, params.genre) ? params.genre : undefined,
       streaming: params.streaming === STREAMING_ON && canFilterStreaming(mediaType, category),
     },

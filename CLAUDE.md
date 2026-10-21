@@ -22,7 +22,7 @@ pnpm test:coverage    # run tests with coverage report
 
 Run a single test file:
 ```bash
-pnpm vitest run tests/lib/utils/array.test.ts
+pnpm vitest run tests/lib/utils/getPosterUrl.test.ts
 ```
 
 ## Environment

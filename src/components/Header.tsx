@@ -16,7 +16,6 @@ export function Header({ locale }: HeaderProps) {
 
   return (
     <header className='relative flex justify-center px-4 pt-6'>
-      {/* Picked once and rarely touched again, so it lives here instead of taking room in the sticky nav. */}
       <div className='absolute top-3 right-3 z-10'>
         <LanguageSelector locale={locale} />
       </div>

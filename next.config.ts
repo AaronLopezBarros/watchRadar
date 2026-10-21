@@ -1,7 +1,6 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
   reactCompiler: true,
   experimental: {
     // ~10 kB gzipped: cheaper inline than as a render-blocking request on a slow connection.

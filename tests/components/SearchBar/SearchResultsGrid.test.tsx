@@ -47,9 +47,6 @@ describe('SearchResultsGrid', () => {
   });
 
   it('fetches and renders results for the given query and locale without needing the sentinel to intersect', async () => {
-    // Regression test: on narrow (mobile) viewports the initial skeletons push the sentinel
-    // out of view, so the IntersectionObserver never fires. The first page must load on its
-    // own regardless of intersection, which is why `triggerIntersection` is never called here.
     vi.mocked(searchMedia).mockResolvedValue([createMediaItem({ id: 1, title: 'Batman' })]);
     render(
       <LocaleProvider locale='es'>

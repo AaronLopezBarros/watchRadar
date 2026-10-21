@@ -33,24 +33,19 @@ const eslintConfig = defineConfig([
       'import/order': [
         'error',
         {
-          groups: [
-            ['builtin', 'external'], // First, import built-in and external modules
-            'internal', // Then, import internal project modules
-            ['sibling', 'parent'], // After that, import sibling and parent modules
-            'index', // Finally, import index files (e.g., index.js or index.ts)
-          ],
+          groups: [['builtin', 'external'], 'internal', ['sibling', 'parent'], 'index'],
           pathGroups: [
             {
-              pattern: 'react', // Ensure react is always imported first
-              group: 'builtin', // Group it as a built-in module
-              position: 'before', // Position it before other imports
+              pattern: 'react',
+              group: 'builtin',
+              position: 'before',
             },
           ],
           alphabetize: {
-            order: 'asc', // Alphabetical order within each group
-            caseInsensitive: true, // Case-insensitive ordering
+            order: 'asc',
+            caseInsensitive: true,
           },
-          'newlines-between': 'always', // Always add a blank line between different groups of imports
+          'newlines-between': 'always',
         },
       ],
     },
