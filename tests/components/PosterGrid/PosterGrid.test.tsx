@@ -1,7 +1,7 @@
 import { act, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { PosterGrid } from '@/src/components/PosterGrid/PosterGrid';
+import { PosterGrid, PosterGridSkeleton } from '@/src/components/PosterGrid/PosterGrid';
 import { createMediaItem } from '@/tests/factories/media.factory';
 
 vi.mock('@/src/components/PosterCard/PosterCard', () => ({
@@ -74,12 +74,14 @@ describe('PosterGrid', () => {
   it('renders skeletons while loading', () => {
     render(<PosterGrid items={[]} isLoading={true} onIntersect={vi.fn()} />);
 
+    expect(screen.getByRole('generic', { busy: true })).toBeInTheDocument();
     expect(screen.getAllByTestId('skeleton').length).toBeGreaterThan(0);
   });
 
   it('does not render skeletons when not loading', () => {
     render(<PosterGrid items={[]} isLoading={false} onIntersect={vi.fn()} />);
 
+    expect(screen.queryByRole('generic', { busy: true })).not.toBeInTheDocument();
     expect(screen.queryByTestId('skeleton')).not.toBeInTheDocument();
   });
 
@@ -90,5 +92,15 @@ describe('PosterGrid', () => {
     act(() => triggerIntersection(true));
 
     expect(onIntersect).toHaveBeenCalledOnce();
+  });
+});
+
+describe('PosterGridSkeleton', () => {
+  it('renders skeletons in place of posters', () => {
+    render(<PosterGridSkeleton />);
+
+    expect(screen.getByRole('generic', { busy: true })).toBeInTheDocument();
+    expect(screen.getAllByTestId('skeleton').length).toBeGreaterThan(0);
+    expect(screen.queryByTestId('poster-card')).not.toBeInTheDocument();
   });
 });

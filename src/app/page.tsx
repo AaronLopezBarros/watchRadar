@@ -6,6 +6,7 @@ import { getLocale, getMetadataLocale } from '@/lib/i18n/getLocale';
 import { getPosterUrl, parseHomeSearchParams, type HomeSearchParams } from '@/lib/utils';
 import { CategoryPosters } from '@/src/components/CategoryPosters';
 import { CategoryTabs } from '@/src/components/CategoryTabs';
+import { PosterGridSkeleton } from '@/src/components/PosterGrid/PosterGrid';
 import { SearchGridSwitch } from '@/src/components/SearchBar/SearchGridSwitch';
 import { SearchProvider } from '@/src/components/SearchBar/SearchProvider';
 import { SharedMedia } from '@/src/components/SharedMedia/SharedMedia';
@@ -46,13 +47,13 @@ export default async function Home({ searchParams }: HomeProps) {
     <SearchProvider>
       <CategoryTabs mediaType={mediaType} active={category} filters={filters} locale={locale} />
       <SearchGridSwitch mediaType={mediaType}>
-        <CategoryPosters
+        {/* Keyed so each tab or filter change shows the skeleton instead of the old posters. */}
+        <Suspense
           key={`${mediaType}-${category}-${filters.genre}-${filters.streaming}-${locale}`}
-          mediaType={mediaType}
-          category={category}
-          filters={filters}
-          locale={locale}
-        />
+          fallback={<PosterGridSkeleton />}
+        >
+          <CategoryPosters mediaType={mediaType} category={category} filters={filters} locale={locale} />
+        </Suspense>
       </SearchGridSwitch>
       {sharedMedia && (
         <Suspense fallback={null}>
