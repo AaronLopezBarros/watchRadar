@@ -66,7 +66,7 @@ export function LanguageSelector({ locale }: LanguageSelectorProps) {
               type='button'
               onClick={() => handleSelect(value)}
               aria-pressed={value === locale}
-              aria-label={`Switch to ${LOCALE_NAME[value]}: ${LOCALE_LABEL[value]}`}
+              aria-label={`${dict.language.switchToAriaLabel} ${LOCALE_NAME[value]}: ${LOCALE_LABEL[value]}`}
               className={cn(
                 'flex h-11 min-w-11 cursor-pointer items-center justify-center rounded-full px-3 whitespace-nowrap transition-colors',
                 value === locale ? 'bg-white/20 font-medium text-white' : 'text-white/60 hover:bg-white/10',

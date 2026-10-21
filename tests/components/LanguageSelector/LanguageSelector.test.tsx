@@ -77,4 +77,12 @@ describe('LanguageSelector', () => {
 
     expect(screen.getByRole('button', { name: 'Switch to Español: ES' })).toBeInTheDocument();
   });
+
+  it('names the options in the current language', async () => {
+    render(<LanguageSelector locale='es' />);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Cambiar idioma: ES' }));
+
+    expect(screen.getByRole('button', { name: 'Cambiar a English: EN' })).toBeInTheDocument();
+  });
 });
