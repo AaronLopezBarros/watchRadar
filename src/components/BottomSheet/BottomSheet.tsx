@@ -41,7 +41,8 @@ type BottomSheetProps = {
   tone: keyof typeof TONE_CLASS_NAME;
   desktop: keyof typeof DESKTOP_CLASS_NAME;
   className?: string;
-  children: ReactNode;
+  // eslint-disable-next-line no-unused-vars -- `controls` names the parameter for documentation, TS function types require a name
+  children: ReactNode | ((controls: { close: () => void }) => ReactNode);
 };
 
 export function BottomSheet({ label, onClose, tone, desktop, className, children }: BottomSheetProps) {
@@ -103,7 +104,7 @@ export function BottomSheet({ label, onClose, tone, desktop, className, children
         <div className='flex justify-center pt-3 pb-4 sm:hidden'>
           <div className={cn('h-1 w-10 rounded-full', TONE_CLASS_NAME[tone].handle)} />
         </div>
-        {children}
+        {typeof children === 'function' ? children({ close: requestClose }) : children}
       </div>
     </div>
   );

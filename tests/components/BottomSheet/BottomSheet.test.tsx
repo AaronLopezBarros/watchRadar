@@ -215,6 +215,27 @@ describe('BottomSheet', () => {
       expect(onClose).toHaveBeenCalledOnce();
     });
 
+    it('closes once the animation ends when its content asks it to close', async () => {
+      runExitAnimation();
+      const onClose = vi.fn();
+      render(
+        <BottomSheet label='Genres' onClose={onClose} tone='dark' desktop='modal'>
+          {({ close }) => (
+            <button type='button' onClick={close}>
+              Drama
+            </button>
+          )}
+        </BottomSheet>,
+      );
+
+      await userEvent.click(screen.getByRole('button', { name: 'Drama' }));
+      expect(onClose).not.toHaveBeenCalled();
+
+      // userEvent can't end an animation.
+      fireEvent.animationEnd(screen.getByRole('dialog'));
+      expect(onClose).toHaveBeenCalledOnce();
+    });
+
     it('closes only once when Escape is pressed again during the animation', async () => {
       runExitAnimation();
       const onClose = renderSheet();

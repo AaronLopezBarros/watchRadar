@@ -14,6 +14,9 @@ import { buildHomeHref, cn } from '@/lib/utils';
 
 const ALL_GENRES_OPTION = undefined;
 
+// Long enough to see the picked genre marked as current before the sheet slides away.
+export const PICK_FEEDBACK_MS = 150;
+
 type FilterPickerProps = {
   mediaType: MediaType;
   category: MediaCategory;
@@ -36,10 +39,7 @@ export function FilterPicker({ mediaType, category, filters }: FilterPickerProps
     triggerRef.current?.focus();
   };
 
-  const handleSelect = () => {
-    setIsOpen(false);
-    window.scrollTo({ top: 0 });
-  };
+  const scrollToTop = () => window.scrollTo({ top: 0 });
 
   const filterLinkProps = (nextFilters: MediaFilters, onSelect?: () => void) =>
     linkProps(nextFilters, buildHomeHref({ mediaType, category, ...nextFilters }), onSelect);
@@ -76,7 +76,7 @@ export function FilterPicker({ mediaType, category, filters }: FilterPickerProps
         </button>
         {hasActiveFilters && (
           <Link
-            {...filterLinkProps({}, handleSelect)}
+            {...filterLinkProps({}, scrollToTop)}
             aria-label={dict.filters.clearAriaLabel}
             className='flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/10 hover:text-white'
           >
@@ -92,46 +92,53 @@ export function FilterPicker({ mediaType, category, filters }: FilterPickerProps
           desktop='popover'
           className='px-4 pb-8 sm:left-0 sm:p-3 md:right-0 md:left-auto'
         >
-          <h2 className='mb-4 text-base font-semibold text-white sm:sr-only'>{dict.filters.title}</h2>
-          {canFilterByStreaming && (
-            // Toggling streaming keeps the sheet open so a genre can still be picked in the same visit.
-            <Link
-              {...filterLinkProps({ genre, streaming: !streaming })}
-              role='switch'
-              aria-checked={Boolean(streaming)}
-              className='mb-4 flex min-h-11 items-center justify-between rounded-xl bg-white/5 px-4 text-sm text-white transition-colors hover:bg-white/10'
-            >
-              {dict.filters.streamingOnly}
-              <span
-                aria-hidden='true'
-                className={cn(
-                  'flex h-6 w-10 items-center rounded-full p-0.5 transition-colors',
-                  streaming ? 'justify-end bg-radar-cyan' : 'justify-start bg-white/20',
-                )}
-              >
-                <span className='h-5 w-5 rounded-full bg-white' />
-              </span>
-            </Link>
-          )}
-          <h3 className='mb-2 text-xs font-medium tracking-wide text-white/40 uppercase'>{dict.filters.genres}</h3>
-          <ul className='grid max-h-[50vh] grid-cols-2 gap-2 overflow-y-auto overscroll-contain'>
-            {[ALL_GENRES_OPTION, ...MEDIA_CONFIG[mediaType].genres].map(value => (
-              <li key={value ?? 'all'}>
+          {({ close }) => (
+            <>
+              <h2 className='mb-4 text-base font-semibold text-white sm:sr-only'>{dict.filters.title}</h2>
+              {canFilterByStreaming && (
+                // Toggling streaming keeps the sheet open so a genre can still be picked in the same visit.
                 <Link
-                  {...filterLinkProps({ genre: value, streaming }, handleSelect)}
-                  aria-current={value === genre ? 'true' : undefined}
-                  className={cn(
-                    'flex min-h-11 items-center rounded-xl px-4 text-sm transition-colors',
-                    value === genre
-                      ? 'bg-white/20 font-medium text-white'
-                      : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white',
-                  )}
+                  {...filterLinkProps({ genre, streaming: !streaming })}
+                  role='switch'
+                  aria-checked={Boolean(streaming)}
+                  className='mb-4 flex min-h-11 items-center justify-between rounded-xl bg-white/5 px-4 text-sm text-white transition-colors hover:bg-white/10'
                 >
-                  {value ? dict.genre[value] : dict.filters.allGenres}
+                  {dict.filters.streamingOnly}
+                  <span
+                    aria-hidden='true'
+                    className={cn(
+                      'flex h-6 w-10 items-center rounded-full p-0.5 transition-colors',
+                      streaming ? 'justify-end bg-radar-cyan' : 'justify-start bg-white/20',
+                    )}
+                  >
+                    <span className='h-5 w-5 rounded-full bg-white' />
+                  </span>
                 </Link>
-              </li>
-            ))}
-          </ul>
+              )}
+              <h3 className='mb-2 text-xs font-medium tracking-wide text-white/40 uppercase'>{dict.filters.genres}</h3>
+              <ul className='grid max-h-[50vh] grid-cols-2 gap-2 overflow-y-auto overscroll-contain'>
+                {[ALL_GENRES_OPTION, ...MEDIA_CONFIG[mediaType].genres].map(value => (
+                  <li key={value ?? 'all'}>
+                    <Link
+                      {...filterLinkProps({ genre: value, streaming }, () => {
+                        scrollToTop();
+                        setTimeout(close, PICK_FEEDBACK_MS);
+                      })}
+                      aria-current={value === genre ? 'true' : undefined}
+                      className={cn(
+                        'flex min-h-11 items-center rounded-xl px-4 text-sm transition active:scale-[0.97] active:bg-white/20',
+                        value === genre
+                          ? 'bg-white/20 font-medium text-white'
+                          : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white',
+                      )}
+                    >
+                      {value ? dict.genre[value] : dict.filters.allGenres}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </BottomSheet>
       )}
     </div>

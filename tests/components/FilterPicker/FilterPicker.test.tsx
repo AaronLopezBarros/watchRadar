@@ -1,8 +1,8 @@
-import { render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { FilterPicker } from '@/components/FilterPicker/FilterPicker';
+import { FilterPicker, PICK_FEEDBACK_MS } from '@/components/FilterPicker/FilterPicker';
 import { LocaleProvider } from '@/components/LocaleProvider';
 import { SearchBar } from '@/components/SearchBar/SearchBar';
 import { SearchProvider } from '@/components/SearchBar/SearchProvider';
@@ -54,14 +54,47 @@ describe('FilterPicker', () => {
     );
   });
 
-  it('closes the sheet after picking a genre', async () => {
-    const user = userEvent.setup();
-    render(<Harness />);
+  describe('after picking a genre', () => {
+    let user: ReturnType<typeof userEvent.setup>;
 
-    await user.click(screen.getByRole('button', { name: 'Filtros' }));
-    await user.click(screen.getByRole('link', { name: 'Comedia' }));
+    beforeEach(() => {
+      vi.useFakeTimers({ shouldAdvanceTime: true });
+      user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    });
 
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    afterEach(() => {
+      vi.useRealTimers();
+      Reflect.deleteProperty(HTMLElement.prototype, 'getAnimations');
+    });
+
+    it('marks the genre as current before closing the sheet', async () => {
+      render(<Harness />);
+
+      await user.click(screen.getByRole('button', { name: 'Filtros' }));
+      await user.click(screen.getByRole('link', { name: 'Comedia' }));
+      expect(
+        within(screen.getByRole('dialog', { name: 'Filtros' })).getByRole('link', { name: 'Comedia', current: true }),
+      ).toBeInTheDocument();
+
+      act(() => vi.advanceTimersByTime(PICK_FEEDBACK_MS));
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+
+    it('slides the sheet away and returns focus to the chip', async () => {
+      // jsdom runs no animations; a running CSS animation is what makes the sheet wait for animationend.
+      HTMLElement.prototype.getAnimations = () => [{ animationName: 'slide-down' } as unknown as Animation];
+      render(<Harness />);
+
+      await user.click(screen.getByRole('button', { name: 'Filtros' }));
+      await user.click(screen.getByRole('link', { name: 'Comedia' }));
+      act(() => vi.advanceTimersByTime(PICK_FEEDBACK_MS));
+      expect(screen.getByRole('dialog', { name: 'Filtros' })).toBeInTheDocument();
+
+      // userEvent can't end an animation.
+      fireEvent.animationEnd(screen.getByRole('dialog'));
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Filtros: Comedia' })).toHaveFocus();
+    });
   });
 
   it('summarizes the active filters on the chip and marks the genre as current in the sheet', async () => {
