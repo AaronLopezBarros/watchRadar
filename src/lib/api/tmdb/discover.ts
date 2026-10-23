@@ -1,5 +1,4 @@
-import { TMDB_WATCH_REGION } from '@/lib/api/tmdb/constants';
-import { MEDIA_CONFIG, type DiscoverParams } from '@/lib/api/tmdb/media';
+import { MEDIA_CONFIG, type CategoryContext, type DiscoverParams } from '@/lib/api/tmdb/media';
 import type { MediaCategory, MediaFilters, MediaType } from '@/lib/api/tmdb/types';
 
 export const hasFilters = ({ genre, streaming }: MediaFilters) => Boolean(genre || streaming);
@@ -10,13 +9,13 @@ export const getDiscoverParams = <M extends MediaType>(
   mediaType: M,
   category: MediaCategory,
   filters: MediaFilters<M>,
-  today: Date,
+  { today, region }: Omit<CategoryContext, 'streaming'>,
 ): DiscoverParams => {
   const config = MEDIA_CONFIG[mediaType];
 
   return {
-    ...config.getCategoryParams(category, { today, streaming: Boolean(filters.streaming) }),
+    ...config.getCategoryParams(category, { today, region, streaming: Boolean(filters.streaming) }),
     with_genres: filters.genre && config.genreIds[filters.genre],
-    ...(filters.streaming && { watch_region: TMDB_WATCH_REGION, with_watch_monetization_types: 'flatrate' }),
+    ...(filters.streaming && { watch_region: region, with_watch_monetization_types: 'flatrate' }),
   };
 };

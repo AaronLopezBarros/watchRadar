@@ -2,8 +2,7 @@
 
 import { useCallback, useRef, useState } from 'react';
 
-import { fetchWatchProviders } from '@/lib/api/tmdb/actions';
-import { getStreamingProviders } from '@/lib/api/tmdb/providers';
+import { fetchStreamingProviders } from '@/lib/api/tmdb/actions';
 import type { MediaType, WatchProvider } from '@/lib/api/tmdb/types';
 
 type UseWatchProvidersResult = {
@@ -22,7 +21,7 @@ export function useWatchProviders(mediaType: MediaType, id: number): UseWatchPro
     hasFetchedRef.current = true;
     setIsLoading(true);
     try {
-      setProviders(getStreamingProviders(await fetchWatchProviders(mediaType, id)));
+      setProviders(await fetchStreamingProviders(mediaType, id));
     } catch {
       setProviders([]);
     } finally {

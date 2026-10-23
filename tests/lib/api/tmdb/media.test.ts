@@ -52,8 +52,14 @@ describe('mediaKey', () => {
 });
 
 describe('hasCategoryEndpoint', () => {
-  it('is true for the movie categories, which TMDB serves under their own endpoint', () => {
-    expect(hasCategoryEndpoint('movie', 'now_playing')).toBe(true);
+  it('is true for the movie lists that need no region, which TMDB serves under their own endpoint', () => {
+    expect(hasCategoryEndpoint('movie', 'popular')).toBe(true);
+    expect(hasCategoryEndpoint('movie', 'top_rated')).toBe(true);
+  });
+
+  it('is false for the movie lists by release date, which go through discover to pass the region', () => {
+    expect(hasCategoryEndpoint('movie', 'upcoming')).toBe(false);
+    expect(hasCategoryEndpoint('movie', 'now_playing')).toBe(false);
   });
 
   it('is false for every series category, which always goes through discover', () => {

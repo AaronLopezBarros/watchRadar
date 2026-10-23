@@ -10,8 +10,9 @@ import type {
 
 export type DiscoverParams = Record<string, string | number | undefined>;
 
-type CategoryContext = {
+export type CategoryContext = {
   today: Date;
+  region: string;
   streaming: boolean;
 };
 
@@ -48,7 +49,10 @@ const toDateParam = (date: Date) => date.toISOString().slice(0, 10);
 const addDays = (date: Date, days: number) => new Date(date.getTime() + days * DAY_MS);
 
 // Discover already sorts by popularity.desc by default.
-const getMovieCategoryParams = (category: MediaCategory, { today, streaming }: CategoryContext): DiscoverParams => {
+const getMovieCategoryParams = (
+  category: MediaCategory,
+  { today, region, streaming }: CategoryContext,
+): DiscoverParams => {
   switch (category) {
     case 'popular':
       return {};
@@ -64,12 +68,14 @@ const getMovieCategoryParams = (category: MediaCategory, { today, streaming }: C
         };
       }
       return {
+        region,
         with_release_type: THEATRICAL_RELEASE_TYPES,
         'release_date.gte': toDateParam(addDays(today, -RELEASE_WINDOW_DAYS)),
         'release_date.lte': toDateParam(today),
       };
     case 'upcoming':
       return {
+        region,
         with_release_type: THEATRICAL_RELEASE_TYPES,
         'release_date.gte': toDateParam(addDays(today, 1)),
         'release_date.lte': toDateParam(addDays(today, RELEASE_WINDOW_DAYS)),
@@ -108,7 +114,9 @@ const STREAMING_CATEGORIES: MediaCategory[] = ['popular', 'top_rated', 'now_play
 
 export const MEDIA_CONFIG: { [M in MediaType]: MediaConfig<M> } = {
   movie: {
-    endpointCategories: MEDIA_CATEGORIES,
+    // The release-date lists go through /discover to pass the visitor's region: without it TMDB counts a release in
+    // any country, so movies out for months elsewhere show as upcoming.
+    endpointCategories: ['popular', 'top_rated'],
     streamingCategories: STREAMING_CATEGORIES,
     genres: [
       'action',

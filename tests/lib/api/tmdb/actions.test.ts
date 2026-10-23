@@ -1,11 +1,18 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { fetchMediaDetails, fetchWatchProviders, fetchMedia, searchMedia } from '@/lib/api/tmdb/actions';
+import { fetchMediaDetails, fetchStreamingProviders, fetchMedia, searchMedia } from '@/lib/api/tmdb/actions';
 import { tmdbClient } from '@/lib/api/tmdb/client';
 import { GENRES_REVALIDATE_SECONDS, SEARCH_REVALIDATE_SECONDS } from '@/lib/api/tmdb/constants';
 import type { Genre } from '@/lib/api/tmdb/types';
+import { createProvider } from '@/tests/factories/media.factory';
 
 vi.mock('@/lib/api/tmdb/client');
+
+const VISITOR_COUNTRY = 'MX';
+
+vi.mock('next/headers', () => ({
+  headers: () => Promise.resolve({ get: (name: string) => (name === 'x-vercel-ip-country' ? VISITOR_COUNTRY : null) }),
+}));
 
 const GENRES_ENDPOINT = '/genre/movie/list';
 
@@ -23,15 +30,19 @@ describe('actions', () => {
     vi.useRealTimers();
   });
 
-  describe('fetchWatchProviders', () => {
-    it('calls tmdbClient with the correct endpoint', async () => {
-      const response = { id: 42, results: {} };
-      vi.mocked(tmdbClient).mockResolvedValue(response);
+  describe('fetchStreamingProviders', () => {
+    it("returns the subscription providers in the visitor's country", async () => {
+      const netflix = createProvider({ provider_name: 'Netflix' });
+      const max = createProvider({ provider_name: 'Max' });
+      vi.mocked(tmdbClient).mockResolvedValue({
+        id: 42,
+        results: { ES: { link: '', flatrate: [netflix] }, MX: { link: '', flatrate: [max] } },
+      });
 
-      const result = await fetchWatchProviders('movie', 42);
+      const result = await fetchStreamingProviders('movie', 42);
 
       expect(tmdbClient).toHaveBeenCalledWith('/movie/42/watch/providers');
-      expect(result).toEqual(response);
+      expect(result).toEqual([max]);
     });
 
     it.each([
@@ -39,7 +50,7 @@ describe('actions', () => {
       ['a non-integer id', 'movie', 1.5],
       ['a non-positive id', 'movie', 0],
     ])('rejects %s without calling TMDB', async (_case, mediaType, id) => {
-      await expect(fetchWatchProviders(mediaType as 'movie', id)).rejects.toThrow();
+      await expect(fetchStreamingProviders(mediaType as 'movie', id)).rejects.toThrow();
 
       expect(tmdbClient).not.toHaveBeenCalled();
     });
@@ -148,6 +159,44 @@ describe('actions', () => {
       expect(result).toEqual([{ mediaType: 'movie', id: 1, genres: [] }]);
     });
 
+    it("lists upcoming movies through /discover/movie with the release dates of the visitor's country", async () => {
+      vi.useFakeTimers({ now: new Date('2026-10-05T12:00:00Z') });
+      mockTmdb({});
+
+      await fetchMedia('movie', 'upcoming', 1, 'en');
+
+      expect(tmdbClient).toHaveBeenCalledWith('/discover/movie', {
+        params: {
+          page: 1,
+          language: 'en-US',
+          region: VISITOR_COUNTRY,
+          with_release_type: '2|3',
+          'release_date.gte': '2026-10-06',
+          'release_date.lte': '2026-11-16',
+          include_adult: false,
+        },
+      });
+    });
+
+    it("lists movies in theaters through /discover/movie with the release dates of the visitor's country", async () => {
+      vi.useFakeTimers({ now: new Date('2026-10-05T12:00:00Z') });
+      mockTmdb({});
+
+      await fetchMedia('movie', 'now_playing', 1, 'en');
+
+      expect(tmdbClient).toHaveBeenCalledWith('/discover/movie', {
+        params: {
+          page: 1,
+          language: 'en-US',
+          region: VISITOR_COUNTRY,
+          with_release_type: '2|3',
+          'release_date.gte': '2026-08-24',
+          'release_date.lte': '2026-10-05',
+          include_adult: false,
+        },
+      });
+    });
+
     it('queries /discover/movie with the category-equivalent params when a genre is given', async () => {
       vi.useFakeTimers({ now: new Date('2026-10-05T12:00:00Z') });
       mockTmdb({ results: [{ id: 1, genre_ids: [] }] });
@@ -158,6 +207,7 @@ describe('actions', () => {
         params: {
           page: 2,
           language: 'es-ES',
+          region: VISITOR_COUNTRY,
           with_release_type: '2|3',
           'release_date.gte': '2026-10-06',
           'release_date.lte': '2026-11-16',
@@ -168,7 +218,7 @@ describe('actions', () => {
       expect(result).toEqual([{ mediaType: 'movie', id: 1, genres: [] }]);
     });
 
-    it('queries /discover/movie restricted to subscription streaming when streaming is on', async () => {
+    it("queries /discover/movie restricted to subscription streaming in the visitor's country", async () => {
       mockTmdb({});
 
       await fetchMedia('movie', 'popular', 1, 'es', { streaming: true });
@@ -177,7 +227,7 @@ describe('actions', () => {
         params: {
           page: 1,
           language: 'es-ES',
-          watch_region: 'ES',
+          watch_region: VISITOR_COUNTRY,
           with_watch_monetization_types: 'flatrate',
           include_adult: false,
         },
@@ -307,7 +357,7 @@ describe('actions', () => {
           'vote_count.gte': 100,
           without_genres: '10767,10763',
           with_genres: 18,
-          watch_region: 'ES',
+          watch_region: VISITOR_COUNTRY,
           with_watch_monetization_types: 'flatrate',
           include_adult: false,
         },
@@ -335,7 +385,7 @@ describe('actions', () => {
     it('fetches the watch providers of a series from /tv/{id}/watch/providers', async () => {
       vi.mocked(tmdbClient).mockResolvedValue({ id: 1399, results: {} });
 
-      await fetchWatchProviders('tv', 1399);
+      await fetchStreamingProviders('tv', 1399);
 
       expect(tmdbClient).toHaveBeenCalledWith('/tv/1399/watch/providers');
     });

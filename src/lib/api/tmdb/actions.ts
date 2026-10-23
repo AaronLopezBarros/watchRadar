@@ -4,6 +4,7 @@ import { tmdbClient } from '@/lib/api/tmdb/client';
 import { GENRES_REVALIDATE_SECONDS, SEARCH_REVALIDATE_SECONDS, TMDB_LANGUAGE } from '@/lib/api/tmdb/constants';
 import { getDiscoverParams, hasFilters } from '@/lib/api/tmdb/discover';
 import { MEDIA_CONFIG, hasCategoryEndpoint, isMediaCategory, isMediaGenre, isMediaType } from '@/lib/api/tmdb/media';
+import { getStreamingProviders } from '@/lib/api/tmdb/providers';
 import type {
   Genre,
   GenresResponse,
@@ -14,9 +15,11 @@ import type {
   TmdbItem,
   TmdbItemDetails,
   TmdbListResponse,
+  WatchProvider,
   WatchProvidersResponse,
 } from '@/lib/api/tmdb/types';
 import type { Locale } from '@/lib/i18n/locale';
+import { getRegion } from '@/lib/region/getRegion';
 
 // Every export of a 'use server' file is callable from the client with any arguments, and these end up in a TMDB
 // path sent with our token, so only known values get through.
@@ -30,10 +33,14 @@ const assertMediaId: (value: unknown) => asserts value is number = value => {
   }
 };
 
-export const fetchWatchProviders = async (mediaType: MediaType, id: number): Promise<WatchProvidersResponse> => {
+export const fetchStreamingProviders = async (mediaType: MediaType, id: number): Promise<WatchProvider[]> => {
   assertMediaType(mediaType);
   assertMediaId(id);
-  return tmdbClient<WatchProvidersResponse>(`/${mediaType}/${id}/watch/providers`);
+  const [response, region] = await Promise.all([
+    tmdbClient<WatchProvidersResponse>(`/${mediaType}/${id}/watch/providers`),
+    getRegion(),
+  ]);
+  return getStreamingProviders(response, region);
 };
 
 export const fetchMediaDetails = async <M extends MediaType>(
@@ -82,11 +89,16 @@ export const fetchMedia = async <M extends MediaType>(
   }
 
   const params = { page, language: TMDB_LANGUAGE[locale] };
+  const region = await getRegion();
 
   const [data, genres] = await Promise.all([
     hasFilters(filters) || !hasCategoryEndpoint(mediaType, category)
       ? tmdbClient<TmdbListResponse<TmdbItem<M>>>(`/discover/${mediaType}`, {
-          params: { ...params, ...getDiscoverParams(mediaType, category, filters, new Date()), include_adult: false },
+          params: {
+            ...params,
+            ...getDiscoverParams(mediaType, category, filters, { today: new Date(), region }),
+            include_adult: false,
+          },
         })
       : tmdbClient<TmdbListResponse<TmdbItem<M>>>(`/${mediaType}/${category}`, { params }),
     fetchGenres(mediaType, locale),

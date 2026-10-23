@@ -2,11 +2,11 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useWatchProviders } from '@/components/PosterCard/hooks/useWatchProviders';
-import { fetchWatchProviders } from '@/lib/api/tmdb/actions';
+import { fetchStreamingProviders } from '@/lib/api/tmdb/actions';
 import { createProvider } from '@/tests/factories/media.factory';
 
 vi.mock('@/lib/api/tmdb/actions', () => ({
-  fetchWatchProviders: vi.fn(),
+  fetchStreamingProviders: vi.fn(),
 }));
 
 describe('useWatchProviders', () => {
@@ -17,15 +17,12 @@ describe('useWatchProviders', () => {
   it('does not fetch before fetchProviders is called', () => {
     renderHook(() => useWatchProviders('movie', 1));
 
-    expect(fetchWatchProviders).not.toHaveBeenCalled();
+    expect(fetchStreamingProviders).not.toHaveBeenCalled();
   });
 
-  it('fetches and returns flatrate providers for ES when fetchProviders is called', async () => {
+  it('fetches and returns the streaming providers when fetchProviders is called', async () => {
     const providers = [createProvider()];
-    vi.mocked(fetchWatchProviders).mockResolvedValue({
-      id: 1,
-      results: { ES: { link: '', flatrate: providers } },
-    });
+    vi.mocked(fetchStreamingProviders).mockResolvedValue(providers);
 
     const { result } = renderHook(() => useWatchProviders('movie', 1));
 
@@ -34,28 +31,12 @@ describe('useWatchProviders', () => {
     });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(fetchWatchProviders).toHaveBeenCalledWith('movie', 1);
+    expect(fetchStreamingProviders).toHaveBeenCalledWith('movie', 1);
     expect(result.current.providers).toEqual(providers);
   });
 
-  it('returns empty array when flatrate is missing', async () => {
-    vi.mocked(fetchWatchProviders).mockResolvedValue({
-      id: 1,
-      results: { ES: { link: '' } },
-    });
-
-    const { result } = renderHook(() => useWatchProviders('movie', 1));
-
-    act(() => {
-      result.current.fetchProviders();
-    });
-
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(result.current.providers).toEqual([]);
-  });
-
   it('returns empty array on fetch error', async () => {
-    vi.mocked(fetchWatchProviders).mockRejectedValue(new Error('Network error'));
+    vi.mocked(fetchStreamingProviders).mockRejectedValue(new Error('Network error'));
 
     const { result } = renderHook(() => useWatchProviders('movie', 1));
 
@@ -68,10 +49,7 @@ describe('useWatchProviders', () => {
   });
 
   it('only fetches once even if fetchProviders is called multiple times', async () => {
-    vi.mocked(fetchWatchProviders).mockResolvedValue({
-      id: 1,
-      results: { ES: { link: '', flatrate: [] } },
-    });
+    vi.mocked(fetchStreamingProviders).mockResolvedValue([]);
 
     const { result } = renderHook(() => useWatchProviders('movie', 1));
 
@@ -82,6 +60,6 @@ describe('useWatchProviders', () => {
     });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(vi.mocked(fetchWatchProviders)).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(fetchStreamingProviders)).toHaveBeenCalledTimes(1);
   });
 });

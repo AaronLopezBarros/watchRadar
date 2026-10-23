@@ -7,7 +7,7 @@ import { createMediaItem } from '@/tests/factories/media.factory';
 
 vi.mock('@/lib/api/tmdb/actions', () => ({
   fetchMedia: vi.fn(),
-  fetchWatchProviders: vi.fn(),
+  fetchStreamingProviders: vi.fn(),
 }));
 
 vi.mock('@/components/InfinitePosterGrid/InfinitePosterGrid', () => ({
